@@ -44,7 +44,12 @@ public class TwitchBot {
 
         nicknames.put("liz0n", "liz0n");
         nicknameVariables.put("liz0n", Arrays.asList(
-                "лиза", "лизон", "liz0n"
+                "лиза", "лизон", "пиздон", "liz0n", "elizzavetta", "lison", "lizon"
+        ));
+
+        nicknames.put("lasqa", "Lasqa");
+        nicknameVariables.put("lasqa", Arrays.asList(
+                "ласка", "крыса", "lasqa"
         ));
 
         this.twitchClient = TwitchClientBuilder.builder()

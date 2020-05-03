@@ -45,7 +45,7 @@ public class GoogleSheets {
 
     public List<List<Object>> getTop () {
         try{
-            String range = "Таблица лидеров!A3:I7";
+            String range = "Таблица лидеров!A3:I8";
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(spreadsheetId, range)
                     .execute();
