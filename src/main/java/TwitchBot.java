@@ -29,12 +29,12 @@ public class TwitchBot {
 
         nicknames.put("mistafaker", "Mistafaker");
         nicknameVariables.put("mistafaker", Arrays.asList(
-                "факер", "faker", "fucker", "фхс", "mistafaker"
+                "факер", "faker", "fucker", "фхс", "mistafaker", "фейкер"
         ));
 
         nicknames.put("melharucos", "Melharucos");
         nicknameVariables.put("melharucos", Arrays.asList(
-                "мэл", "мел", "melharucos", "mel"
+                "мэл", "мел", "melharucos", "mel", "мельха"
         ));
 
         nicknames.put("unclebjorn", "UncleBjorn");
