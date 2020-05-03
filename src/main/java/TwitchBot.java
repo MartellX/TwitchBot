@@ -7,6 +7,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class TwitchBot {
@@ -38,7 +39,7 @@ public class TwitchBot {
 
         nicknames.put("unclebjorn", "UncleBjorn");
         nicknameVariables.put("unclebjorn", Arrays.asList(
-                "unclebjorn", "бьерн", "бьёрн"
+                "unclebjorn", "бьерн", "бьёрн", "бьорн"
         ));
 
         nicknames.put("liz0n", "liz0n");
@@ -64,43 +65,77 @@ public class TwitchBot {
             twitchClient.close();
             return;
         }
-             String logMessage = new String(("[" + new Date() + "][" + event.getChannel().getName() + "]["
+
+        String logMessage = new String(("[" + new Date() + "][" + event.getChannel().getName() + "]["
                      + event.getPermissions().toString()+"] "
                      + event.getUser().getName() + ": "
                      + event.getMessage())
              );
 
-             MainController.writeToLogs(logMessage);
-             System.out.println(logMessage);
+        MainController.writeToLogs(logMessage);
+        System.out.println(logMessage);
 
          String channelName = event.getChannel().getName().toLowerCase();
-         //String nick = nicknames.get(channelName);
-         String nick = "uselessmouth";
+         String nick = nicknames.get(channelName);
+         //String nick = "uselessmouth";
          String message = event.getMessage();
-         if (message.startsWith("!hpg_top")) {
-                 StringBuilder sb = new StringBuilder();
-                 sb.append("Топ 5: ");
-                 sb.append(MainController.getTop());
-                 sb.append(" @" + event.getUser().getName());
-                 sendMessage(event.getChannel().getName(), sb.toString());
-         } else if (message.startsWith("!hpg_info")) {
-                 String nickInfo = nick;
-                 if (message.matches("\\S+ \\S+")) {
-                     nickInfo = message.split(" ")[1];
-                     nickInfo = getNick(nickInfo);
-                     if (nickInfo == null) {
-                         nickInfo = nick;
-                     }
+         if (message.startsWith("!hpg_top") || message.startsWith("!хпгтоп")) {
+             StringBuilder sb = new StringBuilder();
+             sb.append("Топ 5: ");
+             sb.append(MainController.getTop());
+             sb.append(" @" + event.getUser().getName());
+             sendMessage(event.getChannel().getName(), sb.toString());
+         } else if (message.startsWith("!hpg_info") || message.startsWith("!хпгинфо")) {
+             String nickInfo = nick;
+             if (message.matches("\\S+ \\S+")) {
+                 nickInfo = message.split(" ")[1];
+                 nickInfo = getNick(nickInfo);
+                 if (nickInfo == null) {
+                     nickInfo = nick;
                  }
-                 if(nickInfo == null) return;
-                 StringBuilder sb = new StringBuilder(nickInfo + ": ");
-                 sb.append(MainController.getInfoAbout(nickInfo));
-                 sb.append(" @" + event.getUser().getName());
-                 sendMessage(event.getChannel().getName(), sb.toString());
+             }
+             if(nickInfo == null) return;
+             StringBuilder sb = new StringBuilder(nickInfo + ": ");
+             sb.append(MainController.getInfoAbout(nickInfo));
+             sb.append(" @" + event.getUser().getName());
+             sendMessage(event.getChannel().getName(), sb.toString());
+         } else if (message.startsWith("!паста")) {
+             sendMessage(event.getChannel().getName(), MainController.getPast());
+         } else if (message.startsWith("!помощь")) {
+             String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
+                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста";
+             sendMessage(event.getChannel().getName(), commandMessage);
+
+         } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
+             sendMessage(event.getChannel().getName(), "Останавливаюсь..");
+             try {
+                 Thread.sleep(1000);
+             } catch (InterruptedException e) {
+                 e.printStackTrace();
+             }
+             twitchClient.getEventManager().close();
+             twitchClient.getClientHelper().close();
+             twitchClient.close();
+         } else if(message.startsWith("!jointo") && event.getUser().getName().equals("martellx")) {
+
+             if (message.matches("\\S+ \\S+")) {
+                 String joinTo = message.split(" ")[1];
+                 joinTo = getNick(joinTo);
+                 if (joinTo != null) {
+                     joinToChannel(joinTo);
+                 }
+             }
+         }
+         else {
+             String response = MainController.handleMessage(message);
+             if (response != null) {
+                 sendMessage(event.getChannel().getName(), response);
              }
 
-             long timeCheck = System.currentTimeMillis();
-             if ((timeCheck - lastTimeCheck) >= 30*1000) {
+         }
+
+         long timeCheck = System.currentTimeMillis();
+         if ((timeCheck - lastTimeCheck) >= 30*1000 && nick != null) {
                  String lastEventMessage = MainController.getLastEvent(nick);
                  if (lastEventMessage != null) {
                      sendMessage(event.getChannel().getName(), lastEventMessage);
@@ -130,12 +165,12 @@ public class TwitchBot {
         }
 
          */
-        twitchClient.getChat().sendMessage(channelName, message);
+        twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
 
     void joinToChannel(String channel) {
         twitchClient.getChat().joinChannel(channel);
-        sendMessage(channel, ("Присоединился к каналу: \"" + channel + "\""));
+        sendMessage("martellx", ("Присоединился к каналу: \"" + channel + "\""));
     }
 
     @Override

@@ -20,6 +20,7 @@ public class GoogleSheets {
     private JacksonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private final NetHttpTransport HTTP_TRANSPORT;
     private final String spreadsheetId = "1Ag5JOC1tEC7EgMtAB8XJQw-pGc0Xm-s-gh1-_IGh-Ag";
+    private final String pastesSpreadsheetId = "1-xoOKLa1PZEymgxwfRSTCjP6_CbQWg-yVelNvKVueZw";
 
     private Credential credentials;
     private Sheets sheetsService;
@@ -44,7 +45,7 @@ public class GoogleSheets {
 
     public List<List<Object>> getTop () {
         try{
-            String range = "Таблица лидеров!A2:H6";
+            String range = "Таблица лидеров!A3:I7";
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(spreadsheetId, range)
                     .execute();
@@ -123,4 +124,17 @@ public class GoogleSheets {
         return null;
     }
 
+    public List<List<Object>> getPastes() {
+        try {
+            String range = "A1:C1000";
+            ValueRange response = sheetsService.spreadsheets().values()
+                    .get(pastesSpreadsheetId, range)
+                    .setMajorDimension("Columns")
+                    .execute();
+            return response.getValues();
+        } catch (IOException e) {
+            System.out.println("Непредвиденная ошибка в [getPastes()]: " + e.getMessage());
+        }
+        return null;
+    }
 }
