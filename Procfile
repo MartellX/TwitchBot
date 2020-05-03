@@ -1,1 +1,1 @@
-twitchbot: java -jar build\libs\twitchbot_testing-1.0-SNAPSHOT.jar
+twitchbot: java -jar build/libs/twitchbot_testing-1.0-SNAPSHOT.jar
