@@ -29,7 +29,7 @@ public class TwitchBot {
 
         nicknames.put("mistafaker", "Mistafaker");
         nicknameVariables.put("mistafaker", Arrays.asList(
-                "факер", "faker", "fucker", "фхс", "mistafaker", "фейкер"
+                "факер", "faker", "fucker", "фхс", "mistafaker", "фейкер", "гном"
         ));
 
         nicknames.put("melharucos", "Melharucos");
@@ -49,7 +49,7 @@ public class TwitchBot {
 
         nicknames.put("lasqa", "Lasqa");
         nicknameVariables.put("lasqa", Arrays.asList(
-                "ласка", "крыса", "lasqa"
+                "ласка", "крыса", "lasqa", "бодя"
         ));
 
         this.twitchClient = TwitchClientBuilder.builder()
