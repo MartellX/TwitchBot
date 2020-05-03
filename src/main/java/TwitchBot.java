@@ -111,7 +111,7 @@ public class TwitchBot {
      }
 
      String getNick(String nickVar) {
-        for(var e : nicknameVariables.entrySet()) {
+        for(Map.Entry<String, List<String>> e : nicknameVariables.entrySet()) {
             if (e.getValue().contains(nickVar)) {
                 return e.getKey();
             }

@@ -70,7 +70,7 @@ public class GoogleSheets {
             request.setRanges(ranges);
             BatchGetValuesResponse response = request.execute();
             int lastRow = 0;
-            for(var column : response.getValueRanges()) {
+            for(ValueRange column : response.getValueRanges()) {
                 List<Object> columnList = column.getValues().get(0);
                 if (columnList.get(0).equals("Отрезок")) {
                     lastRow = column.getValues().size();
