@@ -16,12 +16,16 @@ public class TwitchBot {
     boolean isClosed = false;
 
     long lastTimeCheck;
+    long lastReconnect = 0;
+    long lastSendedMessage = 0;
     Map<String, String> nicknames = new HashMap<>();
     Map<String, List<String>> nicknameVariables = new HashMap<>();
     Set<String> botNames = new HashSet<>();
 
     TwitchBot(OAuth2Credential credential) {
         lastTimeCheck = System.currentTimeMillis() - 1000*60;
+
+
 
         nicknames.put("uselessmouth", "UselessMouth");
         nicknameVariables.put("uselessmouth", Arrays.asList(
@@ -77,6 +81,21 @@ public class TwitchBot {
             return;
         }
 
+        /*
+        long timeReconnect = System.currentTimeMillis();
+
+        if((timeReconnect - lastReconnect) > 1000*60*10) {
+            twitchClient.getChat().reconnect();
+        }
+
+         */
+         /*
+         long sendMessageTime = System.currentTimeMillis();
+         if ((sendMessageTime - lastSendedMessage) <(15*1000)) {
+
+         }
+
+          */
         String logMessage = ("[" + new Date() + "][" + event.getChannel().getName() + "]["
                      + event.getPermissions().toString()+"] "
                      + event.getUser().getName() + ": "
@@ -116,7 +135,7 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), MainController.getPast());
          } else if (message.startsWith("!помощь")) {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
-                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, !когда, !событие";
+                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, !когда, !событие (КД: 15 секунд)";
              sendMessage(event.getChannel().getName(), commandMessage);
          } else if (message.startsWith("!когда")) {
              sendMessage(event.getChannel().getName(), MainController.when());

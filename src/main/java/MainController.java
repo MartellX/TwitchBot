@@ -132,7 +132,7 @@ public class MainController {
             for (Map.Entry<String, Integer> e: allPastes.entrySet()
                  ) {
                 if (e.getValue() < 3) {
-                    allPastes.remove(e.getKey());
+                    allPastes.remove(e);
                 }
             }
         }
