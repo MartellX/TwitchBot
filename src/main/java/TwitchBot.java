@@ -95,7 +95,7 @@ public class TwitchBot {
          String message = event.getMessage();
          if (message.startsWith("!hpg_top") || message.startsWith("!хпгтоп")) {
              StringBuilder sb = new StringBuilder();
-             sb.append("Топ 5: ");
+             sb.append("Топ: ");
              sb.append(MainController.getTop());
              sb.append(" @" + event.getUser().getName());
              sendMessage(event.getChannel().getName(), sb.toString());
@@ -121,7 +121,7 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), commandMessage);
 
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
-             sendMessage(event.getChannel().getName(), "Останавливаюсь... peepoRIP");
+             sendMessage(event.getChannel().getName(), "останавливаюсь... peepoRIP");
              try {
                  Thread.sleep(1000);
              } catch (InterruptedException e) {
@@ -138,6 +138,12 @@ public class TwitchBot {
                  if (joinTo != null) {
                      joinToChannel(joinTo);
                  }
+             }
+         } else if(message.startsWith("!setpastcount") && event.getUser().getName().equals("martellx")) {
+
+             if (message.matches("\\S+ \\d+")) {
+                 String count = message.split(" ")[1];
+                 MainController.setMaxPastCount(Integer.parseInt(count));
              }
          }
          else {

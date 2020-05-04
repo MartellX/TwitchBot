@@ -15,6 +15,8 @@ public class MainController {
     static private Map<String, List<String>> lastEvents;
     static private Map<String, Integer> allPastes;
 
+    static private int maxPastCount = 5;
+
 
     static public void setTwitchBot(OAuth2Credential twitchCreds) {
         twitchBot = new TwitchBot(twitchCreds);
@@ -116,7 +118,7 @@ public class MainController {
         }
         allPastes.put(message, ++count);
 
-        if (count > 5) {
+        if (count > maxPastCount) {
             allPastes.put(message, 0);
             return message;
         } else {
@@ -153,6 +155,10 @@ public class MainController {
 
     static void joinTo (String channel) {
         twitchBot.joinToChannel(channel);
+    }
+
+    static void setMaxPastCount(int count) {
+        maxPastCount = count;
     }
 
     static void writeToLogs(String log) {
