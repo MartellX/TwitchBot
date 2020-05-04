@@ -14,11 +14,10 @@ public class MainController {
     static private File logsFile;
     static private Map<String, List<String>> lastEvents;
     static private Map<String, Integer> allPastes;
+    static private List<String> nicks;
 
     static private int maxPastCount = 5;
-    static private String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
-            "никогда SadCat", "всегда widepeepoHappy", "через неделю", "через год", "когда юзя видеокарту разгонит",
-            "а хуй знает"};
+
 
     static public void setTwitchBot(OAuth2Credential twitchCreds) {
         twitchBot = new TwitchBot(twitchCreds);
@@ -128,6 +127,8 @@ public class MainController {
             allPastes = new HashMap<>();
         }
 
+
+
         if (allPastes.size() > 1000) {
             allPastes.clear();
             /*
@@ -160,6 +161,16 @@ public class MainController {
         }
     }
 
+    static public void handleNick(String nick) {
+        if (nicks == null) {
+            nicks = new ArrayList<>();
+        }
+
+        if (!nicks.contains(nick)) {
+            nicks.add(nick);
+        }
+    }
+
     public static String getSubStringIfContains(String string) {
         if (string.length() < 2) {
             return null;
@@ -186,12 +197,36 @@ public class MainController {
         return null;
     }
 
+    static private String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
+            "никогда SadCat", "всегда widepeepoHappy", "через неделю", "через год", "когда юзя видеокарту разгонит",
+            "а хуй знает"};
     static public String when() {
         Random rd = new Random();
         String answer = whenAnswers[rd.nextInt(whenAnswers.length)];
         return answer;
     }
 
+    static private String[] whoAnswers = {"он", "ты", "я", "никто",
+            "все", "кто-то", "чат"};
+
+    static public String who() {
+        Random rd = new Random();
+        StringBuilder answ = new StringBuilder(whoAnswers[rd.nextInt(whoAnswers.length)]);
+        if (answ.toString().equals("он")) {
+            answ.append(" :point_right: @" + nicks.get(rd.nextInt(nicks.size())));
+        }
+
+        return answ.toString();
+    }
+
+    static private String[] whereAnswers = {"там :point_right:", "там :point_up:",
+            "там :point_down:", "там :point_left:", "сзади monkaW", "за окном", "нигде",
+    "хз, поищи"};
+    static public String where() {
+        Random rd = new Random();
+        String answ = whereAnswers[rd.nextInt(whereAnswers.length)];
+        return where();
+    }
 
     static void joinTo (String channel) {
         twitchBot.joinToChannel(channel);

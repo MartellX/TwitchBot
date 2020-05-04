@@ -89,13 +89,11 @@ public class TwitchBot {
         }
 
          */
-         /*
          long sendMessageTime = System.currentTimeMillis();
-         if ((sendMessageTime - lastSendedMessage) <(15*1000)) {
-
+         if ((sendMessageTime - lastSendedMessage) < (10*1000)) {
+             return;
          }
 
-          */
         String logMessage = ("[" + new Date() + "][" + event.getChannel().getName() + "]["
                      + event.getPermissions().toString()+"] "
                      + event.getUser().getName() + ": "
@@ -106,6 +104,8 @@ public class TwitchBot {
         if (botNames.contains(event.getUser().getName())) {
             return;
         }
+
+        MainController.handleNick(event.getUser().getName());
 
          String channelName = event.getChannel().getName().toLowerCase();
          String nick = nicknames.get(channelName);
@@ -135,10 +135,20 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), MainController.getPast());
          } else if (message.startsWith("!помощь")) {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
-                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, !когда, !событие (КД: 15 секунд)";
+                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, " +
+                     "!когда, !событие, !кто, !где (кд 10 секунд)";
              sendMessage(event.getChannel().getName(), commandMessage);
          } else if (message.startsWith("!когда")) {
              sendMessage(event.getChannel().getName(), MainController.when());
+         } else if(message.startsWith("!кто")) {
+             String who = MainController.who();
+             if (who.equals("ты")) {
+                 who = (who + " @" + event.getUser().getName());
+             }
+             sendMessage(event.getChannel().getName(), who);
+         } else if (message.startsWith("!где")) {
+             String where = MainController.where();
+             sendMessage(event.getChannel().getName(), where);
          } else if (message.startsWith("!событие")) {
              String last = MainController.getLastEvent(nick);
              if (last != null) {
@@ -209,7 +219,7 @@ public class TwitchBot {
         }
 
          */
-
+        lastSendedMessage = System.currentTimeMillis();
         System.out.println("[LOGS][SEND_MESSAGE] " + message);
         twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
