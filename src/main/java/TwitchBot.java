@@ -53,9 +53,9 @@ public class TwitchBot {
                 "ласка", "крыса", "lasqa", "бодя"
         ));
 
-        botNames.add("Nightbot");
-        botNames.add("Moobot");
-        botNames.add("Streamlabs");
+        botNames.add("nightbot");
+        botNames.add("moobot");
+        botNames.add("streamlabs");
 
 
         this.twitchClient = TwitchClientBuilder.builder()
@@ -146,7 +146,7 @@ public class TwitchBot {
                  MainController.setMaxPastCount(Integer.parseInt(count));
              }
          }
-         else {
+         else if (!message.startsWith("!")){
              String response = MainController.handleMessage(message);
              if (response != null) {
                  sendMessage(event.getChannel().getName(), response);
