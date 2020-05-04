@@ -190,6 +190,8 @@ public class TwitchBot {
         }
 
          */
+
+        System.out.println("[LOGS][SEND_MESSAGE] " + message);
         twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
 

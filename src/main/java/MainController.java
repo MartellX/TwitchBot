@@ -207,7 +207,7 @@ public class MainController {
                 fw.append(log + '\n');
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            return;
         }
     }
 
