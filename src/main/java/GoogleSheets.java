@@ -60,6 +60,7 @@ public class GoogleSheets {
         try {
             Map<String, String> infoMap= new HashMap<>();
             List<String> ranges = new ArrayList<>();
+            ranges.add(nick + "!F12:F10000"); // Статус
             ranges.add(nick + "!D12:D10000"); // Отрезок
             ranges.add(nick + "!E12:E10000"); // Игра
             ranges.add(nick + "!G12:G10000"); // Номинальное GGP
@@ -73,17 +74,21 @@ public class GoogleSheets {
             int lastRow = 0;
             for(ValueRange column : response.getValueRanges()) {
                 List<Object> columnList = column.getValues().get(0);
-                if (columnList.get(0).equals("Отрезок")) {
+                if (columnList.get(0).equals("Результат")) {
                     lastRow = column.getValues().size();
+                    infoMap.put("Status", column.getValues().get(lastRow - 1).toString());
+                }
+                if (columnList.get(0).equals("Отрезок")) {
                     infoMap.put("Range", column.getValues().get(lastRow - 1).toString());
                 } else if (columnList.get(0).equals("Игра")) {
-
-                    infoMap.put("Game", column.getValues().get(column.getValues().size() - 1).toString());
+                    infoMap.put("Game", column.getValues().get(lastRow - 1).toString());
                 } else if (columnList.get(0).equals("Номинальное GGP")) {
-                    infoMap.put("GGP", column.getValues().get(column.getValues().size() - 1).toString());
+                    infoMap.put("GGP", column.getValues().get(lastRow - 1).toString());
                 } else if (columnList.get(0).equals("Комментарий")) {
                     if (lastRow == column.getValues().size()) {
-                        infoMap.put("Comment", column.getValues().get(column.getValues().size() - 1).toString());
+                        if (!column.getValues().get(lastRow - 1).toString().equals("")) {
+                            infoMap.put("Comment", column.getValues().get(lastRow - 1).toString());
+                        }
                     }
                 }
             }

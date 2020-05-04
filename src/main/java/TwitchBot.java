@@ -18,6 +18,7 @@ public class TwitchBot {
     long lastTimeCheck;
     Map<String, String> nicknames = new HashMap<>();
     Map<String, List<String>> nicknameVariables = new HashMap<>();
+    Set<String> botNames = new HashSet<>();
 
     TwitchBot(OAuth2Credential credential) {
         lastTimeCheck = System.currentTimeMillis() - 1000*60;
@@ -52,6 +53,11 @@ public class TwitchBot {
                 "ласка", "крыса", "lasqa", "бодя"
         ));
 
+        botNames.add("Nightbot");
+        botNames.add("Moobot");
+        botNames.add("Streamlabs");
+
+
         this.twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
                 .withChatAccount(credential)
@@ -76,9 +82,12 @@ public class TwitchBot {
                      + event.getUser().getName() + ": "
                      + event.getMessage())
              );
-
         MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
+
+        if (botNames.contains(event.getUser().getName())) {
+            return;
+        }
 
          String channelName = event.getChannel().getName().toLowerCase();
          String nick = nicknames.get(channelName);
@@ -112,7 +121,7 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), commandMessage);
 
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
-             sendMessage(event.getChannel().getName(), "Останавливаюсь..");
+             sendMessage(event.getChannel().getName(), "Останавливаюсь... peepoRIP");
              try {
                  Thread.sleep(1000);
              } catch (InterruptedException e) {
