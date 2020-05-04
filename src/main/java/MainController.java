@@ -16,7 +16,9 @@ public class MainController {
     static private Map<String, Integer> allPastes;
 
     static private int maxPastCount = 5;
-
+    static private String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
+            "никогда SadCat", "всегда widepeepoHappy", "через неделю", "через год", "когда юзя видеокарту разгонит",
+            "а хуй знает"};
 
     static public void setTwitchBot(OAuth2Credential twitchCreds) {
         twitchBot = new TwitchBot(twitchCreds);
@@ -87,10 +89,28 @@ public class MainController {
     }
 
     static public String getPast() {
+        Set<String> blacklist = new HashSet<>();
+        blacklist.add("педик");
+        blacklist.add("пидорас");
+        blacklist.add("пидор");
+        blacklist.add("пидрила");
         List<List<Object>> pastes = googleSheets.getPastes();
         Random rand = new Random();
         List<Object> column = pastes.get(rand.nextInt(pastes.size()));
-        return column.get(rand.nextInt(column.size())).toString();
+        String past = null;
+
+        while (true) {
+            past = column.get(rand.nextInt(column.size())).toString();
+            for (String bl:blacklist
+                 ) {
+                if(past.contains(bl)){
+                    continue;
+                }
+            }
+            break;
+        }
+
+        return past;
     }
 
     static public String handleMessage(String message) {
@@ -150,6 +170,12 @@ public class MainController {
         }
 
         return null;
+    }
+
+    static public String when() {
+        Random rd = new Random();
+        String answer = whenAnswers[rd.nextInt(whenAnswers.length)];
+        return answer;
     }
 
 

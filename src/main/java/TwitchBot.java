@@ -77,11 +77,10 @@ public class TwitchBot {
             return;
         }
 
-        String logMessage = new String(("[" + new Date() + "][" + event.getChannel().getName() + "]["
+        String logMessage = ("[" + new Date() + "][" + event.getChannel().getName() + "]["
                      + event.getPermissions().toString()+"] "
                      + event.getUser().getName() + ": "
-                     + event.getMessage())
-             );
+                     + event.getMessage());
         MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
 
@@ -117,9 +116,10 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), MainController.getPast());
          } else if (message.startsWith("!помощь")) {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
-                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста";
+                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, !когда";
              sendMessage(event.getChannel().getName(), commandMessage);
-
+         } else if (message.startsWith("!когда")) {
+             sendMessage(event.getChannel().getName(), MainController.when());
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
              sendMessage(event.getChannel().getName(), "останавливаюсь... peepoRIP");
              try {
