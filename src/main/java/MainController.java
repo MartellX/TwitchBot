@@ -129,12 +129,16 @@ public class MainController {
         }
 
         if (allPastes.size() > 1000) {
+            allPastes.clear();
+            /*
             for (Map.Entry<String, Integer> e: allPastes.entrySet()
                  ) {
                 if (e.getValue() < 3) {
                     allPastes.remove(e);
                 }
             }
+
+             */
         }
 
         int count = 0;
