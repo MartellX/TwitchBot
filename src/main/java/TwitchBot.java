@@ -89,8 +89,8 @@ public class TwitchBot {
         }
 
          String channelName = event.getChannel().getName().toLowerCase();
-         //String nick = nicknames.get(channelName);
-         String nick = "uselessmouth";
+         String nick = nicknames.get(channelName);
+         //String nick = "uselessmouth";
          String message = event.getMessage();
          if (message.startsWith("!hpg_top") || message.startsWith("!хпгтоп")) {
              StringBuilder sb = new StringBuilder();
