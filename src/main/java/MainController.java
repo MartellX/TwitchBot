@@ -68,12 +68,11 @@ public class MainController {
         return sbInfo.toString();
     }
 
-    static public String getLastEvent(String nick) {
+    static public String updateLastEvent(String nick) {
         if (lastEvents == null) {
             lastEvents = new HashMap<>();
         }
         List<String> lastEventFromData = lastEvents.getOrDefault(nick, null);
-
         StringBuilder sbLastEvent = new StringBuilder();
         List<String> lastEvent = googleSheets.getLastEvent(nick);
         if (lastEventFromData != null) {
@@ -86,6 +85,17 @@ public class MainController {
         sbLastEvent.append("Пояснение: " + lastEvent.get(1));
         lastEvents.put(nick, lastEvent);
         return sbLastEvent.toString();
+    }
+
+    static public String getLastEvent(String nick) {
+        if (lastEvents.get(nick) != null) {
+            List<String> lastEvent = lastEvents.get(nick);
+            StringBuilder sbLastEvent = new StringBuilder();
+            sbLastEvent.append("Последнее событие: " + lastEvent.get(0) + ", ");
+            sbLastEvent.append("Пояснение: " + lastEvent.get(1));
+            return sbLastEvent.toString();
+        }
+        return null;
     }
 
     static public String getPast() {

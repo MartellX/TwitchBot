@@ -89,8 +89,8 @@ public class TwitchBot {
         }
 
          String channelName = event.getChannel().getName().toLowerCase();
-         String nick = nicknames.get(channelName);
-         //String nick = "uselessmouth";
+         //String nick = nicknames.get(channelName);
+         String nick = "uselessmouth";
          String message = event.getMessage();
          if (message.startsWith("!hpg_top") || message.startsWith("!хпгтоп")) {
              StringBuilder sb = new StringBuilder();
@@ -116,10 +116,15 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), MainController.getPast());
          } else if (message.startsWith("!помощь")) {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
-                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, !когда";
+                     "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, !когда, !событие";
              sendMessage(event.getChannel().getName(), commandMessage);
          } else if (message.startsWith("!когда")) {
              sendMessage(event.getChannel().getName(), MainController.when());
+         } else if (message.startsWith("!событие")) {
+             String last = MainController.getLastEvent(nick);
+             if (last != null) {
+                 sendMessage(event.getChannel().getName(), last + " @" + event.getUser().getName());
+             }
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
              sendMessage(event.getChannel().getName(), "останавливаюсь... peepoRIP");
              try {
@@ -155,8 +160,8 @@ public class TwitchBot {
          }
 
          long timeCheck = System.currentTimeMillis();
-         if ((timeCheck - lastTimeCheck) >= 30*1000 && nick != null) {
-                 String lastEventMessage = MainController.getLastEvent(nick);
+         if ((timeCheck - lastTimeCheck) >= 10*1000 && nick != null) {
+                 String lastEventMessage = MainController.updateLastEvent(nick);
                  if (lastEventMessage != null) {
                      sendMessage(event.getChannel().getName(), lastEventMessage);
                  }
