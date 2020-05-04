@@ -128,11 +128,11 @@ public class MainController {
             allPastes = new HashMap<>();
         }
 
-        if (allPastes.size() > 2000) {
+        if (allPastes.size() > 1000) {
             for (Map.Entry<String, Integer> e: allPastes.entrySet()
                  ) {
                 if (e.getValue() < 3) {
-                    allPastes.remove(e);
+                    allPastes.remove(e.getKey());
                 }
             }
         }
