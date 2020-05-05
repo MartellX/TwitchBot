@@ -166,7 +166,7 @@ public class TwitchBot {
          } else if (message.startsWith("!анфиса")) {
              String msg = message.replaceFirst("!анфиса", "");
              if (!msg.matches("\\s*?")) {
-                 String answer = MainController.getAnwerFromChatbot(msg);
+                 String answer = MainController.getAnwerFromChatbot(msg) + " @" + event.getUser().getName();
                  sendMessage(event.getChannel().getName(), answer);
              }
 
@@ -202,7 +202,7 @@ public class TwitchBot {
          else if (!message.startsWith("!")){
              String response = MainController.handleMessage(message);
              if (response != null) {
-                 sendMessage(event.getChannel().getName(), response);
+                 sendMessage(event.getChannel().getName(), response, false);
              }
 
          }
@@ -211,7 +211,7 @@ public class TwitchBot {
          if ((timeCheck - lastTimeCheck) >= 10*1000 && nick != null) {
                  String lastEventMessage = MainController.updateLastEvent(nick);
                  if (lastEventMessage != null) {
-                     sendMessage(event.getChannel().getName(), lastEventMessage);
+                     sendMessage(event.getChannel().getName(), lastEventMessage, false);
                  }
                  lastTimeCheck = System.currentTimeMillis();
              }
@@ -239,6 +239,23 @@ public class TwitchBot {
 
          */
         lastSendedMessage = System.currentTimeMillis();
+        System.out.println("[LOGS][SEND_MESSAGE] " + message);
+        twitchClient.getChat().sendMessage(channelName, "/me " + message);
+    }
+
+    void sendMessage (String channelName, String message, boolean isDelaying) {
+
+        /*String sendingMessage = null;
+        try {
+            sendingMessage = new String(message.getBytes(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+         */
+        if (isDelaying) {
+            lastSendedMessage = System.currentTimeMillis();
+        }
         System.out.println("[LOGS][SEND_MESSAGE] " + message);
         twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
