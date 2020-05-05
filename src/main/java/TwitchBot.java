@@ -86,10 +86,7 @@ public class TwitchBot {
         }
 
          */
-         long sendMessageTime = System.currentTimeMillis();
-         if ((sendMessageTime - lastSendedMessage) < (10*1000)) {
-             return;
-         }
+
 
         String logMessage = ("[" + new Date() + "][" + event.getChannel().getName() + "]["
                      + event.getPermissions().toString()+"] "
@@ -97,6 +94,10 @@ public class TwitchBot {
                      + event.getMessage());
         //MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
+        long sendMessageTime = System.currentTimeMillis();
+        if ((sendMessageTime - lastSendedMessage) < (10*1000)) {
+             return;
+         }
 
         if (botNames.contains(event.getUser().getName())) {
             return;
@@ -266,7 +267,7 @@ public class TwitchBot {
         if (isDelaying) {
             lastSendedMessage = System.currentTimeMillis();
         }
-        System.out.println("[LOGS][SEND_MESSAGE] " + message);
+        System.out.println("[LOGS][" + new Date() + "][SEND_MESSAGE] " + message);
         twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
 
