@@ -17,6 +17,7 @@ public class MainController {
     static private List<String> nicks;
 
     static private ChatBot chatBot = new ChatBot();
+    static private ComicBot comicBot = new ComicBot();
 
     static private int maxPastCount = 5;
 
@@ -201,8 +202,13 @@ public class MainController {
         return null;
     }
 
-    static public String getAnwerFromChatbot(String msg){
+    static public String getAnswerFromChatbot(String msg){
         String answer = chatBot.getAnswer(msg);
+        return answer;
+    }
+
+    static public String getAnswerFromComicbot() {
+        String answer = comicBot.getAnek();
         return answer;
     }
 

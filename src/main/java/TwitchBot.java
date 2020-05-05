@@ -1,13 +1,10 @@
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.api.domain.IDisposable;
-import com.github.philippheuer.events4j.core.domain.Event;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class TwitchBot {
@@ -140,7 +137,7 @@ public class TwitchBot {
          } else if (message.startsWith("!помощь")) {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
                      "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, " +
-                     "!когда, !событие, !кто, !где, !анфиса [сообщение] (кд 10 секунд)";
+                     "!когда, !событие, !кто, !где, !анфиса [сообщение], !анек (кд 10 секунд)";
              sendMessage(event.getChannel().getName(), commandMessage);
 
          } else if (message.startsWith("!когда")) {
@@ -166,9 +163,22 @@ public class TwitchBot {
          } else if (message.startsWith("!анфиса")) {
              String msg = message.replaceFirst("!анфиса", "");
              if (!msg.matches("\\s*?")) {
-                 String answer = MainController.getAnwerFromChatbot(msg) + " @" + event.getUser().getName();
+                 String answer = MainController.getAnswerFromChatbot(msg) + " @" + event.getUser().getName();
                  sendMessage(event.getChannel().getName(), answer);
              }
+
+         } else if (message.startsWith("!анек")) {
+             String answer = "";
+             int i = 0;
+             while (true) {
+                 answer = MainController.getAnswerFromComicbot();
+                 if (answer.length() <= 500 || i > 15) {
+                     break;
+                 }
+                 i++;
+             }
+
+             sendMessage(event.getChannel().getName(), answer);
 
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
              sendMessage(event.getChannel().getName(), "останавливаюсь... peepoRIP");
@@ -262,7 +272,7 @@ public class TwitchBot {
 
     void joinToChannel(String channel) {
         twitchClient.getChat().joinChannel(channel);
-        sendMessage("martellx", ("Присоединился к каналу: \"" + channel + "\""));
+        sendMessage("martellx", ("Присоединился к каналу: \"" + channel + "\""), false);
     }
 
     @Override
