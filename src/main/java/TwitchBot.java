@@ -29,7 +29,7 @@ public class TwitchBot {
 
         nicknames.put("uselessmouth", "UselessMouth");
         nicknameVariables.put("uselessmouth", Arrays.asList(
-                "юзя", "uselessmouth", "гений", "ричард"
+                "юзя", "uselessmouth", "гений", "ричард", "разгонщик"
                 ));
 
         nicknames.put("mistafaker", "Mistafaker");
@@ -44,7 +44,7 @@ public class TwitchBot {
 
         nicknames.put("unclebjorn", "UncleBjorn");
         nicknameVariables.put("unclebjorn", Arrays.asList(
-                "unclebjorn", "бьерн", "бьёрн", "бьорн"
+                "unclebjorn", "бьерн", "бьёрн", "бьорн", "бурн"
         ));
 
         nicknames.put("liz0n", "liz0n");
@@ -98,7 +98,7 @@ public class TwitchBot {
                      + event.getPermissions().toString()+"] "
                      + event.getUser().getName() + ": "
                      + event.getMessage());
-        MainController.writeToLogs(logMessage);
+        //MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
 
         if (botNames.contains(event.getUser().getName())) {
@@ -117,43 +117,59 @@ public class TwitchBot {
              sb.append(MainController.getTop());
              sb.append(" @" + event.getUser().getName());
              sendMessage(event.getChannel().getName(), sb.toString());
+
          } else if (message.startsWith("!hpg_info") || message.startsWith("!хпгинфо")) {
              String nickInfo = nick;
              if (message.matches("\\S+ \\S+")) {
                  nickInfo = message.split(" ")[1];
                  nickInfo = getNick(nickInfo);
                  if (nickInfo == null) {
-                     nickInfo = nick;
+                     String msg = "Не понял. Ху? @" + event.getUser().getName();
+                     sendMessage(event.getChannel().getName(), msg);
+                     return;
                  }
              }
-             if(nickInfo == null) return;
              StringBuilder sb = new StringBuilder(nickInfo + ": ");
              sb.append(MainController.getInfoAbout(nickInfo));
              sb.append(" @" + event.getUser().getName());
              sendMessage(event.getChannel().getName(), sb.toString());
+
          } else if (message.startsWith("!паста")) {
              sendMessage(event.getChannel().getName(), MainController.getPast());
+
          } else if (message.startsWith("!помощь")) {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
                      "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, " +
-                     "!когда, !событие, !кто, !где (кд 10 секунд)";
+                     "!когда, !событие, !кто, !где, !анфиса [сообщение] (кд 10 секунд)";
              sendMessage(event.getChannel().getName(), commandMessage);
+
          } else if (message.startsWith("!когда")) {
              sendMessage(event.getChannel().getName(), MainController.when());
+
          } else if(message.startsWith("!кто")) {
              String who = MainController.who();
              if (who.equals("ты")) {
                  who = (who + " @" + event.getUser().getName());
              }
              sendMessage(event.getChannel().getName(), who);
+
          } else if (message.startsWith("!где")) {
              String where = MainController.where();
              sendMessage(event.getChannel().getName(), where);
+
          } else if (message.startsWith("!событие")) {
              String last = MainController.getLastEvent(nick);
              if (last != null) {
                  sendMessage(event.getChannel().getName(), last + " @" + event.getUser().getName());
              }
+
+         } else if (message.startsWith("!анфиса")) {
+             String msg = message.replaceFirst("!анфиса", "");
+             if (!msg.matches("\\s*?")) {
+                 String answer = MainController.getAnwerFromChatbot(msg);
+                 sendMessage(event.getChannel().getName(), answer);
+             }
+
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
              sendMessage(event.getChannel().getName(), "останавливаюсь... peepoRIP");
              try {
@@ -164,6 +180,7 @@ public class TwitchBot {
              twitchClient.getEventManager().close();
              twitchClient.getClientHelper().close();
              twitchClient.close();
+
          } else if(message.startsWith("!jointo") && event.getUser().getName().equals("martellx")) {
 
              if (message.matches("\\S+ \\S+")) {
@@ -173,12 +190,14 @@ public class TwitchBot {
                      joinToChannel(joinTo);
                  }
              }
+
          } else if(message.startsWith("!setpastcount") && event.getUser().getName().equals("martellx")) {
 
              if (message.matches("\\S+ \\d+")) {
                  String count = message.split(" ")[1];
                  MainController.setMaxPastCount(Integer.parseInt(count));
              }
+
          }
          else if (!message.startsWith("!")){
              String response = MainController.handleMessage(message);

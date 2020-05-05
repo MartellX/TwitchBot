@@ -16,6 +16,8 @@ public class MainController {
     static private Map<String, Integer> allPastes;
     static private List<String> nicks;
 
+    static private ChatBot chatBot = new ChatBot();
+
     static private int maxPastCount = 5;
 
 
@@ -103,6 +105,8 @@ public class MainController {
         blacklist.add("пидорас");
         blacklist.add("пидор");
         blacklist.add("пидрила");
+        blacklist.add("п***р");
+        blacklist.add("п****");
         List<List<Object>> pastes = googleSheets.getPastes();
         Random rand = new Random();
         List<Object> column = pastes.get(rand.nextInt(pastes.size()));
@@ -195,6 +199,11 @@ public class MainController {
         }
 
         return null;
+    }
+
+    static public String getAnwerFromChatbot(String msg){
+        String answer = chatBot.getAnswer(msg);
+        return answer;
     }
 
     static private String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
