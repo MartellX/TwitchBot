@@ -19,6 +19,8 @@ public class TwitchBot {
     Map<String, List<String>> nicknameVariables = new HashMap<>();
     Set<String> botNames = new HashSet<>();
     Set<String> blacklist = new HashSet<>();
+    Set<String> adminNames = new HashSet<>();
+    int delay = 10;
 
     TwitchBot(OAuth2Credential credential) {
         lastTimeCheck = System.currentTimeMillis() - 1000*60;
@@ -67,6 +69,9 @@ public class TwitchBot {
         blacklist.add("п***р");
         blacklist.add("п****");
 
+        adminNames.add("martellx");
+        adminNames.add("pdvrr");
+
 
         this.twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
@@ -107,7 +112,7 @@ public class TwitchBot {
         long sendMessageTime = System.currentTimeMillis();
          String message = event.getMessage();
 
-         if(message.startsWith("!стоп") && event.getUser().getName().equals("martellx")) {
+         if(message.startsWith("!стоп") && adminNames.contains(event.getUser().getName().toLowerCase())) {
              isStarted = false;
              sendMessage(event.getChannel().getName(), "перестаю", false);
          }
@@ -120,7 +125,7 @@ public class TwitchBot {
                 return;
             }
         }
-        if ((sendMessageTime - lastSendedMessage) < (10*1000)) {
+        if ((sendMessageTime - lastSendedMessage) < (delay*1000)) {
              return;
          }
 
@@ -255,12 +260,19 @@ public class TwitchBot {
                  MainController.setMaxPastCount(Integer.parseInt(count));
              }
 
-         } else if(message.startsWith("!старт") && event.getUser().getName().equals("martellx")) {
+         } else if(message.startsWith("!старт") &&
+                 adminNames.contains(event.getUser().getName().toLowerCase())) {
              isStarted = true;
              sendMessage(event.getChannel().getName(), "@hepega_bot Привет", false);
-         } else if(message.startsWith("!стоп") && event.getUser().getName().equals("martellx")) {
+         } else if(message.startsWith("!стоп") && adminNames.contains(event.getUser().getName().toLowerCase())) {
              isStarted = false;
              sendMessage(event.getChannel().getName(), "перестаю", false);
+
+         } else if(message.startsWith("!задержка") && event.getUser().getName().equals("martellx")) {
+             String msg = message.replaceAll("!задержка", "");
+             delay = Integer.parseInt(msg);
+             sendMessage(event.getChannel().getName(), "Задержка установлена на " + delay + " секунд"
+                     , false);
          }
          else if (!message.startsWith("!")){
              String response = MainController.handleMessage(message);
