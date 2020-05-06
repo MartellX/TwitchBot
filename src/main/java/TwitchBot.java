@@ -80,6 +80,7 @@ public class TwitchBot {
 
     }
 
+    boolean isStarted = false;
      void handlerMethod(ChannelMessageEvent event) {
         if(isClosed) {
             twitchClient.getClientHelper().close();
@@ -105,7 +106,7 @@ public class TwitchBot {
         System.out.println(logMessage);
         long sendMessageTime = System.currentTimeMillis();
          String message = event.getMessage();
-        if (message.contains("@***REMOVED***") && event.getUser().getName().equals("hepega_bot")) {
+        if (message.contains("@***REMOVED***") && event.getUser().getName().equals("hepega_bot") && isStarted) {
             String msg = message.replaceAll("@***REMOVED***", "");
             if (!msg.matches("\\s*?")) {
                 String answer = MainController.getAnswerFromChatbot(msg) + " @" + event.getUser().getName();
@@ -246,7 +247,11 @@ public class TwitchBot {
              }
 
          } else if(message.startsWith("!старт") && event.getUser().getName().equals("martellx")) {
+             isStarted = true;
              sendMessage(event.getChannel().getName(), "@hepega_bot Привет", false);
+         } else if(message.startsWith("!стоп") && event.getUser().getName().equals("martellx")) {
+             isStarted = false;
+             sendMessage(event.getChannel().getName(), "перестаю", false);
          }
          else if (!message.startsWith("!")){
              String response = MainController.handleMessage(message);
