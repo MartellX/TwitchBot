@@ -106,6 +106,12 @@ public class TwitchBot {
         System.out.println(logMessage);
         long sendMessageTime = System.currentTimeMillis();
          String message = event.getMessage();
+
+         if(message.startsWith("!стоп") && event.getUser().getName().equals("martellx")) {
+             isStarted = false;
+             sendMessage(event.getChannel().getName(), "перестаю", false);
+         }
+
         if (message.contains("@***REMOVED***") && event.getUser().getName().equals("hepega_bot") && isStarted) {
             String msg = message.replaceAll("@***REMOVED***", "");
             if (!msg.matches("\\s*?")) {
