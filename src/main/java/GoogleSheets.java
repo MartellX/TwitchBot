@@ -111,7 +111,7 @@ public class GoogleSheets {
 
             int i = 0;
             boolean isFinds = true;
-            while (values.get(values.size() - 1 - i).size() != 2) {
+            while ((values.get(values.size() - 1 - i)).size() != 2) {
                 i++;
                 if (values.size() - 1 - i < 0) {
                     isFinds = false;
@@ -119,8 +119,8 @@ public class GoogleSheets {
                 }
             }
             if (isFinds) {
-                lastEvent.add(values.get(values.size() - 1).get(0).toString());
-                lastEvent.add(values.get(values.size() - 1).get(1).toString());
+                lastEvent.add(values.get(values.size() - 1 - i).get(0).toString());
+                lastEvent.add(values.get(values.size() - 1 - i).get(1).toString());
             }
             return lastEvent;
         } catch (IOException e) {

@@ -106,8 +106,8 @@ public class TwitchBot {
         MainController.handleNick(event.getUser().getName());
 
          String channelName = event.getChannel().getName().toLowerCase();
-         String nick = nicknames.get(channelName);
-         //String nick = "uselessmouth";
+         //String nick = nicknames.get(channelName);
+         String nick = "uselessmouth";
          String message = event.getMessage();
          if (message.startsWith("!hpg_top") || message.startsWith("!хпгтоп")) {
              StringBuilder sb = new StringBuilder();
