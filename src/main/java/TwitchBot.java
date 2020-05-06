@@ -270,7 +270,7 @@ public class TwitchBot {
 
          } else if(message.startsWith("!задержка")
                  && (event.getUser().getName().equals("martellx") || event.getPermissions().contains("MODERATOR"))) {
-             String msg = message.replaceAll("!задержка", "");
+             String msg = message.replaceAll("!задержка", "").replaceAll(" ", "");
              delay = Integer.parseInt(msg);
              sendMessage(event.getChannel().getName(), "Задержка установлена на " + delay + " секунд"
                      , false);
