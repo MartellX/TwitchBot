@@ -18,6 +18,7 @@ public class MainController {
 
     static private ChatBot chatBot = new ChatBot();
     static private ComicBot comicBot = new ComicBot();
+    static private HttpClientController httpClient = new HttpClientController();
 
     static private int maxPastCount = 5;
 
@@ -58,6 +59,7 @@ public class MainController {
         }
         if (infoMap.containsKey("Game") && !infoMap.get("Game").equals("")) {
             sbInfo.append("Игра: " + infoMap.get("Game") + ", ");
+            sbInfo.append("Время прохождения: [" + httpClient.getGameTimeFromHLTB(infoMap.get("Game")) + "], ");
         }
         if (infoMap.containsKey("GGP") && !infoMap.get("GGP").equals("")) {
             sbInfo.append("Номинальное GGP: " + infoMap.get("GGP") + ", ");

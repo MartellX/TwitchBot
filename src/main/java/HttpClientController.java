@@ -3,6 +3,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,7 +18,48 @@ public class HttpClientController {
     private String RESOURCE_POINT;
     HttpClient client = null;
     HttpClientController() {
+
         client = HttpClient.newBuilder().build();
+    }
+
+    HttpRequest requestGameHLTB(String game) {
+        String resource = "https://howlongtobeat.com/search_results?page=1";
+        String body = "queryString="+ game +
+                "&t=games" +
+                "&sorthead%3D=popular" +
+                "&sortd=Normal Order" +
+                "&plat=" +
+                "&length_type=main" +
+                "&length_min=" +
+                "&length_max=" +
+                "&detail=";
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .uri(URI.create(resource))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        return httpRequest;
+    }
+
+    public String getGameTimeFromHLTB(String game) {
+        game = game
+                .replaceAll("®", "")
+                .replaceFirst("\\[", "")
+                .replaceAll("]$", "");
+        HttpRequest request = requestGameHLTB(game);
+        String answer = "???";
+        try {
+            HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Document html = Jsoup.parse(response.body().toString());
+            Elements times = html.getElementsByClass("search_list_tidbit center time_100");
+            if (times.size() > 0) {
+                answer = times.get(0).text();
+            }
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+        return answer;
     }
 
 }
