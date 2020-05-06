@@ -182,7 +182,7 @@ public class TwitchBot {
 
              sendMessage(event.getChannel().getName(), answer);
 
-         } else if (message.startsWith("!предложение")) {
+         } else if (message.startsWith("!предложить")) {
              String msg = message.replaceFirst("!предложение", "");
              if (!msg.matches("\\s*?")) {
                  System.out.println("[SUGGESTION][" + new Date() + "][" + event.getUser().getName() + "]: "
