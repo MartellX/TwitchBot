@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -25,7 +26,7 @@ public class HttpClientController {
 
     HttpRequest requestGameHLTB(String game) {
         String resource = "https://howlongtobeat.com/search_results?page=1";
-        String body = "queryString="+ game +
+        String body = "queryString="+ URLEncoder.encode(game) +
                 "&t=games" +
                 "&sorthead%3D=popular" +
                 "&sortd=Normal Order" +
