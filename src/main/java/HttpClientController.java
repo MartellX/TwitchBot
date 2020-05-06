@@ -5,6 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -52,9 +53,12 @@ public class HttpClientController {
         try {
             HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
             Document html = Jsoup.parse(response.body().toString());
-            Elements times = html.getElementsByClass("search_list_tidbit center time_100");
+            Elements times = html.getElementsByClass("search_list_details_block");
             if (times.size() > 0) {
-                answer = times.get(0).text();
+                Element firstElement = times.get(0);
+                Element timesElement = firstElement.child(0);
+                Element MainTime = timesElement.child(1);
+                answer = MainTime.text();
             }
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
