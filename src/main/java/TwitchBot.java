@@ -195,8 +195,10 @@ public class TwitchBot {
                  sendMessage(event.getChannel().getName(), last + " @" + event.getUser().getName());
              }
 
-         } else if (message.startsWith("!анфиса")) {
-             String msg = message.replaceFirst("!анфиса", "");
+         } else if (message.startsWith("!анфиса") || message.contains("@***REMOVED***")) {
+             String msg = message.replaceFirst("!анфиса", "")
+                     .replaceAll("@***REMOVED***", "");
+
              if (!msg.matches("\\s*?")) {
                  String answer = MainController.getAnswerFromChatbot(msg) + " @" + event.getUser().getName();
                  sendMessage(event.getChannel().getName(), answer);
