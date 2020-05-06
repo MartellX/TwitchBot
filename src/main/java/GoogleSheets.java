@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class GoogleSheets {
@@ -65,6 +67,7 @@ public class GoogleSheets {
             ranges.add(nick + "!E12:E10000"); // Игра
             ranges.add(nick + "!G12:G10000"); // Номинальное GGP
             ranges.add(nick + "!I12:I10000"); // Комментарий
+            ranges.add(nick + "!J12:J10000");
             Sheets.Spreadsheets.Values.BatchGet request = sheetsService
                     .spreadsheets()
                     .values()
@@ -88,6 +91,20 @@ public class GoogleSheets {
                     if (lastRow == column.getValues().size()) {
                         if (!column.getValues().get(lastRow - 1).toString().equals("")) {
                             infoMap.put("Comment", column.getValues().get(lastRow - 1).toString());
+                        }
+                    }
+                } else if (columnList.get(0).equals("События")) {
+                    if (lastRow == column.getValues().size()) {
+                        String events = column.getValues().get(lastRow - 1).toString();
+                        Pattern pattern = Pattern.compile(".*Бухгалтерия \\(\\d*\\).*");
+                        Matcher matcher = pattern.matcher(events);
+                        if (matcher.find()){
+                            int i = matcher.groupCount();
+                            String last = matcher.group(i);
+                            last = last.replaceAll("^Бухгалтерия \\(", "")
+                                    .replaceAll("\\)$", "");
+                            Integer newGGP = Integer.parseInt(last);
+                            infoMap.put("GGP", newGGP.toString());
                         }
                     }
                 }
