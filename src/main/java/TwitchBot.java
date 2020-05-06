@@ -136,9 +136,10 @@ public class TwitchBot {
              sendMessage(event.getChannel().getName(), MainController.getPast());
 
          } else if (message.startsWith("!помощь")) {
-             String commandMessage = "Это тестовый бот для слежения за процессом HPG. " +
+             String commandMessage = "Это тестовый бот для слежения за процессом HPG. (Задержка 10 секунд)" +
                      "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, " +
-                     "!когда, !событие, !кто, !где, !анфиса [сообщение], !анек (кд 10 секунд)";
+                     "!кто, !где, !когда, !событие,  !анфиса [сообщение], " +
+                     "!анек. Для того, чтобы предложить команду используйте !предложить [сообщение]";
              sendMessage(event.getChannel().getName(), commandMessage);
 
          } else if (message.startsWith("!когда")) {
@@ -180,6 +181,15 @@ public class TwitchBot {
              }
 
              sendMessage(event.getChannel().getName(), answer);
+
+         } else if (message.startsWith("!предложение")) {
+             String msg = message.replaceFirst("!предложение", "");
+             if (!msg.matches("\\s*?")) {
+                 System.out.println("[SUGGESTION][" + new Date() + "][" + event.getUser().getName() + "]: "
+                         + msg);
+                 String answer = "Предложение отправлено!";
+                 sendMessage(event.getChannel().getName(), answer);
+             }
 
          } else if(message.startsWith("!martell_stop") && event.getUser().getName().equals("martellx")) {
              sendMessage(event.getChannel().getName(), "останавливаюсь... peepoRIP");
@@ -250,7 +260,7 @@ public class TwitchBot {
 
          */
         lastSendedMessage = System.currentTimeMillis();
-        System.out.println("[LOGS][SEND_MESSAGE] " + message);
+        System.out.println("[LOGS][" + new Date() + "][SEND_MESSAGE] " + message);
         twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
 
