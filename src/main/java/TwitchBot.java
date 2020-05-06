@@ -18,6 +18,7 @@ public class TwitchBot {
     Map<String, String> nicknames = new HashMap<>();
     Map<String, List<String>> nicknameVariables = new HashMap<>();
     Set<String> botNames = new HashSet<>();
+    Set<String> blacklist = new HashSet<>();
 
     TwitchBot(OAuth2Credential credential) {
         lastTimeCheck = System.currentTimeMillis() - 1000*60;
@@ -57,6 +58,14 @@ public class TwitchBot {
         botNames.add("nightbot");
         botNames.add("moobot");
         botNames.add("streamlabs");
+        botNames.add("hepega_bot");
+
+        blacklist.add("педик");
+        blacklist.add("пидорас");
+        blacklist.add("пидор");
+        blacklist.add("пидрила");
+        blacklist.add("п***р");
+        blacklist.add("п****");
 
 
         this.twitchClient = TwitchClientBuilder.builder()
@@ -109,6 +118,14 @@ public class TwitchBot {
          String nick = nicknames.get(channelName);
          //String nick = "uselessmouth";
          String message = event.getMessage();
+
+         for (var s:blacklist
+              ) {
+             if (message.contains(s)) {
+                 return;
+             }
+         }
+
          if (message.startsWith("!hpg_top") || message.startsWith("!хпгтоп")) {
              StringBuilder sb = new StringBuilder();
              sb.append("Топ: ");
