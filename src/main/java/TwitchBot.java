@@ -104,6 +104,15 @@ public class TwitchBot {
         //MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
         long sendMessageTime = System.currentTimeMillis();
+         String message = event.getMessage();
+        if (message.contains("@***REMOVED***") && event.getUser().getName().equals("hepega_bot")) {
+            String msg = message.replaceAll("@***REMOVED***", "");
+            if (!msg.matches("\\s*?")) {
+                String answer = MainController.getAnswerFromChatbot(msg) + " @" + event.getUser().getName();
+                sendMessage(event.getChannel().getName(), answer);
+                return;
+            }
+        }
         if ((sendMessageTime - lastSendedMessage) < (10*1000)) {
              return;
          }
@@ -117,7 +126,7 @@ public class TwitchBot {
          String channelName = event.getChannel().getName().toLowerCase();
          String nick = nicknames.get(channelName);
          //String nick = "uselessmouth";
-         String message = event.getMessage();
+
 
          for (var s:blacklist
               ) {
@@ -236,6 +245,8 @@ public class TwitchBot {
                  MainController.setMaxPastCount(Integer.parseInt(count));
              }
 
+         } else if(message.startsWith("!старт") && event.getUser().getName().equals("martellx")) {
+             sendMessage(event.getChannel().getName(), "@hepega_bot Привет", false);
          }
          else if (!message.startsWith("!")){
              String response = MainController.handleMessage(message);
@@ -246,12 +257,13 @@ public class TwitchBot {
          }
 
          long timeCheck = System.currentTimeMillis();
-         if ((timeCheck - lastTimeCheck) >= 10*1000 && nick != null) {
-                 String lastEventMessage = MainController.updateLastEvent(nick);
+         if ((timeCheck - lastTimeCheck) >= 60*1000 && nick != null) {
+             lastTimeCheck = System.currentTimeMillis();
+             String lastEventMessage = MainController.updateLastEvent(nick);
                  if (lastEventMessage != null) {
                      sendMessage(event.getChannel().getName(), lastEventMessage, false);
                  }
-                 lastTimeCheck = System.currentTimeMillis();
+
              }
 
      }

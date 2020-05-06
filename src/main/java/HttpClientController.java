@@ -122,7 +122,7 @@ class ComicBot extends HttpClientController {
     HttpRequest requestAnswer() {
         String method = "getRandItemP";
         long timestamp = Instant.now().getEpochSecond();
-        String query = "pid=" + pid + "&method=" + method + "&uts=" + timestamp;
+        String query = "pid=" + pid + "&method=" + method + "&uts=" + timestamp + "&genre=4";
 
         String hash = DigestUtils.md5Hex(query + skey);
         query += "&hash=" + hash;
