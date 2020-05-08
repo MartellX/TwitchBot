@@ -70,6 +70,13 @@ public class TwitchBot {
         blacklist.add("пидрила");
         blacklist.add("п***р");
         blacklist.add("п****");
+        blacklist.add("нигга");
+        blacklist.add("нигер");
+        blacklist.add("ниггер");
+        blacklist.add("негр");
+        blacklist.add("неггр");
+
+
 
         adminNames.add("martellx");
         adminNames.add("pdvrr");
@@ -211,6 +218,12 @@ public class TwitchBot {
 
              if (!msg.matches("\\s*?")) {
                  String answer = MainController.getAnswerFromChatbot(msg) + " @" + event.getUser().getName();
+                 for (var bl : blacklist
+                      ) {
+                     if (answer.contains(bl)) {
+                         return;
+                     }
+                 }
                  sendMessage(event.getChannel().getName(), answer);
              }
 
