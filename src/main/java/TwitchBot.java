@@ -68,6 +68,7 @@ public class TwitchBot {
         blacklist.add("пидорас");
         blacklist.add("пидор");
         blacklist.add("пидрила");
+        blacklist.add("пидр");
         blacklist.add("п***р");
         blacklist.add("п****");
         blacklist.add("нигга");
