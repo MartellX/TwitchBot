@@ -88,23 +88,15 @@ public class GoogleSheets {
                 } else if (columnList.get(0).equals("Номинальное GGP")) {
                     infoMap.put("GGP", column.getValues().get(lastRow - 1).toString());
                 } else if (columnList.get(0).equals("Комментарий")) {
-                    if (lastRow == column.getValues().size()) {
+                    if (lastRow <= column.getValues().size()) {
                         if (!column.getValues().get(lastRow - 1).toString().equals("")) {
                             infoMap.put("Comment", column.getValues().get(lastRow - 1).toString());
                         }
                     }
                 } else if (columnList.get(0).equals("События")) {
-                    if (lastRow == column.getValues().size()) {
-                        String events = column.getValues().get(lastRow - 1).toString();
-                        Pattern pattern = Pattern.compile(".*Бухгалтерия \\(\\d*\\).*");
-                        Matcher matcher = pattern.matcher(events);
-                        if (matcher.find()){
-                            int i = matcher.groupCount();
-                            String last = matcher.group(i);
-                            last = last.replaceAll("^Бухгалтерия \\(", "")
-                                    .replaceAll("\\)$", "");
-                            Integer newGGP = Integer.parseInt(last);
-                            infoMap.put("GGP", newGGP.toString());
+                    if (lastRow <= column.getValues().size()) {
+                        if (!column.getValues().get(lastRow - 1).toString().equals("")) {
+                            infoMap.put("Events", column.getValues().get(lastRow - 1).toString());
                         }
                     }
                 }

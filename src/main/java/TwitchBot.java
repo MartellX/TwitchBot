@@ -4,6 +4,7 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.github.twitch4j.common.enums.CommandPermission;
 
 import java.util.*;
 
@@ -20,6 +21,7 @@ public class TwitchBot {
     Set<String> botNames = new HashSet<>();
     Set<String> blacklist = new HashSet<>();
     Set<String> adminNames = new HashSet<>();
+    Set<String> adminCommands = Set.of();
     int delay = 10;
 
     TwitchBot(OAuth2Credential credential) {
@@ -107,7 +109,9 @@ public class TwitchBot {
                      + event.getPermissions().toString()+"] "
                      + event.getUser().getName() + ": "
                      + event.getMessage());
+
         //MainController.writeToLogs(logMessage);
+
         System.out.println(logMessage);
         long sendMessageTime = System.currentTimeMillis();
          String message = event.getMessage();

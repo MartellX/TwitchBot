@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainController {
 
@@ -52,7 +54,8 @@ public class MainController {
     static public String getInfoAbout(String nick) {
         StringBuilder sbInfo = new StringBuilder();
         Map<String, String> infoMap = googleSheets.getInfoAbout(nick);
-
+        int startGGP = 0;
+        double finalGGP = 0;
 
         if (infoMap.containsKey("Range") && !infoMap.get("Range").equals("")) {
             sbInfo.append("Отрезок: " + infoMap.get("Range") + ", ");
@@ -62,11 +65,63 @@ public class MainController {
             sbInfo.append("Время прохождения: [" + httpClient.getGameTimeFromHLTB(infoMap.get("Game")) + "], ");
         }
         if (infoMap.containsKey("GGP") && !infoMap.get("GGP").equals("")) {
-            sbInfo.append("Номинальное GGP: " + infoMap.get("GGP") + ", ");
+            startGGP = Integer
+                    .parseInt(infoMap
+                            .get("GGP")
+                            .replaceAll("[\\[\\]]", ""));
+            finalGGP = startGGP;
         }
+
+        if (infoMap.containsKey("Events") && !infoMap.get("Events").equals("")) {
+            String events = infoMap.get("Events");
+            Pattern pattern = Pattern.compile(".*Бухгалтерия \\(\\d*\\).*");
+            Matcher matcher = pattern.matcher(events);
+            if (matcher.find()){
+                int i = matcher.groupCount();
+                String last = matcher.group(i);
+                last = last.replaceAll("^Бухгалтерия \\(", "")
+                        .replaceAll("\\)$", "");
+                Integer newGGP = Integer.parseInt(last);
+                startGGP = newGGP;
+                finalGGP = newGGP;
+            }
+
+            pattern = Pattern.compile("[-−]\\d*%");
+            matcher = pattern.matcher(events);
+            while (matcher.find()) {
+                String match = matcher.group();
+                match = match.replaceAll("[-−%]", "");
+                double percent = Integer.parseInt(match);
+                double k = (100 - percent) / 100;
+                finalGGP = finalGGP * k;
+            }
+
+            pattern = Pattern.compile("\\+\\d*%");
+            matcher = pattern.matcher(events);
+            while(matcher.find()){
+                String match = matcher.group();
+                match = match.replaceAll("[+%]", "");
+                double percent = Integer.parseInt(match);
+                double k = (100 + percent) / 100;
+                finalGGP = finalGGP * k;
+            }
+
+            pattern = Pattern.compile("\\+\\d*\\sGGP");
+            matcher = pattern.matcher(events);
+            while(matcher.find()){
+                String match = matcher.group();
+                match = match.replaceAll("[^\\d]", "");
+                double plusGGP = Integer.parseInt(match);
+                finalGGP += plusGGP;
+            }
+        }
+
+        sbInfo.append("Номинальное GGP: " + startGGP + ", Итоговое GGP: " + (int)finalGGP + ", ");
+
         if (infoMap.containsKey("Comment") && !infoMap.get("Comment").equals("")) {
             sbInfo.append("Комментарий: " + infoMap.get("Comment") + ", ");
         }
+
 
         sbInfo.delete(sbInfo.length() - 2, sbInfo.length());
         return sbInfo.toString();
