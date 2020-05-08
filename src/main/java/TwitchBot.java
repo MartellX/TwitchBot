@@ -162,7 +162,7 @@ public class TwitchBot {
              String nickInfo = nick;
              if (message.matches("\\S+ \\S+")) {
                  nickInfo = message.split(" ")[1];
-                 nickInfo = getNick(nickInfo);
+                 nickInfo = getNick(nickInfo.toLowerCase());
                  if (nickInfo == null) {
                      String msg = "Не понял. Ху? @" + event.getUser().getName();
                      sendMessage(event.getChannel().getName(), msg);
