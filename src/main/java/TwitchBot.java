@@ -168,7 +168,7 @@ public class TwitchBot {
 
          } else if (message.startsWith("!hpg_info") || message.startsWith("!хпгинфо")) {
              String nickInfo = nick;
-             if (message.matches("\\S+ \\S+")) {
+             if (message.matches("\\S+ \\S+.*")) {
                  nickInfo = message.split(" ")[1];
                  nickInfo = getNick(nickInfo.toLowerCase());
                  if (nickInfo == null) {
