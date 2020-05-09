@@ -88,23 +88,25 @@ public class MainController {
 
             pattern = Pattern.compile("[-−]\\d*%");
             matcher = pattern.matcher(events);
+            double percent = 0;
             while (matcher.find()) {
                 String match = matcher.group();
-                match = match.replaceAll("[-−%]", "");
-                double percent = Integer.parseInt(match);
-                double k = (100 - percent) / 100;
-                finalGGP = finalGGP * k;
+                match = match.replaceAll("[^\\d]", "");
+                percent -= Integer.parseInt(match);
+
             }
 
             pattern = Pattern.compile("\\+\\d*%");
             matcher = pattern.matcher(events);
             while(matcher.find()){
                 String match = matcher.group();
-                match = match.replaceAll("[+%]", "");
-                double percent = Integer.parseInt(match);
-                double k = (100 + percent) / 100;
-                finalGGP = finalGGP * k;
+                match = match.replaceAll("[^\\d]", "");
+                percent += Integer.parseInt(match);
+
             }
+
+            double k = (100 + percent) / 100;
+            finalGGP = finalGGP * k;
 
             pattern = Pattern.compile("\\+\\d*\\sGGP");
             matcher = pattern.matcher(events);
