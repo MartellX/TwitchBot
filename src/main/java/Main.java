@@ -14,6 +14,6 @@ public class Main {
         MainController.setGoogleSheets(googleCredsPath);
         MainController.setLogsFile("logs.txt");
         MainController.joinTo("martellx");
-        MainController.joinTo("uselessmouth");
+        //MainController.joinTo("uselessmouth");
     }
 }

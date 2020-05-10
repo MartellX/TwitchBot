@@ -4,7 +4,6 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.common.enums.CommandPermission;
 
 import java.util.*;
 
@@ -26,7 +25,6 @@ public class TwitchBot {
 
     TwitchBot(OAuth2Credential credential) {
         lastTimeCheck = System.currentTimeMillis() - 1000*60;
-
 
 
         nicknames.put("uselessmouth", "UselessMouth");
@@ -96,6 +94,7 @@ public class TwitchBot {
     }
 
     boolean isStarted = false;
+
      void handlerMethod(ChannelMessageEvent event) {
         if(isClosed) {
             twitchClient.getClientHelper().close();
@@ -173,7 +172,7 @@ public class TwitchBot {
                  nickInfo = getNick(nickInfo.toLowerCase());
                  if (nickInfo == null) {
                      String msg = "Не понял. Ху? @" + event.getUser().getName();
-                     sendMessage(event.getChannel().getName(), msg);
+                     sendMessage(event.getChannel().getName(), msg, false);
                      return;
                  }
              }
@@ -231,9 +230,18 @@ public class TwitchBot {
          } else if (message.startsWith("!анек")) {
              String answer = "";
              int i = 0;
+
              while (true) {
+                 boolean isBL = false;
                  answer = MainController.getAnswerFromComicbot();
-                 if (answer.length() <= 500 || i > 15) {
+                 for (var bl:blacklist
+                      ) {
+                     if (answer.contains(bl)) {
+                         isBL = true;
+                         break;
+                     }
+                 }
+                 if ((answer.length() <= 500 || i > 15) && !isBL){
                      break;
                  }
                  i++;
