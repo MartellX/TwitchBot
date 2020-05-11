@@ -147,8 +147,9 @@ public class TwitchBot {
         MainController.handleNick(event.getUser().getName());
 
          String channelName = event.getChannel().getName().toLowerCase();
+         //String channelName = "uselessmouth";
          String nick = nicknames.get(channelName);
-         //String nick = "uselessmouth";
+
 
 
          for (var s:blacklist
@@ -170,13 +171,13 @@ public class TwitchBot {
              if (message.matches("\\S+ \\S+.*")) {
                  nickInfo = message.split(" ")[1];
                  nickInfo = getNick(nickInfo.toLowerCase());
+                 nickInfo = nicknames.get(nickInfo);
                  if (nickInfo == null) {
                      String msg = "Не понял. Ху? @" + event.getUser().getName();
                      sendMessage(event.getChannel().getName(), msg, false);
                      return;
                  }
              }
-             nickInfo = nicknames.get(nickInfo);
              StringBuilder sb = new StringBuilder(nickInfo + ": ");
              sb.append(MainController.getInfoAbout(nickInfo));
              sb.append(" @" + event.getUser().getName());
