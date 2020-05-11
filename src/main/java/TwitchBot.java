@@ -176,6 +176,7 @@ public class TwitchBot {
                      return;
                  }
              }
+             nickInfo = nicknames.get(nickInfo);
              StringBuilder sb = new StringBuilder(nickInfo + ": ");
              sb.append(MainController.getInfoAbout(nickInfo));
              sb.append(" @" + event.getUser().getName());

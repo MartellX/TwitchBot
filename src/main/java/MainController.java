@@ -79,8 +79,7 @@ public class MainController {
             if (matcher.find()){
                 int i = matcher.groupCount();
                 String last = matcher.group(i);
-                last = last.replaceAll("^Бухгалтерия \\(", "")
-                        .replaceAll("\\)$", "");
+                last = last.replaceAll("[^\\d]", "");
                 Integer newGGP = Integer.parseInt(last);
                 startGGP = newGGP;
                 finalGGP = newGGP;
@@ -299,7 +298,7 @@ public class MainController {
     static public String where() {
         Random rd = new Random();
         String answ = whereAnswers[rd.nextInt(whereAnswers.length)];
-        return where();
+        return answ;
     }
 
     static void joinTo (String channel) {
