@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.core.JsonFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -10,6 +9,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,7 +24,7 @@ public class HttpClientController {
         client = HttpClient.newBuilder().build();
     }
 
-    HttpRequest requestGameHLTB(String game) {
+    HttpRequest buildRequestGameHLTB(String game) {
         String resource = "https://howlongtobeat.com/search_results?page=1";
         String body = "queryString="+ URLEncoder.encode(game) +
                 "&t=games" +
@@ -49,21 +49,46 @@ public class HttpClientController {
                 .replaceAll("®", "")
                 .replaceFirst("\\[", "")
                 .replaceAll("]$", "");
-        HttpRequest request = requestGameHLTB(game);
+        HttpRequest request = buildRequestGameHLTB(game);
         String answer = "???";
         try {
             HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
             Document html = Jsoup.parse(response.body().toString());
-            Elements times = html.getElementsByClass("search_list_details_block");
+            Elements times = html.getElementsByAttributeValueStarting("class", "search_list_tidbit");
             if (times.size() > 0) {
-                Element firstElement = times.get(0);
-                Element timesElement = firstElement.child(0);
-                Element MainTime = timesElement.child(1);
-                answer = MainTime.text();
+                Element firstElement = times.get(1);
+                answer = firstElement.text();
             }
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
+        return answer;
+    }
+
+    public String getTimeFromGamefaqs(String game) {
+        game = game
+                .replaceAll("®", "")
+                .replaceFirst("\\[", "")
+                .replaceAll("]$", "");
+        String resource = "https://gamefaqs.gamespot.com";
+        String query = "/search?game=" + URLEncoder.encode(game);
+        String url = resource + query;
+        String answer = "???";
+        try {
+            Document findedHTML = Jsoup.parse(new URL(url), 10000);
+            Elements refs = findedHTML.getElementsByClass("log_search");
+            String ref = refs.get(0).attributes().get("href");
+            url = resource + ref;
+            Document gameHTML = Jsoup.parse(new URL(url), 10000);
+            Elements times = gameHTML.getElementsByAttributeValueStarting("class", "rating mygames_stats_time");
+            if (times.size() > 0) {
+                Element time = times.get(0);
+                answer = time.getAllElements().get(0).text();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return answer;
     }
 

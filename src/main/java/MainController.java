@@ -17,10 +17,12 @@ public class MainController {
     static private Map<String, List<String>> lastEvents;
     static private Map<String, Integer> allPastes;
     static private List<String> nicks;
+    static private Map<String, String> gamesLength = new HashMap<>();
 
     static private ChatBot chatBot = new ChatBot();
     static private ComicBot comicBot = new ComicBot();
     static private HttpClientController httpClient = new HttpClientController();
+
 
     static private int maxPastCount = 5;
 
@@ -62,7 +64,19 @@ public class MainController {
         }
         if (infoMap.containsKey("Game") && !infoMap.get("Game").equals("")) {
             sbInfo.append("Игра: " + infoMap.get("Game") + ", ");
-            sbInfo.append("Время прохождения: [" + httpClient.getGameTimeFromHLTB(infoMap.get("Game")) + "], ");
+            String game = infoMap.get("Game");
+            String length = "???";
+
+            if (gamesLength.containsKey(game)) {
+                length = gamesLength.get(game);
+            } else {
+                length = httpClient.getGameTimeFromHLTB(infoMap.get("Game"));
+                if (length.equals("???") || length.equals("--")) {
+                    length = httpClient.getTimeFromGamefaqs(game);
+                }
+                gamesLength.put(game, length);
+            }
+            sbInfo.append("Время прохождения: [" + length + "], ");
         }
         if (infoMap.containsKey("GGP") && !infoMap.get("GGP").equals("")) {
             startGGP = Integer
