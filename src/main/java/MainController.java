@@ -74,11 +74,10 @@ public class MainController {
 
         if (infoMap.containsKey("Events") && !infoMap.get("Events").equals("")) {
             String events = infoMap.get("Events");
-            Pattern pattern = Pattern.compile(".*Бухгалтерия \\(\\d*\\).*");
+            Pattern pattern = Pattern.compile("Бухгалтерия \\(\\d*\\)");
             Matcher matcher = pattern.matcher(events);
-            if (matcher.find()){
-                int i = matcher.groupCount();
-                String last = matcher.group(i);
+            while (matcher.find()){
+                String last = matcher.group();
                 last = last.replaceAll("[^\\d]", "");
                 Integer newGGP = Integer.parseInt(last);
                 startGGP = newGGP;
