@@ -74,7 +74,10 @@ public class MainController {
                 if (length.equals("???") || length.equals("--")) {
                     length = httpClient.getTimeFromGamefaqs(game);
                 }
-                gamesLength.put(game, length);
+                if (!length.equals("???")) {
+                    gamesLength.put(game, length);
+                }
+
             }
             sbInfo.append("Время прохождения: [" + length + "], ");
         }

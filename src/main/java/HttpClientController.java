@@ -74,19 +74,23 @@ public class HttpClientController {
         String query = "/search?game=" + URLEncoder.encode(game);
         String url = resource + query;
         String answer = "???";
-        try {
-            Document findedHTML = Jsoup.parse(new URL(url), 10000);
-            Elements refs = findedHTML.getElementsByClass("log_search");
-            String ref = refs.get(0).attributes().get("href");
-            url = resource + ref;
-            Document gameHTML = Jsoup.parse(new URL(url), 10000);
-            Elements times = gameHTML.getElementsByAttributeValueStarting("class", "rating mygames_stats_time");
-            if (times.size() > 0) {
-                Element time = times.get(0);
-                answer = time.getAllElements().get(0).text();
+        int i = 0;
+        while (i < 5) {
+            try {
+                Document findedHTML = Jsoup.parse(new URL(url), 10000);
+                Elements refs = findedHTML.getElementsByClass("log_search");
+                String ref = refs.get(0).attributes().get("href");
+                url = resource + ref;
+                Document gameHTML = Jsoup.parse(new URL(url), 10000);
+                Elements times = gameHTML.getElementsByAttributeValueStarting("class", "rating mygames_stats_time");
+                if (times.size() > 0) {
+                    Element time = times.get(0);
+                    answer = time.getAllElements().get(0).text();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                i++;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return answer;
