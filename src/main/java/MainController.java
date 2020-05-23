@@ -262,7 +262,7 @@ public class MainController {
 
         try {
             BufferedImage image = ImageController.getImageFromUrl(url);
-            art = ImageController.ImageToBraille(image, -1);
+            art = ImageController.ImageToBraille(image, threshold);
         } catch (IOException e) {
             e.printStackTrace();
         }
