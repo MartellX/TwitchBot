@@ -1,6 +1,7 @@
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +23,9 @@ public class MainController {
     static private ChatBot chatBot = new ChatBot();
     static private ComicBot comicBot = new ComicBot();
     static private HttpClientController httpClient = new HttpClientController();
+    static private EmotesController emotesController = new EmotesController();
+    static private long lastUpdate = System.currentTimeMillis();
+    static private int updateMinutes = 30;
 
 
     static private int maxPastCount = 5;
@@ -123,7 +127,7 @@ public class MainController {
             double k = (100 + percent) / 100;
             finalGGP = finalGGP * k;
 
-            pattern = Pattern.compile("\\+\\d*\\sGGP");
+            pattern = Pattern.compile("\\+\\d*[^%]");
             matcher = pattern.matcher(events);
             while(matcher.find()){
                 String match = matcher.group();
@@ -240,6 +244,32 @@ public class MainController {
         }
     }
 
+    static public String getArt(String emote, String channel, int threshold) {
+        long time = System.currentTimeMillis();
+        long diff = time - lastUpdate;
+        if (diff/(1000*60) >= updateMinutes) {
+            emotesController.updateChannelEmotes(channel);
+        }
+        String url = emotesController.getEmoteUrl(emote, channel);
+        if (url == null) {
+            return null;
+        }
+
+        if (threshold > 100 || threshold < 0) {
+            threshold = -1;
+        }
+        String art = null;
+
+        try {
+            BufferedImage image = ImageController.getImageFromUrl(url);
+            art = ImageController.ImageToBraille(image, -1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return art;
+    }
+
     static public void handleNick(String nick) {
         if (nicks == null) {
             nicks = new ArrayList<>();
@@ -318,6 +348,7 @@ public class MainController {
     }
 
     static void joinTo (String channel) {
+        emotesController.updateChannelEmotes(channel);
         twitchBot.joinToChannel(channel);
     }
 

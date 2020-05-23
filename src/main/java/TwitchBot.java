@@ -96,6 +96,7 @@ public class TwitchBot {
     boolean isStarted = false;
 
      void handlerMethod(ChannelMessageEvent event) {
+
         if(isClosed) {
             twitchClient.getClientHelper().close();
             twitchClient.close();
@@ -190,7 +191,8 @@ public class TwitchBot {
              String commandMessage = "Это тестовый бот для слежения за процессом HPG. (Задержка 10 секунд) " +
                      "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !паста, " +
                      "!кто, !где, !когда, !событие,  !анфиса [сообщение], " +
-                     "!анек. Для того, чтобы предложить команду используйте !предложить [сообщение]";
+                     "!анек, !арт [смайл] или !арт [смайл] [чувствительность 0-100]." +
+                     " Для того, чтобы предложить команду используйте !предложить [сообщение]";
              sendMessage(event.getChannel().getName(), commandMessage);
 
          } else if (message.startsWith("!когда")) {
@@ -251,6 +253,19 @@ public class TwitchBot {
 
              sendMessage(event.getChannel().getName(), answer);
 
+         }else if (message.startsWith("!арт") || message.startsWith("!art")){
+             String msg = message.replaceFirst("!арт ", "").replaceFirst("!art ", "");
+             if (msg.matches("\\S+")) {
+                 String emote = msg.replaceAll("^(\\S+).*", "$1");
+                 int threshold = -1;
+                 if (msg.matches("\\S+ \\d+")) {
+                     threshold = Integer.parseInt(msg.replaceAll("\\S+ (\\d+)$", "$1"));
+                 }
+                 String art = MainController.getArt(emote, channelName, threshold);
+                 if (art != null) {
+                     sendMessage(event.getChannel().getName(), art);
+                 }
+             }
          } else if (message.startsWith("!предложить")) {
              String msg = message.replaceFirst("!предложение", "");
              if (!msg.matches("\\s*?")) {
