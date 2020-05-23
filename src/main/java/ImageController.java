@@ -13,7 +13,7 @@ public class ImageController {
 
     static int THRESHOLD_DEFAULT = 127;
     static int asciiXDots = 2, asciiYDots = 4;
-    static int asciiWidth = 32, asciiHeight = 15; //for twitch chat
+    static int asciiWidth = 32, asciiHeight = 14; //for twitch chat
 
 
     public static BufferedImage getImageFromUrl(String url) throws IOException {
