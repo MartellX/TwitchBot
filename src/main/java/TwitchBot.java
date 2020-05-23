@@ -255,7 +255,7 @@ public class TwitchBot {
 
          }else if (message.startsWith("!арт") || message.startsWith("!art")){
              String msg = message.replaceFirst("!арт ", "").replaceFirst("!art ", "");
-             if (msg.matches("\\S+")) {
+             if (msg.matches("\\S+.*")) {
                  String emote = msg.replaceAll("^(\\S+).*", "$1");
                  int threshold = -1;
                  if (msg.matches("\\S+ \\d+")) {
