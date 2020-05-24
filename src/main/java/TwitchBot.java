@@ -253,19 +253,24 @@ public class TwitchBot {
 
              sendMessage(event.getChannel().getName(), answer);
 
-         }else if (message.startsWith("!арт") || message.startsWith("!art")){
+         }
+
+         else if ((message.startsWith("!арт") || message.startsWith("!art"))
+                 && (event.getUser().getName().equals("martellx") || event.getPermissions().contains("SUBSCRIBER"))){
              String msg = message.replaceFirst("!арт ", "").replaceFirst("!art ", "");
              if (msg.matches("\\S+.*")) {
                  String emote = msg.replaceAll("^(\\S+).*", "$1");
                  int threshold = -1;
-                 if (msg.matches("\\S+ \\d+")) {
-                     threshold = Integer.parseInt(msg.replaceAll("\\S+ (\\d+)$", "$1"));
+                 if (msg.matches("\\S+ \\d+.*")) {
+                     threshold = Integer.parseInt(msg.replaceAll("\\S+ (\\d+).*", "$1"));
                  }
                  String art = MainController.getArt(emote, channelName, threshold);
                  if (art != null) {
                      sendMessage(event.getChannel().getName(), art);
                  }
              }
+
+
          } else if (message.startsWith("!предложить")) {
              String msg = message.replaceFirst("!предложение", "");
              if (!msg.matches("\\s*?")) {
