@@ -1,3 +1,5 @@
+package api;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -128,7 +130,17 @@ public class GoogleSheets {
                 }
             }
             if (isFinds) {
-                lastEvent.add(values.get(values.size() - 1 - i).get(0).toString());
+                String event = values.get(values.size() - 1 - i).get(0).toString();
+                if (event.equals("")) {
+                    int j = i + 1;
+                    while(event.equals("")) {
+                        if (values.get(values.size() - 1 - j).size() > 0) {
+                            event = values.get(values.size() - 1 - j).get(0).toString();
+                        }
+                        j++;
+                    }
+                }
+                lastEvent.add(event);
                 lastEvent.add(values.get(values.size() - 1 - i).get(1).toString());
             }
             return lastEvent;

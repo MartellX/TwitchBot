@@ -1,5 +1,10 @@
+package controllers;
+
+import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import constants.CommandConstants;
 import org.apache.commons.collections4.CollectionUtils;
+import services.CommandExecutor;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -16,17 +21,19 @@ public class MainController {
     static private GoogleSheets googleSheets;
     static private File logsFile;
     static private Map<String, List<String>> lastEvents;
-    static private Map<String, Integer> allPastes;
+
     static private List<String> nicks;
     static private Map<String, String> gamesLength = new HashMap<>();
 
     static private ChatBot chatBot = new ChatBot();
     static private ComicBot comicBot = new ComicBot();
-    static private HttpClientController httpClient = new HttpClientController();
+    static private SimpleApi httpClient = new SimpleApi();
     static private EmotesController emotesController = new EmotesController();
+    static private CommandExecutor commandExecutor = new CommandExecutor();
     static private long lastUpdate = System.currentTimeMillis();
     static private int updateMinutes = 30;
-
+    static private long lastEventCheck = 0;
+    static public boolean isStopped = false;
 
     static private int maxPastCount = 5;
 
@@ -41,6 +48,46 @@ public class MainController {
 
     static public void setLogsFile(String logsPath) {
         logsFile = new File(logsPath);
+    }
+
+    static public void handleMessage(String channelname, String username, Set userPermissions, String message) {
+        if (CommandConstants.masterNames.contains(username)) {
+            userPermissions.add("MASTER");
+        }
+        for (var s: CommandConstants.blacklist
+        ) {
+            if (message.contains(s)) {
+                return;
+            }
+        }
+
+        if (message.startsWith("!")) {
+            String commandTag = message.replaceFirst("(!\\S+).*", "$1");
+            String commandArgs = message.replaceAll("!\\S+\\s?(.*)","$1");
+            if (commandExecutor.containsCommand(commandTag)) {
+                String result = commandExecutor.execute(commandTag, channelname, username, userPermissions, commandArgs);
+                if (result != null) {
+                    twitchBot.sendMessage(result, channelname);
+                }
+            }
+        }
+
+        if (isStopped) {
+            twitchBot.close();
+            return;
+        }
+
+        long currEventCheck = System.currentTimeMillis();
+        String nick = CommandConstants.nicknames.get(channelname);
+        if (nick == null) nick = "UselessMouth";
+        if ((currEventCheck - lastEventCheck) >= 60*1000 && nick != null) {
+            lastEventCheck = System.currentTimeMillis();
+            String lastEventMessage = MainController.updateLastEvent(nick);
+            if (lastEventMessage != null) {
+                twitchBot.sendMessage(lastEventMessage, channelname);
+            }
+
+        }
     }
 
     static public String getTop() {
@@ -205,44 +252,7 @@ public class MainController {
         return past;
     }
 
-    static public String handleMessage(String message) {
-        if (allPastes == null) {
-            allPastes = new HashMap<>();
-        }
 
-
-
-        if (allPastes.size() > 1000) {
-            allPastes.clear();
-            /*
-            for (Map.Entry<String, Integer> e: allPastes.entrySet()
-                 ) {
-                if (e.getValue() < 3) {
-                    allPastes.remove(e);
-                }
-            }
-
-             */
-        }
-
-        int count = 0;
-        String checkedOnCopies = getSubStringIfContains(message);
-        if (checkedOnCopies != null) {
-            message = checkedOnCopies;
-        }
-
-        if (allPastes.containsKey(message)) {
-            count = allPastes.get(message);
-        }
-        allPastes.put(message, ++count);
-
-        if (count > maxPastCount) {
-            allPastes.put(message, 0);
-            return message;
-        } else {
-            return null;
-        }
-    }
 
     static public String getArt(String emote, String channel, int threshold) {
         long time = System.currentTimeMillis();
@@ -280,31 +290,7 @@ public class MainController {
         }
     }
 
-    public static String getSubStringIfContains(String string) {
-        if (string.length() < 2) {
-            return null;
-        }
-        String specSymbols = "!$()*+.<>?[\\]^{|}";
-        StringBuilder substr = new StringBuilder();
-        for (int i = 0; i < string.length() / 2; i++) {
-            Character chr = string.charAt(i);
-            if (specSymbols.contains(chr.toString())) {
-                substr.append("\\");
-                substr.append(chr);
-            } else {
-                substr.append(chr);
-            }
-            String clearedFromSubstrings
-                    = string.replaceAll(substr.toString(), "");
 
-            if (clearedFromSubstrings.length() == 0 || clearedFromSubstrings.matches("\\s+")) {
-                String returnedString = substr.toString().replaceAll("\\\\?", "");
-                return returnedString;
-            }
-        }
-
-        return null;
-    }
 
     static public String getAnswerFromChatbot(String msg){
         String answer = chatBot.getAnswer(msg);
@@ -347,12 +333,12 @@ public class MainController {
         return answ;
     }
 
-    static void joinTo (String channel) {
+    public static String joinTo(String channel) {
         emotesController.updateChannelEmotes(channel);
-        twitchBot.joinToChannel(channel);
+        return twitchBot.joinToChannel(channel);
     }
 
-    static void setMaxPastCount(int count) {
+    public static void setMaxPastCount(int count) {
         maxPastCount = count;
     }
 
@@ -373,7 +359,6 @@ public class MainController {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        twitchBot.isClosed = true;
-        twitchBot.twitchClient.close();
+        twitchBot.close();
     }
 }
