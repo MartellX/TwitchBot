@@ -38,10 +38,12 @@ public class TwitchBot {
 
         eventHandler.onEvent(ChannelGoLiveEvent.class, event -> {
             MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!выкл фан");
+            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 30");
         });
 
         eventHandler.onEvent(ChannelGoOfflineEvent.class, event -> {
             MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
+            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 5");
         });
 
     }
