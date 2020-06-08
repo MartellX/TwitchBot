@@ -16,6 +16,7 @@ public class CommandConfig {
 
     public CommandConfig(int delay, Set neededPermissions, boolean isPaused) {
         this.delay = delay;
+
         this.neededPermissions = neededPermissions;
         this.isPaused = isPaused;
     }

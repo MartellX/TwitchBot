@@ -92,6 +92,7 @@ public class CommandExecutor {
         tecCommand = new Command(this::onCommand, CommandType.MOD);
         commands.put("!вкл", tecCommand);
 
+
         //----------------------------------------------------------------------------------------------
 
         tecCommand = new Command(this::joinToChannel, CommandType.MASTER);
@@ -105,6 +106,13 @@ public class CommandExecutor {
 
         tecCommand = new Command(this::restartBot, CommandType.MASTER);
         commands.put("!martellstop", tecCommand);
+
+        tecCommand = new Command(this::addPermission, CommandType.MASTER);
+        commands.put("!разрешить", tecCommand);
+
+        tecCommand = new Command(this::deletePermission, CommandType.MASTER);
+        commands.put("!запретить", tecCommand);
+
     }
 
     public boolean containsCommand(String command) {
@@ -307,10 +315,12 @@ public class CommandExecutor {
     private String joinToChannel(CommandArgumentDto args) {
         String message = args.getMessage();
         String result = "Не понял прикола";
-        if (message.matches("\\S+ \\S+")) {
-            String joinTo = message.split(" ")[1];
-            joinTo = CommandConstants.getNick(joinTo);
-            if (joinTo != null) {
+        if (message.matches("\\S+.*")) {
+            String joinTo = message.replaceFirst("\\S+", "$1");
+            String joinToNick = CommandConstants.getNick(joinTo);
+            if (joinToNick != null) {
+                result = MainController.joinTo(joinToNick);
+            } else {
                 result = MainController.joinTo(joinTo);
             }
         }
@@ -338,6 +348,50 @@ public class CommandExecutor {
     private String restartBot(CommandArgumentDto args) {
         MainController.isStopped = true;
         return "Перезапускаюсь(наверное) peepoRip";
+    }
+
+    private String addPermission(CommandArgumentDto args) {
+        String message = args.getMessage();
+        String result = null;
+        if (message.matches("^\\S+ \\S+.*")) {
+            String type = message.replaceAll("^([^0-9^\\s]+)\\s.*$", "$1");
+
+            String perm = message.replaceAll("^[^0-9^\\s]+\\s(\\S+).*$", "$1");
+            if (commandTypeMap.containsKey(type)) {
+                CommandType commandType = commandTypeMap.get(type);
+                commandType.getConfig().addPermission(perm.toUpperCase());
+                updateConfigsOfType(commandType);
+                result = "\"" + perm + "\" разрешено пользоваться командами типа \"" + type + "\"";
+            } else if (commands.containsKey(type)) {
+                Command command = commands.get(type);
+                command.getConfig().addPermission(perm.toUpperCase());
+                result = "" + perm + "\" разрешено пользоваться командой \"" + type + "\"";
+            }
+        }
+
+        return result;
+    }
+
+    private String deletePermission(CommandArgumentDto args) {
+        String message = args.getMessage();
+        String result = null;
+        if (message.matches("^\\S+ \\S+.*")) {
+            String type = message.replaceAll("^([^0-9^\\s]+)\\s.*$", "$1");
+
+            String perm = message.replaceAll("^[^0-9^\\s]+\\s(\\S+).*$", "$1");
+            if (commandTypeMap.containsKey(type)) {
+                CommandType commandType = commandTypeMap.get(type);
+                commandType.getConfig().deletePermission(perm.toUpperCase());
+                updateConfigsOfType(commandType);
+                result = "Удалено разрешение \"" + perm + "\" для команд типа \"" + type + "\"";
+            } else if (commands.containsKey(type)) {
+                Command command = commands.get(type);
+                command.getConfig().deletePermission(perm.toUpperCase());
+                result = "Удалено разрешение \"" + perm + "\" для команды \"" + type + "\"";
+            }
+        }
+
+        return result;
     }
 
     private void updateConfigsOfType(CommandType type) {

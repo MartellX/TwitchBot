@@ -1,5 +1,6 @@
 package services;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class CommandConfigService {
@@ -7,10 +8,10 @@ public class CommandConfigService {
     private CommandConfig infoConfig, funConfig, modConfig, masterConfig;
 
     public CommandConfigService() {
-        infoConfig = new CommandConfig(3, Set.of("EVERYONE"));
-        funConfig = new CommandConfig(30, Set.of("EVERYONE"), true);
-        modConfig = new CommandConfig(0, Set.of("MODERATOR", "MASTER"));
-        masterConfig = new CommandConfig(0, Set.of("MASTER"));
+        infoConfig = new CommandConfig(3, new HashSet(Set.of("EVERYONE")));
+        funConfig = new CommandConfig(30, new HashSet(Set.of("EVERYONE")), true);
+        modConfig = new CommandConfig(0, new HashSet(Set.of("MODERATOR", "MASTER")));
+        masterConfig = new CommandConfig(0, new HashSet(Set.of("MASTER")));
     }
 
     public CommandConfig getInfoConfig() {

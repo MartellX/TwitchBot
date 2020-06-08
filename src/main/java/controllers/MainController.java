@@ -54,6 +54,7 @@ public class MainController {
         if (CommandConstants.masterNames.contains(username)) {
             userPermissions.add("MASTER");
         }
+        userPermissions.add(username.toUpperCase());
         for (var s: CommandConstants.blacklist
         ) {
             if (message.contains(s)) {
@@ -73,6 +74,11 @@ public class MainController {
         }
 
         if (isStopped) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             twitchBot.close();
             return;
         }
