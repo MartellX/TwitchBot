@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, IOException, GeneralSecurityException {
         CommandConstants.init();
         OAuth2Credential twitchCredential = new OAuth2Credential("***REMOVED***",
-                "x45opnw0dsdy37ll44me2wlb1nyhu0");
+                "***REMOVED***");
         String googleCredsPath = "./src/main/resources/Quickstart-88b91e2083dc.json";
 
 
@@ -18,6 +18,6 @@ public class Main {
         MainController.setGoogleSheets(googleCredsPath);
         MainController.setLogsFile("logs.txt");
         MainController.joinTo("martellx");
-        MainController.joinTo("uselessmouth");
+        //MainController.joinTo("uselessmouth");
     }
 }

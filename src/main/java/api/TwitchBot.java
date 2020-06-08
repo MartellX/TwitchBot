@@ -7,8 +7,11 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.enums.CommandPermission;
+import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
+import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
 import controllers.MainController;
 
+import java.beans.EventHandler;
 import java.util.*;
 
 public class TwitchBot {
@@ -16,83 +19,30 @@ public class TwitchBot {
     IDisposable handlerMessages;
     boolean isClosed = false;
 
-    long lastTimeCheck;
-    long lastReconnect = 0;
-    long lastSendedMessage = 0;
-    Map<String, String> nicknames = new HashMap<>();
-    Map<String, List<String>> nicknameVariables = new HashMap<>();
-    Set<String> botNames = new HashSet<>();
-    Set<String> blacklist = new HashSet<>();
-    Set<String> adminNames = new HashSet<>();
-    int delay = 10;
 
     public TwitchBot(OAuth2Credential credential) {
-        lastTimeCheck = System.currentTimeMillis() - 1000*60;
-
-
-        nicknames.put("uselessmouth", "UselessMouth");
-        nicknameVariables.put("uselessmouth", Arrays.asList(
-                "юзя", "uselessmouth", "гений", "ричард", "разгонщик"
-                ));
-
-        nicknames.put("mistafaker", "Mistafaker");
-        nicknameVariables.put("mistafaker", Arrays.asList(
-                "факер", "faker", "fucker", "фхс", "mistafaker", "фейкер", "гном"
-        ));
-
-        nicknames.put("melharucos", "Melharucos");
-        nicknameVariables.put("melharucos", Arrays.asList(
-                "мэл", "мел", "melharucos", "mel", "мельха"
-        ));
-
-        nicknames.put("unclebjorn", "UncleBjorn");
-        nicknameVariables.put("unclebjorn", Arrays.asList(
-                "unclebjorn", "бьерн", "бьёрн", "бьорн", "бурн", "мишка", "медведь", "миха", "михаил"
-        ));
-
-        nicknames.put("liz0n", "liz0n");
-        nicknameVariables.put("liz0n", Arrays.asList(
-                "лиза", "лизон", "пиздон", "liz0n", "elizzavetta", "lison", "lizon"
-        ));
-
-        nicknames.put("lasqa", "Lasqa");
-        nicknameVariables.put("lasqa", Arrays.asList(
-                "ласка", "крыса", "lasqa", "бодя"
-        ));
-
-        botNames.add("nightbot");
-        botNames.add("moobot");
-        botNames.add("streamlabs");
-        botNames.add("hepega_bot");
-
-        blacklist.add("педик");
-        blacklist.add("пидорас");
-        blacklist.add("пидор");
-        blacklist.add("пидрила");
-        blacklist.add("пидр");
-        blacklist.add("п***р");
-        blacklist.add("п****");
-        blacklist.add("нигга");
-        blacklist.add("нигер");
-        blacklist.add("ниггер");
-        blacklist.add("негр");
-        blacklist.add("неггр");
-
-
-
-        adminNames.add("martellx");
-        adminNames.add("pdvrr");
-
 
         this.twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
                 .withChatAccount(credential)
+                .withClientId("***REMOVED***")
                 .withEnableHelix(true)
+                .withDefaultAuthToken(credential)
                 .build();
-        handlerMessages = twitchClient
-                .getEventManager()
-                .getEventHandler(SimpleEventHandler.class)
-                .onEvent(ChannelMessageEvent.class, event -> handlerMethod(event));
+        //twitchClient.getClientHelper().setDefaultAuthToken(credential);
+        SimpleEventHandler eventHandler = twitchClient.getEventManager()
+                .getEventHandler(SimpleEventHandler.class);
+
+        eventHandler.onEvent(ChannelMessageEvent.class, event -> handlerMethod(event));
+
+
+        eventHandler.onEvent(ChannelGoLiveEvent.class, event -> {
+            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!выкл фан");
+        });
+
+        eventHandler.onEvent(ChannelGoOfflineEvent.class, event -> {
+            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
+        });
 
     }
 
@@ -131,21 +81,8 @@ public class TwitchBot {
 
         MainController.handleMessage(channelname, username, permissions, message);
 
-
-
-
-
      }
 
-     String getNick(String nickVar) {
-        for(Map.Entry<String, List<String>> e : nicknameVariables.entrySet()) {
-            if (e.getValue().contains(nickVar)) {
-                return e.getKey();
-            }
-        }
-
-        return null;
-     }
 
      public void close() {
          isClosed = true;
@@ -161,6 +98,7 @@ public class TwitchBot {
 
     public String joinToChannel(String channel) {
         twitchClient.getChat().joinChannel(channel);
+        twitchClient.getClientHelper().enableStreamEventListener(channel);
         String message = "Присоединился к каналу: \"" + channel + "\"";
         sendMessage(message, "martellx");
         return message;

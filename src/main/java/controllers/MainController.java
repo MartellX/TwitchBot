@@ -3,7 +3,6 @@ package controllers;
 import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import constants.CommandConstants;
-import org.apache.commons.collections4.CollectionUtils;
 import services.CommandExecutor;
 
 import java.awt.image.BufferedImage;
@@ -62,7 +61,9 @@ public class MainController {
             }
         }
 
-        if (message.startsWith("!")) {
+        handleNick(username);
+
+        if (message.startsWith("!") && !CommandConstants.botNames.contains(username)) {
             String commandTag = message.replaceFirst("(!\\S+).*", "$1");
             String commandArgs = message.replaceAll("!\\S+\\s?(.*)","$1");
             if (commandExecutor.containsCommand(commandTag)) {
@@ -86,7 +87,7 @@ public class MainController {
         long currEventCheck = System.currentTimeMillis();
         String nick = CommandConstants.nicknames.get(channelname);
         if (nick == null) nick = "UselessMouth";
-        if ((currEventCheck - lastEventCheck) >= 60*1000 && nick != null) {
+        if ((currEventCheck - lastEventCheck) >= 3*1000 && nick != null) {
             lastEventCheck = System.currentTimeMillis();
             String lastEventMessage = MainController.updateLastEvent(nick);
             if (lastEventMessage != null) {
@@ -209,7 +210,7 @@ public class MainController {
         StringBuilder sbLastEvent = new StringBuilder();
         List<String> lastEvent = googleSheets.getLastEvent(nick);
         if (lastEventFromData != null) {
-            if(lastEvent == null || CollectionUtils.isEqualCollection(lastEventFromData, lastEvent)) {
+            if(lastEvent == null || lastEventFromData.equals(lastEvent)) {
                 return null;
             }
         }
