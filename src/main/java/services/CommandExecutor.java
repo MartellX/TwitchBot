@@ -82,6 +82,9 @@ public class CommandExecutor {
         tecCommand = new Command(this::getArt, CommandType.FUN);
         commands.put("!арт", tecCommand);
 
+        tecCommand = new Command(this::roulette, CommandType.FUN);
+        commands.put("!рулетка", tecCommand);
+
         //----------------------------------------------------------------------------------------------
 
         tecCommand = new Command(this::setDelay, CommandType.MOD);
@@ -246,6 +249,28 @@ public class CommandExecutor {
 
     private String where(CommandArgumentDto args) {
         return MainController.where();
+    }
+
+    Map<String, Integer> patronsRemain = new HashMap<>();
+
+    private String roulette (CommandArgumentDto args) {
+        String username = args.getUsername();
+        int patrons = 7;
+        if (patronsRemain.containsKey(username)) {
+            patrons = patronsRemain.get(username);
+        }
+        Random rd = new Random();
+        int patron = rd.nextInt(patrons);
+        String result;
+        if (patron == 0) {
+            result = (7 - patrons + 1) + " патрон убил тебя pressF @" + username ;
+            patronsRemain.remove(username);
+        } else {
+            patrons--;
+            patronsRemain.put(username, patrons);
+            result = "Ты выжил, количество оставшихся патронов в револьвере: " + patrons + " @" + username;
+        }
+        return result;
     }
 
 
