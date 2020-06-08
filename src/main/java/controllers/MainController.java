@@ -33,6 +33,7 @@ public class MainController {
     static private int updateMinutes = 30;
     static private long lastEventCheck = 0;
     static public boolean isStopped = false;
+    static public boolean isCheckedEvents = false;
 
     static private int maxPastCount = 5;
 
@@ -86,15 +87,18 @@ public class MainController {
 
         long currEventCheck = System.currentTimeMillis();
         String nick = CommandConstants.nicknames.get(channelname);
-        if (nick == null) nick = "UselessMouth";
-        if ((currEventCheck - lastEventCheck) >= 3*1000 && nick != null) {
-            lastEventCheck = System.currentTimeMillis();
-            String lastEventMessage = MainController.updateLastEvent(nick);
-            if (lastEventMessage != null) {
-                twitchBot.sendMessage(lastEventMessage, channelname);
-            }
+        //if (nick == null) nick = "UselessMouth";
+        if (isCheckedEvents) {
+            if ((currEventCheck - lastEventCheck) >= 60*1000 && nick != null) {
+                lastEventCheck = System.currentTimeMillis();
+                String lastEventMessage = MainController.updateLastEvent(nick);
+                if (lastEventMessage != null) {
+                    twitchBot.sendMessage(lastEventMessage, channelname);
+                }
 
+            }
         }
+
     }
 
     static public String getTop() {

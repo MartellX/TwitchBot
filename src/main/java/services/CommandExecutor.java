@@ -1,5 +1,6 @@
 package services;
 
+import com.sun.tools.javac.Main;
 import constants.CommandConstants;
 import controllers.MainController;
 
@@ -287,6 +288,9 @@ public class CommandExecutor {
                 Command command = commands.get(type);
                 command.getConfig().setPaused(true);
                 result = "Команда \"" + type + "\" отключена";
+            } else if (type.equals("события")) {
+                MainController.isCheckedEvents = false;
+                result = "Проверка событий отключена";
             }
         }
         return result;
@@ -306,6 +310,9 @@ public class CommandExecutor {
                 Command command = commands.get(type);
                 command.getConfig().setPaused(false);
                 result = "Команда \"" + type + "\" включена";
+            } else if (type.equals("события")) {
+                MainController.isCheckedEvents = true;
+                result = "Проверка событий включена";
             }
         }
         return result;
