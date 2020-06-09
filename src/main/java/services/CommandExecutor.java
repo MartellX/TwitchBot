@@ -65,7 +65,7 @@ public class CommandExecutor {
         commands.put("!анфиса", tecCommand);
 
         tecCommand = new Command(this::getComic, CommandType.FUN);
-        commands.put("!анек", tecCommand);
+        //commands.put("!анек", tecCommand);
 
         tecCommand = new Command(this::getArt, CommandType.FUN);
         commands.put("!арт", tecCommand);
@@ -153,11 +153,10 @@ public class CommandExecutor {
 
 
     private String getHelp(CommandArgumentDto args) {
-        String msg = "Это тестовый бот для слежения за процессом HPG. (Задержка 10 секунд) " +
-                "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !событие";
+        String msg = "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !событие";
         if (!commandConfigService.getFunConfigClone().isPaused()) {
             msg += ", !кто, !где, !когда, !паста, !анфиса [сообщение], " +
-                    "!анек, !арт [смайл] или !арт [смайл] [чувствительность 0-100]";
+                    " !арт [смайл] или !арт [смайл] [чувствительность 0-100]";
         }
         return msg;
     }

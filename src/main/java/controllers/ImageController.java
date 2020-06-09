@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ImageController {
 
@@ -53,13 +54,19 @@ public class ImageController {
             threshold = 255 - (threshold/100) * 255;
         }
         StringBuilder result = new StringBuilder("");
+        Random rd = new Random();
         for (int y = 0; y < asciiHeight * asciiYDots; y += asciiYDots) {
             for (int x = 0; x < asciiWidth * asciiXDots; x += asciiXDots) {
-                String symbol = ImageData2Braille(
+                char symbol = ImageData2Braille(
                         inputImage
                         .getRGB(x, y, asciiXDots, asciiYDots, null, 0, asciiXDots)
                         , (int)threshold);
 
+                if ((int)symbol == 10240) {
+                    symbol = (char) (10240 + (rd.nextInt(7) == 0 ? 1 : 0) );
+                } else if ((int)symbol == 10495) {
+                    symbol = (char) (10495 - (rd.nextInt(7) == 0 ? 1 : 0) );
+                }
                 //System.out.print(symbol);
                 result.append(symbol);
             }
@@ -70,7 +77,7 @@ public class ImageController {
         return result.toString();
     }
 
-    private static String ImageData2Braille(int[] data, int threshold) {
+    private static char ImageData2Braille(int[] data, int threshold) {
         int asciiXDots = 2, asciiYDots = 4;
         //int threshold = 130;
 
@@ -79,13 +86,14 @@ public class ImageController {
         StringBuilder boolDots = new StringBuilder();
         for (int i = 0; i < dots.length; i++) {
             int rgb = dots[i];
-            int blue = rgb & 0xff;
-            int green = (rgb & 0xff00) >> 8;
-            int red = (rgb & 0xff0000) >> 16;
-            int grey = (blue + green + red) / 3;
+            double blue = rgb & 0xff;
+            double green = (rgb & 0xff00) >> 8;
+            double red = (rgb & 0xff0000) >> 16;
+            double grey = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 
             //String dot = ((blue > threshold) ^ (green > threshold) ^ (red > threshold))  ? "1" : "0";
             String dot = grey > threshold ? "1" : "0";
+
             boolDots.append(dot);
         }
 
@@ -93,7 +101,7 @@ public class ImageController {
         char brailleChar = (char) (10240 + Integer.parseInt(boolDots.toString(), 2));
 
         String braileString = String.valueOf(brailleChar);
-        return braileString;
+        return brailleChar;
     }
 
     private static BufferedImage toBufferedImage(Image img)
