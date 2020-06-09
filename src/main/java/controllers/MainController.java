@@ -186,7 +186,7 @@ public class MainController {
             double k = (100 + percent) / 100;
             finalGGP = finalGGP * k;
 
-            pattern = Pattern.compile("\\+\\d*[^%]");
+            pattern = Pattern.compile("\\+\\d+[^%\\d]");
             matcher = pattern.matcher(events);
             while(matcher.find()){
                 String match = matcher.group();
