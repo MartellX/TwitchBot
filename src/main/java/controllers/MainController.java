@@ -3,6 +3,7 @@ package controllers;
 import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import constants.CommandConstants;
+import org.apache.commons.collections4.CollectionUtils;
 import services.CommandExecutor;
 
 import java.awt.image.BufferedImage;
@@ -33,7 +34,7 @@ public class MainController {
     static private int updateMinutes = 30;
     static private long lastEventCheck = 0;
     static public boolean isStopped = false;
-    static public boolean isCheckedEvents = false;
+    static public boolean isCheckedEvents = true;
 
     static private int maxPastCount = 5;
 
@@ -70,7 +71,7 @@ public class MainController {
             if (commandExecutor.containsCommand(commandTag)) {
                 String result = commandExecutor.execute(commandTag, channelname, username, userPermissions, commandArgs);
                 if (result != null) {
-                    twitchBot.sendMessage(result, channelname);
+                    twitchBot.sendMessage(result, channelname, false);
                 }
             }
         }
@@ -214,7 +215,7 @@ public class MainController {
         StringBuilder sbLastEvent = new StringBuilder();
         List<String> lastEvent = googleSheets.getLastEvent(nick);
         if (lastEventFromData != null) {
-            if(lastEvent == null || lastEventFromData.equals(lastEvent)) {
+            if(lastEvent == null || CollectionUtils.isEqualCollection(lastEventFromData, lastEvent)) {
                 return null;
             }
         }
@@ -300,6 +301,12 @@ public class MainController {
             nicks.add(nick);
         }
     }
+
+    static public void sendMessage (String message, String channelName) {
+        twitchBot.sendMessage(message, channelName);
+    }
+
+
 
 
 

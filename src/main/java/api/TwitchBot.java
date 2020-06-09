@@ -11,7 +11,6 @@ import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
 import controllers.MainController;
 
-import java.beans.EventHandler;
 import java.util.*;
 
 public class TwitchBot {
@@ -45,6 +44,7 @@ public class TwitchBot {
             MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
             MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 5");
         });
+
 
     }
 
@@ -93,9 +93,20 @@ public class TwitchBot {
      }
 
     public void sendMessage (String message, String channelName) {
-        System.out.println("[LOGS][" + new Date() + "][SEND_MESSAGE] " + message);
+        System.out.println("[LOGS][" + new Date() + "][" + channelName +"][SEND_MESSAGE]:" + message);
         twitchClient.getChat().sendMessage(channelName, "/me " + message);
     }
+
+    public void sendMessage (String message, String channelName, boolean isLighting) {
+        System.out.println("[LOGS][" + new Date() + "][" + channelName +"][SEND_MESSAGE]:" + message);
+        if (isLighting) {
+            twitchClient.getChat().sendMessage(channelName, "/me " + message);
+        } else {
+            twitchClient.getChat().sendMessage(channelName, message);
+        }
+
+    }
+
 
 
     public String joinToChannel(String channel) {

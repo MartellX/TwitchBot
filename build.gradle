@@ -18,6 +18,7 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'com.github.twitch4j', name: 'twitch4j', version: '1.0.0-alpha.24'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile 'com.google.api-client:google-api-client:1.30.9'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.30.6'
     compile 'com.google.apis:google-api-services-sheets:v4-rev20200312-1.30.9'

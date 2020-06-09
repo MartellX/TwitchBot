@@ -19,19 +19,20 @@ public class CommandExecutor {
         int neededDelay = command.getConfig().getDelay();
         long lastExecute = command.getLastExecution();
         long currentTime = System.currentTimeMillis();
-
+        CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message);
         String result;
         if (Collections.disjoint(userPermissions, neededPermissions)) {
             result = null;
-        } else if ((currentTime - lastExecute) < neededDelay * 1000) {
-            result = null;
-        } else if (command.getConfig().isPaused()) {
+        } else if ((currentTime - lastExecute) < neededDelay * 1000 || command.getConfig().isPaused()) {
             result = null;
         } else {
-            CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message);
+
             result = commandFunction.apply(args);
             if (result != null) {
                 command.setLastExecution(System.currentTimeMillis());
+                if (command.getType() != CommandType.FUN) {
+                    result = "/me " + result;
+                }
             }
         }
 
@@ -46,9 +47,11 @@ public class CommandExecutor {
 
         Command tecCommand = new Command(this::getHpgTop, CommandType.INFO);
         commands.put("!хпгтоп", tecCommand);
+        commands.put("!hpgtop", tecCommand);
 
         tecCommand = new Command(this::getHpgInfo, CommandType.INFO);
         commands.put("!хпгинфо", tecCommand);
+        commands.put("!hpginfo", tecCommand);
 
         tecCommand = new Command(this::getHelp, CommandType.INFO);
         commands.put("!помощь", tecCommand);
