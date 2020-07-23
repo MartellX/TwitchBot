@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class CommandConfigService {
 
-    private static CommandConfigService defaultConfigService = new CommandConfigService();
+    private static final CommandConfigService defaultConfigService = new CommandConfigService();
 
     private CommandConfig infoConfig, funConfig, modConfig, masterConfig;
 

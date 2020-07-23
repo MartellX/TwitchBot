@@ -2,8 +2,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import constants.CommandConstants;
 import controllers.MainController;
 
-
-import java.io.*;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 public class Main {

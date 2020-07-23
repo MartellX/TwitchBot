@@ -1,14 +1,15 @@
 package api;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import okhttp3.*;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class RecognizingProtocol {

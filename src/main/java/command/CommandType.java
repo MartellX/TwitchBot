@@ -69,7 +69,7 @@ public enum CommandType {
 
 
 
-    private static Map<String, CommandType> typesMap = Map.of(
+    private static final Map<String, CommandType> typesMap = Map.of(
             "INFO", CommandType.INFO,
             "FUN", CommandType.FUN,
             "MOD", CommandType.MOD,

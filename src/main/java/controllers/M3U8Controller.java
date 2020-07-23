@@ -1,16 +1,12 @@
 package controllers;
 
-import api.UnofficialTwitchApi;
 import com.iheartradio.m3u8.*;
 import com.iheartradio.m3u8.data.MasterPlaylist;
 import com.iheartradio.m3u8.data.MediaPlaylist;
-import com.iheartradio.m3u8.data.Playlist;
 import com.iheartradio.m3u8.data.TrackData;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;

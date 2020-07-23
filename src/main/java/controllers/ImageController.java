@@ -4,19 +4,13 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.collections4.CollectionUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -130,7 +124,7 @@ public class ImageController {
         } else {
             threshold = 255 - (threshold/100) * 255;
         }
-        StringBuilder result = new StringBuilder("");
+        StringBuilder result = new StringBuilder();
         Random rd = new Random();
         for (int y = 0; y < asciiHeight * asciiYDots; y += asciiYDots) {
             for (int x = 0; x < asciiWidth * asciiXDots; x += asciiXDots) {

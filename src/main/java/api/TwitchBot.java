@@ -6,13 +6,13 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.common.enums.CommandPermission;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
-import com.sun.tools.javac.Main;
 import controllers.MainController;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TwitchBot {
     TwitchClient twitchClient;

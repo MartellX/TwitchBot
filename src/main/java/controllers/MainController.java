@@ -2,9 +2,9 @@ package controllers;
 
 import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import command.CommandExecutor;
 import constants.CommandConstants;
 import org.apache.commons.collections4.CollectionUtils;
-import command.CommandExecutor;
 import utils.FFMpegUtil;
 
 import java.awt.image.BufferedImage;
@@ -21,21 +21,21 @@ public class MainController {
 
     static private TwitchBot twitchBot;
     static private GoogleSheets googleSheets;
-    static private RecognizingProtocol recognizingProtocol = new RecognizingProtocol();
-    static private M3U8Controller m3U8Controller = new M3U8Controller();
+    static private final RecognizingProtocol recognizingProtocol = new RecognizingProtocol();
+    static private final M3U8Controller m3U8Controller = new M3U8Controller();
     static private File logsFile;
     static private Map<String, List<String>> lastEvents;
 
     static private List<String> nicks;
-    static private Map<String, String> gamesLength = new HashMap<>();
+    static private final Map<String, String> gamesLength = new HashMap<>();
 
-    static private ChatBot chatBot = new ChatBot();
-    static private ComicBot comicBot = new ComicBot();
-    static private SimpleApi httpClient = new SimpleApi();
-    static private EmotesController emotesController = new EmotesController();
-    static private CommandExecutor commandExecutor = new CommandExecutor();
-    static private long lastUpdate = System.currentTimeMillis();
-    static private int updateMinutes = 30;
+    static private final ChatBot chatBot = new ChatBot();
+    static private final ComicBot comicBot = new ComicBot();
+    static private final SimpleApi httpClient = new SimpleApi();
+    static private final EmotesController emotesController = new EmotesController();
+    static private final CommandExecutor commandExecutor = new CommandExecutor();
+    static private final long lastUpdate = System.currentTimeMillis();
+    static private final int updateMinutes = 30;
     static private long lastEventCheck = 0;
     static public boolean isStopped = false;
     static public boolean isCheckedEvents = false;
@@ -361,7 +361,7 @@ public class MainController {
         return answer;
     }
 
-    static private String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
+    static private final String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
             "никогда SadCat", "всегда widepeepoHappy", "через неделю", "через год", "когда юзя видеокарту разгонит",
             "а хуй знает"};
     static public String when() {
@@ -370,7 +370,7 @@ public class MainController {
         return answer;
     }
 
-    static private String[] whoAnswers = {"он", "ты", "я", "никто",
+    static private final String[] whoAnswers = {"он", "ты", "я", "никто",
             "все", "кто-то", "чат"};
 
     static public String who() {
@@ -383,7 +383,7 @@ public class MainController {
         return answ.toString();
     }
 
-    static private String[] whereAnswers = {"там :point_right:", "там :point_up:",
+    static private final String[] whereAnswers = {"там :point_right:", "там :point_up:",
             "там :point_down:", "там :point_left:", "сзади monkaW", "за окном", "нигде",
     "хз, поищи"};
     static public String where() {

@@ -4,24 +4,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EmotesGetter {
-    private String BTTV_RESOURCE_POINT = "https://api.betterttv.net";
-    private String FFZ_RESOURCE_POINT = "https://api.frankerfacez.com";
-    private String TWITCH_RESOURCE_POINT = "";
+    private final String BTTV_RESOURCE_POINT = "https://api.betterttv.net";
+    private final String FFZ_RESOURCE_POINT = "https://api.frankerfacez.com";
+    private final String TWITCH_RESOURCE_POINT = "";
 
     OkHttpClient client = new OkHttpClient.Builder()
             .build();

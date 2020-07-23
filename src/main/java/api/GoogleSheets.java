@@ -5,26 +5,18 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.bigquery.model.Dataset;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.auth.oauth2.AccessToken;
-import com.google.auth.oauth2.GoogleCredentials;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public class GoogleSheets {
-    private JacksonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private final JacksonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private final NetHttpTransport HTTP_TRANSPORT;
     private final String spreadsheetId = "1Ag5JOC1tEC7EgMtAB8XJQw-pGc0Xm-s-gh1-_IGh-Ag";
     private final String pastesSpreadsheetId = "1-xoOKLa1PZEymgxwfRSTCjP6_CbQWg-yVelNvKVueZw";

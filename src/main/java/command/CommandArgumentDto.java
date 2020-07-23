@@ -5,10 +5,10 @@ import java.util.Set;
 
 public class CommandArgumentDto {
 
-    private String channelname;
-    private String username;
-    private Set userPermissions;
-    private String message;
+    private final String channelname;
+    private final String username;
+    private final Set userPermissions;
+    private final String message;
 
     public CommandArgumentDto(String channelname, String username, Set userPermissions, String message) {
         this.channelname = channelname;

@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class CommandConfig {
     private int delay;
-    private Set<String> neededPermissions;
+    private final Set<String> neededPermissions;
     private boolean isPaused = false;
     private CommandType type;
 

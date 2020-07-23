@@ -12,9 +12,9 @@ import java.time.Instant;
 
 
 public class ComicBot extends SimpleApi {
-    private String RESOURCE_POINT = "http://anecdotica.ru/api";
-    private String pid = "z2njof3gz598spk3hunv";
-    private String skey = "dbc506036a28b8e4ebb6ad60654cfca8d1e8a4c0c089de9792e198b30c77cc58";
+    private final String RESOURCE_POINT = "http://anecdotica.ru/api";
+    private final String pid = "z2njof3gz598spk3hunv";
+    private final String skey = "dbc506036a28b8e4ebb6ad60654cfca8d1e8a4c0c089de9792e198b30c77cc58";
 
     public ComicBot(){
         super();

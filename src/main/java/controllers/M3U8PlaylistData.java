@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class M3U8PlaylistData{
-    private String channelName;
+    private final String channelName;
     private MasterPlaylist masterPlaylist;
     private long getted_at;
 

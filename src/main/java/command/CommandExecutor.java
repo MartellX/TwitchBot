@@ -7,8 +7,8 @@ import java.util.*;
 import java.util.function.Function;
 
 public class CommandExecutor {
-    private Map<String, Command> commands = new HashMap<>();
-    private CommandConfigService commandConfigService;
+    private final Map<String, Command> commands = new HashMap<>();
+    private final CommandConfigService commandConfigService;
 
     public String execute(String commandTag, String channelname, String username, Set<String> userPermissions, String message){
         Command command = commands.get(commandTag);
@@ -231,9 +231,7 @@ public class CommandExecutor {
                 threshold = Integer.parseInt(msg.replaceAll("\\S+ (\\d+).*", "$1"));
             }
             String art = MainController.getArt(emote, channelName, threshold);
-            if (art != null) {
-                return art;
-            }
+            return art;
         }
         return null;
     }
