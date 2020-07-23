@@ -31,6 +31,15 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
 
+    compile group: 'ws.schild', name: 'jave-all-deps', version: '2.7.3'
+
+    compile 'com.iheartradio.m3u8:open-m3u8:0.2.4'
+
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
+
+    implementation 'org.postgresql:postgresql:42.2.14.jre7'
+
 
 }
 

@@ -1,4 +1,4 @@
-package services;
+package command;
 
 
 import java.util.HashSet;
@@ -8,15 +8,16 @@ public class CommandConfig {
     private int delay;
     private Set<String> neededPermissions;
     private boolean isPaused = false;
+    private CommandType type;
 
-    public CommandConfig(int delay, Set neededPermissions) {
+    public CommandConfig(int delay, Set neededPermissions, CommandType type) {
         this.delay = delay;
         this.neededPermissions = neededPermissions;
+        this.type = type;
     }
 
     public CommandConfig(int delay, Set neededPermissions, boolean isPaused) {
         this.delay = delay;
-
         this.neededPermissions = neededPermissions;
         this.isPaused = isPaused;
     }
@@ -47,6 +48,14 @@ public class CommandConfig {
 
     public void setPaused(boolean paused) {
         isPaused = paused;
+    }
+
+    public CommandType getType() {
+        return type;
+    }
+
+    public void setType(CommandType type) {
+        this.type = type;
     }
 
     protected CommandConfig clone(){

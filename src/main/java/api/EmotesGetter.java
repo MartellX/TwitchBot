@@ -4,7 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,10 +23,10 @@ public class EmotesGetter {
     private String FFZ_RESOURCE_POINT = "https://api.frankerfacez.com";
     private String TWITCH_RESOURCE_POINT = "";
 
-    HttpClient client = null;
+    OkHttpClient client = new OkHttpClient.Builder()
+            .build();
 
     public EmotesGetter() {
-        client = HttpClient.newBuilder().build();
 
     }
 
@@ -31,13 +36,14 @@ public class EmotesGetter {
         String urlTemplate = "//cdn.betterttv.net/emote/{{id}}/{{image}}";
         String image = "3x";
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(resource))
-                .GET()
+        Request request = new Request.Builder()
+                .url(resource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .get()
                 .build();
-        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        JsonArray emotesArray = JsonParser.parseString(response.body().toString()).getAsJsonArray();
+        Response response = client.newCall(request).execute();
+
+        JsonArray emotesArray = JsonParser.parseString(response.body().string()).getAsJsonArray();
 
         urlTemplate = urlTemplate.replace("//", "https://");
         for (JsonElement elem : emotesArray
@@ -52,30 +58,36 @@ public class EmotesGetter {
         return emotesMap;
     }
 
-    public Map<String, String> getBTTVEmotes(String nick) throws IOException, InterruptedException {
+    public Map<String, String> getBTTVEmotes(String nick){
         Map<String, String> emotesMap = new HashMap<>();
 
         String resource = BTTV_RESOURCE_POINT + "/2/channels/" + nick;
-        HttpRequest request = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(resource))
-                .GET()
+        Request request = new Request.Builder()
+                .url(resource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .get()
                 .build();
-        HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        JsonObject JSONresponse = JsonParser.parseString(response.body().toString()).getAsJsonObject();
-        String urlTemplate = JSONresponse.get("urlTemplate").getAsString();
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+            JsonObject JSONresponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
+            String urlTemplate = JSONresponse.get("urlTemplate").getAsString();
 
-        urlTemplate = urlTemplate.replace("//", "https://");
-        JsonArray emotesArray = JSONresponse.getAsJsonArray("emotes");
-        String image = "3x";
-        for (JsonElement elem : emotesArray
-             ) {
-            JsonObject objElem = elem.getAsJsonObject();
-            String id = objElem.get("id").getAsString();
-            String code = objElem.get("code").getAsString();
-            String url = urlTemplate.replace("{{id}}", id).replace("{{image}}", image);
-            emotesMap.put(code, url);
+            urlTemplate = urlTemplate.replace("//", "https://");
+            JsonArray emotesArray = JSONresponse.getAsJsonArray("emotes");
+            String image = "3x";
+            for (JsonElement elem : emotesArray
+            ) {
+                JsonObject objElem = elem.getAsJsonObject();
+                String id = objElem.get("id").getAsString();
+                String code = objElem.get("code").getAsString();
+                String url = urlTemplate.replace("{{id}}", id).replace("{{image}}", image);
+                emotesMap.put(code, url);
+            }
+        } catch (IOException | NullPointerException e) {
+            System.out.println("[ERROR]Не удалось получить BTTV-смайлы");
         }
+
 
 
         return emotesMap;
@@ -85,17 +97,19 @@ public class EmotesGetter {
         Map<String, String> emotesMap = new HashMap<>();
         String globalEmotesResource = FFZ_RESOURCE_POINT + "/v1/set/3";
 
-        HttpRequest requestGlobalEmotes = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(globalEmotesResource))
-                .GET()
+        Request request = new Request.Builder()
+                .url(globalEmotesResource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .get()
                 .build();
-        HttpResponse globalResponse = client.send(requestGlobalEmotes, HttpResponse.BodyHandlers.ofString());
+        Response globalResponse = client.newCall(request).execute();
+
         JsonArray globalEmotes = JsonParser
-                .parseString(globalResponse.body().toString())
+                .parseString(globalResponse.body().string())
                 .getAsJsonObject()
                 .getAsJsonObject("set")
                 .getAsJsonArray("emoticons");
+
         for (var elem : globalEmotes
         ) {
             JsonObject emoteInfo = elem.getAsJsonObject();
@@ -118,25 +132,26 @@ public class EmotesGetter {
         return emotesMap;
     }
 
-    public Map<String, String> getFFZEmotes(String nick) throws IOException, InterruptedException {
+    public Map<String, String> getFFZEmotes(String nick){
         Map<String, String> emotesMap = new HashMap<>();
 
 
-        String channelEmotresResource = FFZ_RESOURCE_POINT + "/v1/room/" + nick;
+        String channelEmotesResource = FFZ_RESOURCE_POINT + "/v1/room/" + nick;
 
 
-        HttpRequest requestChannelEmotes = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(channelEmotresResource))
-                .GET()
+        Request request = new Request.Builder()
+                .url(channelEmotesResource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .get()
                 .build();
+        Response channelResponse = null;
+        try {
+            channelResponse = client.newCall(request).execute();
 
-
-        HttpResponse channelResponse = client.send(requestChannelEmotes, HttpResponse.BodyHandlers.ofString());
 
 
         JsonObject channelInfoJson = JsonParser
-                .parseString(channelResponse.body().toString())
+                .parseString(channelResponse.body().string())
                 .getAsJsonObject();
 
         String channelSetId = channelInfoJson
@@ -168,6 +183,9 @@ public class EmotesGetter {
 
             emotesMap.put(name, url);
         }
+        } catch (IOException | NullPointerException e) {
+            System.out.println("[ERROR}Не удалось получить FFZ-смайлы");
+        }
 
         return emotesMap;
     }
@@ -178,14 +196,14 @@ public class EmotesGetter {
         String urlTemplate = "https://static-cdn.jtvnw.net/emoticons/v1/{{id}}/{{size}}";
         String globalEmotesResource = "https://api.twitchemotes.com/api/v4/channels/0";
 
-        HttpRequest globalRequest = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(globalEmotesResource))
-                .GET()
+        Request request = new Request.Builder()
+                .url(globalEmotesResource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .get()
                 .build();
+        Response globalResponse = client.newCall(request).execute();
 
-        HttpResponse globalResponse = client.send(globalRequest, HttpResponse.BodyHandlers.ofString());
-        JsonArray globalEmotes = JsonParser.parseString(globalResponse.body().toString())
+        JsonArray globalEmotes = JsonParser.parseString(globalResponse.body().string())
                 .getAsJsonObject()
                 .getAsJsonArray("emotes");
 
@@ -204,44 +222,45 @@ public class EmotesGetter {
         return emotesMap;
     }
 
-    public Map<String, String> getTwitchEmotes(String nick) throws IOException, InterruptedException {
+    public Map<String, String> getTwitchEmotes(String nick){
         Map<String, String> emotesMap = new HashMap<>();
 
         String urlTemplate = "https://static-cdn.jtvnw.net/emoticons/v1/{{id}}/{{size}}";
         String channelEmotesResource = "https://twitchemotes.com/search/channel?query=" + nick;
 
-        HttpRequest channelIDRequest = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(channelEmotesResource))
-                .GET()
-                .build();
-
-        HttpResponse channelIDResponse = client.send(channelIDRequest, HttpResponse.BodyHandlers.ofString());
-
-        String channelid = channelIDResponse.headers()
-                .firstValue("location")
+        Request request = new Request.Builder()
+                .url(channelEmotesResource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .get()
+                .build();
+        Response channelIDResponse = null;
+        try {
+            channelIDResponse = client.newCall(request).execute();
+
+        String channelid = channelIDResponse.priorResponse().headers()
+                .get("location")
                 .replace("/channels/", "");
 
         if (channelid.equals("")) {
-            return null;
+            throw new IOException();
         }
 
         channelEmotesResource = "https://api.twitchemotes.com/api/v4/channels/" + channelid;
-        HttpRequest channelRequest = HttpRequest.newBuilder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .uri(URI.create(channelEmotesResource))
-                .GET()
+        Request channelRequest = new Request.Builder()
+                .url(channelEmotesResource)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .get()
                 .build();
-        HttpResponse channelResponse = client.send(channelRequest, HttpResponse.BodyHandlers.ofString());
-        JsonArray channelEmotes = JsonParser.parseString(channelResponse.body().toString())
+        Response channelResponse = client.newCall(channelRequest).execute();
+        if (channelResponse.body().contentLength() <= 0) {
+            throw new IOException();
+        }
+        JsonArray channelEmotes = JsonParser.parseString(channelResponse.body().string())
                 .getAsJsonObject()
                 .getAsJsonArray("emotes");
-
         if (channelEmotes == null) {
-            return null;
+            throw new IOException();
         }
-
         for (var elem : channelEmotes
         ) {
             JsonObject emoteInfo = elem.getAsJsonObject();
@@ -253,6 +272,13 @@ public class EmotesGetter {
                     .replace("{{size}}", size);
             emotesMap.put(code, url);
         }
+
+        } catch (IOException | NullPointerException e) {
+            client.connectionPool().evictAll();
+            System.out.println("[ERROR]Не удалось получить Twitch-смайлы");
+        }
+
         return emotesMap;
+
     }
 }

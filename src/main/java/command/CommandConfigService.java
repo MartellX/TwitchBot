@@ -1,17 +1,23 @@
-package services;
+package command;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class CommandConfigService {
 
+    private static CommandConfigService defaultConfigService = new CommandConfigService();
+
     private CommandConfig infoConfig, funConfig, modConfig, masterConfig;
 
     public CommandConfigService() {
-        infoConfig = new CommandConfig(3, new HashSet(Set.of("EVERYONE")));
-        funConfig = new CommandConfig(30, new HashSet(Set.of("EVERYONE")), true);
-        modConfig = new CommandConfig(0, new HashSet(Set.of("MODERATOR", "MASTER")));
-        masterConfig = new CommandConfig(0, new HashSet(Set.of("MASTER")));
+        infoConfig = new CommandConfig(3, new HashSet(Set.of("EVERYONE")), CommandType.INFO);
+        funConfig = new CommandConfig(30, new HashSet(Set.of("EVERYONE")), CommandType.FUN);
+        modConfig = new CommandConfig(0, new HashSet(Set.of("MODERATOR", "MASTER")), CommandType.MOD);
+        masterConfig = new CommandConfig(0, new HashSet(Set.of("MASTER")), CommandType.MASTER);
+    }
+
+    public static CommandConfigService getDefault(){
+        return defaultConfigService;
     }
 
     public CommandConfig getInfoConfig() {
@@ -32,6 +38,14 @@ public class CommandConfigService {
 
     public CommandConfig getInfoConfigClone() {
         return infoConfig.clone();
+    }
+
+    public CommandConfig getConfig(CommandType type){
+        return type.getConfig(this);
+    }
+
+    public CommandConfig getConfigClone(CommandType type){
+        return type.getConfigClone(this);
     }
 
     public void setInfoConfig(CommandConfig infoConfig) {

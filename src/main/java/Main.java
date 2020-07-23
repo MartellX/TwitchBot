@@ -9,8 +9,10 @@ import java.security.GeneralSecurityException;
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException, GeneralSecurityException {
         CommandConstants.init();
-        OAuth2Credential twitchCredential = new OAuth2Credential("***REMOVED***",
-                "***REMOVED***");
+//        OAuth2Credential twitchCredential = new OAuth2Credential("martellx_testbot",
+//                "p77qxvmablm14hpvq9xg1mai5sgudw");
+      OAuth2Credential twitchCredential = new OAuth2Credential("***REMOVED***",
+               "***REMOVED***");
         String googleCredsPath = "./src/main/resources/Quickstart-88b91e2083dc.json";
 
 
@@ -18,6 +20,6 @@ public class Main {
         MainController.setGoogleSheets(googleCredsPath);
         MainController.setLogsFile("logs.txt");
         MainController.joinTo("martellx");
-        MainController.joinTo("uselessmouth");
+        //MainController.joinTo("klefanchick");
     }
 }

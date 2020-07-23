@@ -1,10 +1,8 @@
-package services;
+package command;
 
-import com.sun.tools.javac.Main;
 import constants.CommandConstants;
 import controllers.MainController;
 
-import java.sql.Struct;
 import java.util.*;
 import java.util.function.Function;
 
@@ -30,7 +28,7 @@ public class CommandExecutor {
             result = commandFunction.apply(args);
             if (result != null) {
                 command.setLastExecution(System.currentTimeMillis());
-                if (command.getType() != CommandType.FUN) {
+                if (command.getConfig().getType() != CommandType.FUN) {
                     result = "/me " + result;
                 }
             }
@@ -41,23 +39,21 @@ public class CommandExecutor {
 
     public CommandExecutor() {
         commandConfigService = new CommandConfigService();
-        CommandType.setCommandConfigService(commandConfigService);
-
+        Command tecCommand;
         //----------------------------------------------------------------------------------------------
-
-        Command tecCommand = new Command(this::getHpgTop, CommandType.INFO);
-        commands.put("!хпгтоп", tecCommand);
-        commands.put("!hpgtop", tecCommand);
-
-        tecCommand = new Command(this::getHpgInfo, CommandType.INFO);
-        commands.put("!хпгинфо", tecCommand);
-        commands.put("!hpginfo", tecCommand);
-
-        tecCommand = new Command(this::getHelp, CommandType.INFO);
-        commands.put("!помощь", tecCommand);
-
-        tecCommand = new Command(this::getEvent, CommandType.INFO);
-        commands.put("!событие", tecCommand);
+//        tecCommand = new Command(this::getHpgTop, CommandType.INFO);
+//        commands.put("!хпгтоп", tecCommand);
+//        commands.put("!hpgtop", tecCommand);
+//
+//        tecCommand = new Command(this::getHpgInfo, CommandType.INFO);
+//        commands.put("!хпгинфо", tecCommand);
+//        commands.put("!hpginfo", tecCommand);
+//
+//        tecCommand = new Command(this::getHelp, CommandType.INFO);
+//        commands.put("!помощь", tecCommand);
+//
+//        tecCommand = new Command(this::getEvent, CommandType.INFO);
+//        commands.put("!событие", tecCommand);
 
         //----------------------------------------------------------------------------------------------
 
@@ -120,6 +116,10 @@ public class CommandExecutor {
         tecCommand = new Command(this::deletePermission, CommandType.MASTER);
         commands.put("!запретить", tecCommand);
 
+        //--------------------------------------------------------------------------------------------
+        tecCommand = new Command(this::getShazam, new CommandConfig(10, new HashSet(Set.of("EVERYONE")), CommandType.OTHER));
+        commands.put("!шазам", tecCommand);
+
     }
 
     public boolean containsCommand(String command) {
@@ -157,7 +157,7 @@ public class CommandExecutor {
 
     private String getHelp(CommandArgumentDto args) {
         String msg = "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !событие";
-        if (!commandConfigService.getFunConfigClone().isPaused()) {
+        if (!commandConfigService.getFunConfig().isPaused()) {
             msg += ", !кто, !где, !когда, !паста, !анфиса [сообщение], " +
                     " !арт [смайл] или !арт [смайл] [чувствительность 0-100]";
         }
@@ -218,6 +218,8 @@ public class CommandExecutor {
 
         return answer;
     }
+
+
 
     private String getArt(CommandArgumentDto args) {
         String msg = args.getMessage();
@@ -287,7 +289,7 @@ public class CommandExecutor {
             int delay = Integer.parseInt(message.replaceAll("^[^0-9^\\s]+\\s(\\d+).*$", "$1"));
             if (commandTypeMap.containsKey(type)) {
                 CommandType commandType = commandTypeMap.get(type);
-                commandType.getConfig().setDelay(delay);
+                commandConfigService.getConfig(commandType).setDelay(delay);
                 updateConfigsOfType(commandType);
                 result = "Задержка команд типа \"" + type + "\" установлена на [" + delay + "] секунд";
             } else if (commands.containsKey(type)) {
@@ -308,7 +310,7 @@ public class CommandExecutor {
             String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
             if (commandTypeMap.containsKey(type)) {
                 CommandType commandType = commandTypeMap.get(type);
-                commandType.getConfig().setPaused(true);
+                commandConfigService.getConfig(commandType).setPaused(true);
                 updateConfigsOfType(commandType);
                 result = "Команды типа \"" + type + "\" отключены";
             } else if (commands.containsKey(type)) {
@@ -330,7 +332,7 @@ public class CommandExecutor {
             String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
             if (commandTypeMap.containsKey(type)) {
                 CommandType commandType = commandTypeMap.get(type);
-                commandType.getConfig().setPaused(false);
+                commandConfigService.getConfig(commandType).setPaused(false);
                 updateConfigsOfType(commandType);
                 result = "Команды типа \"" + type + "\" включены";
             } else if (commands.containsKey(type)) {
@@ -362,8 +364,8 @@ public class CommandExecutor {
     }
 
     private String pauseBot(CommandArgumentDto args) {
-        CommandType.INFO.getConfig().setPaused(true);
-        CommandType.FUN.getConfig().setPaused(true);
+        commandConfigService.getConfig(CommandType.INFO).setPaused(true);
+        commandConfigService.getConfig(CommandType.FUN).setPaused(true);
         updateConfigsOfType(CommandType.INFO);
         updateConfigsOfType(CommandType.FUN);
         String result = "чилю :)";
@@ -371,8 +373,8 @@ public class CommandExecutor {
     }
 
     private String unpauseBot(CommandArgumentDto args) {
-        CommandType.INFO.getConfig().setPaused(false);
-        CommandType.FUN.getConfig().setPaused(false);
+        commandConfigService.getConfig(CommandType.INFO).setPaused(true);
+        commandConfigService.getConfig(CommandType.FUN).setPaused(true);
         updateConfigsOfType(CommandType.INFO);
         updateConfigsOfType(CommandType.FUN);
         String result = "работаем";
@@ -393,7 +395,7 @@ public class CommandExecutor {
             String perm = message.replaceAll("^[^0-9^\\s]+\\s(\\S+).*$", "$1");
             if (commandTypeMap.containsKey(type)) {
                 CommandType commandType = commandTypeMap.get(type);
-                commandType.getConfig().addPermission(perm.toUpperCase());
+                commandConfigService.getConfig(commandType).addPermission(perm.toUpperCase());
                 updateConfigsOfType(commandType);
                 result = "\"" + perm + "\" разрешено пользоваться командами типа \"" + type + "\"";
             } else if (commands.containsKey(type)) {
@@ -415,7 +417,7 @@ public class CommandExecutor {
             String perm = message.replaceAll("^[^0-9^\\s]+\\s(\\S+).*$", "$1");
             if (commandTypeMap.containsKey(type)) {
                 CommandType commandType = commandTypeMap.get(type);
-                commandType.getConfig().deletePermission(perm.toUpperCase());
+                commandConfigService.getConfig(commandType).deletePermission(perm.toUpperCase());
                 updateConfigsOfType(commandType);
                 result = "Удалено разрешение \"" + perm + "\" для команд типа \"" + type + "\"";
             } else if (commands.containsKey(type)) {
@@ -428,14 +430,21 @@ public class CommandExecutor {
         return result;
     }
 
+    private String getShazam(CommandArgumentDto args) {
+        String answer = MainController.getShazam(args.getChannelname());
+        return answer + " @" + args.getUsername();
+    }
+
     private void updateConfigsOfType(CommandType type) {
         for (var command:commands.values()
              ) {
-            if (command.getType() == type) {
-                command.setConfig(type.getConfigClone());
+            if (command.getConfig().getType() == type) {
+                command.setConfig(commandConfigService.getConfigClone(type));
             }
         }
     }
+
+
 
 
 

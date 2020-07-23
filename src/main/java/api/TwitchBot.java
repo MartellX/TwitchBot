@@ -9,6 +9,7 @@ import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.enums.CommandPermission;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
+import com.sun.tools.javac.Main;
 import controllers.MainController;
 
 import java.util.*;
@@ -35,14 +36,16 @@ public class TwitchBot {
         eventHandler.onEvent(ChannelMessageEvent.class, event -> handlerMethod(event));
 
 
+
         eventHandler.onEvent(ChannelGoLiveEvent.class, event -> {
-            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!выкл фан");
-            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 30");
+//            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!выкл фан");
+//            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 30");
+            MainController.addListeningChannel(event.getChannel().getName());
         });
 
         eventHandler.onEvent(ChannelGoOfflineEvent.class, event -> {
-            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
-            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 5");
+//            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
+//            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 5");
         });
 
 
@@ -112,6 +115,7 @@ public class TwitchBot {
     public String joinToChannel(String channel) {
         twitchClient.getChat().joinChannel(channel);
         twitchClient.getClientHelper().enableStreamEventListener(channel);
+        MainController.addListeningChannel(channel);
         String message = "Присоединился к каналу: \"" + channel + "\"";
         sendMessage(message, "martellx");
         return message;

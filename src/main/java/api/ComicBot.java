@@ -10,6 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 
+
 public class ComicBot extends SimpleApi {
     private String RESOURCE_POINT = "http://anecdotica.ru/api";
     private String pid = "z2njof3gz598spk3hunv";

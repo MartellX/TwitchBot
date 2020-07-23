@@ -5,10 +5,13 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.bigquery.model.Dataset;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,8 +39,7 @@ public class GoogleSheets {
     public GoogleSheets(String credsPath) throws GeneralSecurityException, IOException {
         this();
 
-        File credentialsPath = new File(credsPath);
-        try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
+        try (FileInputStream serviceAccountStream = new FileInputStream(credsPath)) {
             this.credentials = GoogleCredential.fromStream(serviceAccountStream)
                     .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
         }

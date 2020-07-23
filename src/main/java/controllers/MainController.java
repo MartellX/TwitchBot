@@ -4,10 +4,12 @@ import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import constants.CommandConstants;
 import org.apache.commons.collections4.CollectionUtils;
-import services.CommandExecutor;
+import command.CommandExecutor;
+import utils.FFMpegUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -19,6 +21,8 @@ public class MainController {
 
     static private TwitchBot twitchBot;
     static private GoogleSheets googleSheets;
+    static private RecognizingProtocol recognizingProtocol = new RecognizingProtocol();
+    static private M3U8Controller m3U8Controller = new M3U8Controller();
     static private File logsFile;
     static private Map<String, List<String>> lastEvents;
 
@@ -34,7 +38,7 @@ public class MainController {
     static private int updateMinutes = 30;
     static private long lastEventCheck = 0;
     static public boolean isStopped = false;
-    static public boolean isCheckedEvents = true;
+    static public boolean isCheckedEvents = false;
 
     static private int maxPastCount = 5;
 
@@ -290,6 +294,43 @@ public class MainController {
         }
 
         return art;
+    }
+
+    static public void main (String[] args){
+        Scanner sc = new Scanner(System.in);
+        String channel = sc.nextLine();
+        System.out.println(getShazam(channel));
+    }
+
+    static public String getShazam(String channel) {
+        String result = "Произошла хуйня :)";
+        List<String> urls = m3U8Controller.getLastTsUrls(channel, 4);
+        if (urls == null) {
+            return "Не удалось получить поток";
+        }
+        List<File> filesFromUrls = FFMpegUtil.urlsToTSfiles(urls);
+        File mp3 = FFMpegUtil.encodeTStoMP3(filesFromUrls);
+        try {
+            byte[] data = new FileInputStream(mp3).readAllBytes();
+            mp3.delete();
+            Map<String, String> resultMap = recognizingProtocol.recognize(data, "audio");
+            if (resultMap.containsKey("result")) {
+                result = resultMap.get("result");
+                result = "Совпадения: " + result;
+            } else {
+                result = resultMap.get("status");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+        return result;
+    }
+
+    static public void addListeningChannel(String channel) {
+        m3U8Controller.addChannel(channel);
     }
 
     static public void handleNick(String nick) {

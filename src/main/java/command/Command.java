@@ -1,4 +1,4 @@
-package services;
+package command;
 
 import java.util.function.Function;
 
@@ -6,18 +6,16 @@ public class Command {
     private Function<CommandArgumentDto, String> command;
     private CommandConfig config;
     private long lastExecution;
-    private CommandType type;
+
 
     public Command(Function<CommandArgumentDto, String> command, CommandType type) {
         this.command = command;
-        this.type = type;
-        this.config = type.getConfigClone();
+        this.config = type.getConfigClone(CommandConfigService.getDefault()); //TODO пофиксить получение конфига
         this.lastExecution = 0;
     }
 
     public Command(Function<CommandArgumentDto, String> command, CommandConfig config) {
         this.command = command;
-        this.type = CommandType.OTHER;
         this.config = config;
         this.lastExecution = 0;
     }
@@ -46,7 +44,4 @@ public class Command {
         this.lastExecution = lastExecution;
     }
 
-    public CommandType getType() {
-        return type;
-    }
 }

@@ -3,7 +3,7 @@ package other;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LatecyFunctions {
+public class LegacyFunctions {
     static private Map<String, Integer> allPastes;
     static public String handleMessage(String message) {
         if (allPastes == null) {
