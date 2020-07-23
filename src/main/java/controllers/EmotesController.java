@@ -27,7 +27,6 @@ public class EmotesController {
     }
 
     void updateChannelEmotes(String channel) {
-        try {
             var twitchMap = emotesGetter.getTwitchEmotes(channel);
             var BTTVMap = emotesGetter.getBTTVEmotes(channel);
             var FFZMap = emotesGetter.getFFZEmotes(channel);
@@ -48,11 +47,7 @@ public class EmotesController {
                 channelEmotesMap.put(channel, resultMap);
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     }
 
     void updateAllChannelsEmotes() {
