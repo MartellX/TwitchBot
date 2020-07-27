@@ -2,6 +2,7 @@ package api;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import constants.Config;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,7 +36,7 @@ public class UnofficialTwitchApi {
 
     OkHttpClient client;
 
-    String clientid = "***REMOVED***";
+    String clientid = Config.getStringFor("UNOFFICIAL_TWITCH_CID");
 
     private UnofficialTwitchApi() {
         client = new OkHttpClient.Builder().callTimeout(Duration.ofSeconds(10)).build();

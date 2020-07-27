@@ -8,6 +8,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
+import constants.Config;
 import controllers.MainController;
 
 import java.util.Date;
@@ -25,7 +26,7 @@ public class TwitchBot {
         this.twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
                 .withChatAccount(credential)
-                .withClientId("***REMOVED***")
+                .withClientId(Config.getStringFor("TWITCH_CID"))
                 .withEnableHelix(true)
                 .withDefaultAuthToken(credential)
                 .build();

@@ -1,5 +1,6 @@
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import constants.CommandConstants;
+import constants.Config;
 import controllers.MainController;
 
 import java.io.IOException;
@@ -10,14 +11,13 @@ public class Main {
         CommandConstants.init();
 //        OAuth2Credential twitchCredential = new OAuth2Credential("martellx_testbot",
 //                "p77qxvmablm14hpvq9xg1mai5sgudw");
-      OAuth2Credential twitchCredential = new OAuth2Credential("***REMOVED***",
-               "***REMOVED***");
-        String googleCredsPath = "./src/main/resources/Quickstart-88b91e2083dc.json";
+      OAuth2Credential twitchCredential = new OAuth2Credential(Config.getStringFor("TWITCH_NICKNAME"),
+               Config.getStringFor("TWITCH_ATOKEN"));
 
 
         MainController.setTwitchBot(twitchCredential);
-        MainController.setGoogleSheets(googleCredsPath);
-        MainController.setLogsFile("logs.txt");
+        MainController.setGoogleSheets(Config.getStringFor("GOOGLE_CREDS"));
+        //MainController.setLogsFile("logs.txt");
         MainController.joinTo("martellx");
         //MainController.joinTo("klefanchick");
     }

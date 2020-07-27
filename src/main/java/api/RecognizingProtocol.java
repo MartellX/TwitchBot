@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import constants.Config;
 import okhttp3.*;
 import org.apache.commons.codec.binary.Base64;
 
@@ -13,9 +14,9 @@ import java.io.IOException;
 import java.util.*;
 
 public class RecognizingProtocol {
-    String host = "***REMOVED***";
-    String accessKey = "***REMOVED***";
-    String secretKey = "***REMOVED***";
+    String host = Config.getStringFor("RECOGNIZING_HOST");
+    String accessKey = Config.getStringFor("RECOGNIZING_AKEY");
+    String secretKey = Config.getStringFor("RECOGNIZING_SKEY");
 
     public RecognizingProtocol() {
 

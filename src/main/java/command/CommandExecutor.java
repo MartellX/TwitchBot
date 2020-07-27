@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.Function;
 
 public class CommandExecutor {
-    private final Map<String, Command> commands = new HashMap<>();
+    private Map<String, Command> commands = new HashMap<>();
     private final CommandConfigService commandConfigService;
 
     public String execute(String commandTag, String channelname, String username, Set<String> userPermissions, String message){

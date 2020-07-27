@@ -11,7 +11,7 @@ public class PostgreSQL {
     private Connection connection = null;
 
     public static void main (String[] args) {
-        String DB_URL = "jdbc:postgresql://ec2-52-202-146-43.compute-1.amazonaws.com:5432/d5u9clqhsan1s?user=dbuzswszxukvad&password=352a964debffb9b7943b0a013ca506d0c4485e7806b0bedc02c8c0051b490c91&sslmode=require";
+        String DB_URL = System.getenv("DATABASE_URL");
 
         PostgreSQL sqlController = new PostgreSQL();
 
@@ -57,15 +57,23 @@ public class PostgreSQL {
     }
 
     public CommandConfig getCommandConfig(String channelname, String alias) throws SQLException {
-        PreparedStatement st = null;
+
         try {
-            st = connection.prepareStatement("SELECT delay, permissions, isPaused, type " +
+            PreparedStatement checkOnExist = connection.prepareStatement("SELECT * from channels " +
+                    "WHERE channel_name = ?");
+            checkOnExist.setString(1, channelname);
+            ResultSet checkinRS = checkOnExist.executeQuery();
+            if (!checkinRS.next()) {
+                createNewChannelWithDefaults(channelname);
+            }
+            PreparedStatement getConfig = null;
+            getConfig = connection.prepareStatement("SELECT delay, permissions, isPaused, type " +
                     "FROM configs_of_channels " +
                     "WHERE channel_name = ? and alias = ?");
-            st.setString(1, channelname);
-            st.setString(2, alias);
+            getConfig.setString(1, channelname);
+            getConfig.setString(2, alias);
 
-            ResultSet rs = st.executeQuery();
+            ResultSet rs = getConfig.executeQuery();
             rs.next();
             int delay = rs.getInt("delay");
             String[] permArray = (String[]) rs.getArray("permissions").getArray();

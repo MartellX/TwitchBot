@@ -9,9 +9,13 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.*;
 
@@ -21,20 +25,26 @@ public class GoogleSheets {
     private final String spreadsheetId = "1Ag5JOC1tEC7EgMtAB8XJQw-pGc0Xm-s-gh1-_IGh-Ag";
     private final String pastesSpreadsheetId = "1-xoOKLa1PZEymgxwfRSTCjP6_CbQWg-yVelNvKVueZw";
 
-    private Credential credentials;
     private Sheets sheetsService;
 
     public GoogleSheets() throws GeneralSecurityException, IOException {
         HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     }
 
-    public GoogleSheets(String credsPath) throws GeneralSecurityException, IOException {
+    public static void main(String[] args) throws GeneralSecurityException, IOException {
+        String creds = System.getenv("GOOGLE_CREDS");
+        GoogleSheets googleSheets = new GoogleSheets(creds);
+    }
+
+    public GoogleSheets(String creds) throws GeneralSecurityException, IOException {
         this();
 
-        try (FileInputStream serviceAccountStream = new FileInputStream(credsPath)) {
-            this.credentials = GoogleCredential.fromStream(serviceAccountStream)
+        GoogleCredential credentials;
+        try (InputStream serviceAccountStream = new ByteArrayInputStream(creds.getBytes())) {
+            credentials = GoogleCredential.fromStream(serviceAccountStream)
                     .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
         }
+
 
         this.sheetsService = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
                 .setApplicationName("hpg_bot")
