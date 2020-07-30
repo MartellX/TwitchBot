@@ -1,5 +1,7 @@
 /.gradle/
 /.idea/
-/build/
+
 /build/distributions/
 /build/tmp/
+/build/
+/gradle/

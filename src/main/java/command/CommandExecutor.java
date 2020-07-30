@@ -180,7 +180,7 @@ public class CommandExecutor {
     private String chatBotAnswer(CommandArgumentDto args) {
         String message = args.getMessage();
         String msg = message.replaceFirst("!анфиса", "")
-                .replaceAll("@***REMOVED***", "");
+                .replaceAll("@martellx_bot", "");
 
         if (!msg.matches("\\s*?")) {
             String answer = MainController.getAnswerFromChatbot(msg) + " @" + args.getUsername();
