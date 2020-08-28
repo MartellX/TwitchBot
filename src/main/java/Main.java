@@ -16,9 +16,15 @@ public class Main {
 
 
         MainController.setTwitchBot(twitchCredential);
-        MainController.setGoogleSheets(Config.getStringFor("GOOGLE_CREDS"));
+        try {
+            MainController.setGoogleSheets(Config.getStringFor("GOOGLE_CREDS"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         //MainController.setLogsFile("logs.txt");
         MainController.joinTo("martellx");
-        //MainController.joinTo("klefanchick");
+        MainController.joinTo("cemka");
+        //MainController.joinTo("taerss");
     }
 }

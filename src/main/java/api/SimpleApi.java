@@ -1,5 +1,8 @@
 package api;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,8 +18,10 @@ import java.net.http.HttpResponse;
 public class SimpleApi {
     private String RESOURCE_POINT;
     protected HttpClient client = null;
+    protected OkHttpClient okclient;
     public SimpleApi() {
 
+        okclient = new OkHttpClient.Builder().build();
         client = HttpClient.newBuilder().build();
     }
 
@@ -110,6 +115,25 @@ public class SimpleApi {
         return answer;
     }
 
+    public String getAnek() {
+        Request request = new Request.Builder()
+                .url("https://baneks.ru/random")
+                .get()
+                .build();
+
+        String result = null;
+
+        try {
+            Response response = okclient.newCall(request).execute();
+            Document anekHTML = Jsoup.parse(response.body().string());
+            Element anekText = anekHTML.selectFirst("body > main > section > article > p");
+            result = anekText.text();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 }
 
 

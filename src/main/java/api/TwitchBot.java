@@ -6,6 +6,7 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
 import constants.Config;
@@ -14,6 +15,8 @@ import controllers.MainController;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TwitchBot {
     TwitchClient twitchClient;
@@ -22,7 +25,7 @@ public class TwitchBot {
 
 
     public TwitchBot(OAuth2Credential credential) {
-
+        Logger.getLogger(TwitchClient.class.getName()).setLevel(Level.WARNING);
         this.twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
                 .withChatAccount(credential)
@@ -47,6 +50,10 @@ public class TwitchBot {
         eventHandler.onEvent(ChannelGoOfflineEvent.class, event -> {
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 5");
+        });
+
+        eventHandler.onEvent(FollowEvent.class, followEvent -> {
+            System.out.println("[FOLLOW][" + followEvent.getChannel().getName() + "][" + followEvent.getUser().getName() + "]");
         });
 
 
@@ -111,6 +118,12 @@ public class TwitchBot {
 
     }
 
+    public void sendMessagePm(String message, String user){
+        System.out.println("[LOGS][" + new Date() + "][" + user +"][SEND_MESSAGE_PM]:" + message);
+        twitchClient.getChat().sendPrivateMessage(user, message);
+    }
+
+
 
 
     public String joinToChannel(String channel) {
@@ -119,6 +132,7 @@ public class TwitchBot {
         MainController.addListeningChannel(channel);
         String message = "Присоединился к каналу: \"" + channel + "\"";
         sendMessage(message, "martellx");
+        twitchClient.getClientHelper().enableFollowEventListener(channel);
         return message;
     }
 

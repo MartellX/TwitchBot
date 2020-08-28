@@ -66,8 +66,6 @@ public class CommandExecutor {
         tecCommand = new Command(this::getComic, CommandType.FUN);
         //commands.put("!анек", tecCommand);
 
-        tecCommand = new Command(this::getArt, CommandType.FUN);
-        commands.put("!арт", tecCommand);
 
         tecCommand = new Command(this::who, CommandType.FUN);
         commands.put("!кто", tecCommand);
@@ -119,6 +117,9 @@ public class CommandExecutor {
         //--------------------------------------------------------------------------------------------
         tecCommand = new Command(this::getShazam, new CommandConfig(10, new HashSet(Set.of("EVERYONE")), CommandType.OTHER));
         commands.put("!шазам", tecCommand);
+
+        tecCommand = new Command(this::getAnek, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
+        commands.put("!анек", tecCommand);
 
     }
 
@@ -431,6 +432,16 @@ public class CommandExecutor {
     private String getShazam(CommandArgumentDto args) {
         String answer = MainController.getShazam(args.getChannelname());
         return answer + " @" + args.getUsername();
+    }
+
+    private String sendPmMessage(CommandArgumentDto args){
+        MainController.sendPMmessage(args.getUsername(), args.getMessage() + " @" + args.getUsername());
+        return "Сообщение отправлено";
+    }
+
+    private String getAnek(CommandArgumentDto args) {
+        String result = MainController.getAnek();
+        return result;
     }
 
     private void updateConfigsOfType(CommandType type) {

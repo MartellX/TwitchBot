@@ -415,6 +415,32 @@ public class MainController {
         }
     }
 
+    public static void sendPMmessage(String username, String message) {
+        twitchBot.sendMessagePm(message, username);
+    }
+
+    public static String getAnek() {
+        String answer = null;
+        int i = 0;
+        while (true) {
+            boolean isBL = false;
+            answer = httpClient.getAnek();
+            for (var bl: CommandConstants.blacklist
+            ) {
+                if (answer.contains(bl)) {
+                    isBL = true;
+                    break;
+                }
+            }
+            if ((answer.length() <= 500 || i > 15) && !isBL){
+                break;
+            }
+            i++;
+        }
+
+        return answer;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
