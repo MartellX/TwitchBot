@@ -351,7 +351,7 @@ public class CommandExecutor {
         String message = args.getMessage();
         String result = "Не понял прикола";
         if (message.matches("\\S+.*")) {
-            String joinTo = message.replaceFirst("\\S+", "$1");
+            String joinTo = message.replaceFirst("(\\S+).*", "$1");
             String joinToNick = CommandConstants.getNick(joinTo);
             if (joinToNick != null) {
                 result = MainController.joinTo(joinToNick);
