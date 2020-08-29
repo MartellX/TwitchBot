@@ -24,7 +24,6 @@ public class CommandExecutor {
         } else if ((currentTime - lastExecute) < neededDelay * 1000 || command.getConfig().isPaused()) {
             result = null;
         } else {
-
             result = commandFunction.apply(args);
             if (result != null) {
                 command.setLastExecution(System.currentTimeMillis());
@@ -154,6 +153,7 @@ public class CommandExecutor {
         sb.append(" @" + args.getUsername());
         return sb.toString();
     }
+
 
 
     private String getHelp(CommandArgumentDto args) {

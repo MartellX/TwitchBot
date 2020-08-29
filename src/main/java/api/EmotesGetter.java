@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -220,12 +218,12 @@ public class EmotesGetter {
         Map<String, String> emotesMap = new HashMap<>();
 
         String urlTemplate = "https://static-cdn.jtvnw.net/emoticons/v1/{{id}}/{{size}}";
-        String channelEmotesResource = "https://twitchemotes.com/search/channel?query=" + nick;
+        String channelEmotesResource = "https://twitchemotes.com/search/channel";
 
         Request request = new Request.Builder()
                 .url(channelEmotesResource)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .get()
+                .post(new FormBody.Builder().add("query", nick).build())
                 .build();
         Response channelIDResponse = null;
         try {
@@ -234,6 +232,7 @@ public class EmotesGetter {
         String channelid = channelIDResponse.priorResponse().headers()
                 .get("location")
                 .replace("/channels/", "");
+
 
         if (channelid.equals("")) {
             throw new IOException();
@@ -247,11 +246,14 @@ public class EmotesGetter {
                 .build();
         Response channelResponse = client.newCall(channelRequest).execute();
         if (channelResponse.body().contentLength() <= 0) {
+            channelResponse.body().close();
             throw new IOException();
         }
         JsonArray channelEmotes = JsonParser.parseString(channelResponse.body().string())
                 .getAsJsonObject()
                 .getAsJsonArray("emotes");
+
+
         if (channelEmotes == null) {
             throw new IOException();
         }
@@ -268,7 +270,7 @@ public class EmotesGetter {
         }
 
         } catch (IOException | NullPointerException e) {
-            client.connectionPool().evictAll();
+            channelIDResponse.body().close();
             System.out.println("[ERROR]Не удалось получить Twitch-смайлы");
         }
 

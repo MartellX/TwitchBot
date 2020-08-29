@@ -22,6 +22,11 @@ public class CommandConfig {
         this.isPaused = isPaused;
     }
 
+    public CommandConfig(int delay, Set neededPermissions, boolean isPaused, CommandType type) {
+        this(delay, neededPermissions, isPaused);
+        this.type = type;
+    }
+
     public int getDelay() {
         return delay;
     }
@@ -59,7 +64,7 @@ public class CommandConfig {
     }
 
     protected CommandConfig clone(){
-        CommandConfig clone = new CommandConfig(delay, new HashSet(neededPermissions), isPaused);
+        CommandConfig clone = new CommandConfig(delay, new HashSet(neededPermissions), isPaused, type);
         return clone;
     }
 

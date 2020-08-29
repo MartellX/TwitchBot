@@ -50,8 +50,8 @@ public class ImageController {
         Image image = new BufferedImage(asciiWidth * asciiXDots, asciiHeight * asciiYDots, BufferedImage.TYPE_INT_ARGB);
         double scaledY = (double)(asciiHeight * asciiYDots) / (double)inputImage.getHeight() ;
         double scaledX = (double)(asciiWidth * asciiXDots) / (double)inputImage.getWidth();
-        double scaled =  (scaledX < scaledY ? scaledX : scaledY - 0.02);
-        int width = (int) (inputImage.getWidth() * scaled);
+        double scaled = (scaledX < scaledY ? scaledX : scaledY - 0.02);
+        int width = (int)(inputImage.getWidth() * scaled);
         int height = (int)(inputImage.getHeight() * scaled);
         int offsetX = image.getWidth(null)/2 - width / 2;
         int offsetY = image.getHeight(null)/2 - height / 2;
@@ -70,46 +70,48 @@ public class ImageController {
                 inputImage.getWidth(), inputImage.getHeight(), null, 0, inputImage.getWidth());
         int[] greyArray = new int[rgbArray.length];
 
-        for (int i = 0; i < rgbArray.length; i++){
-            int rgb = rgbArray[i];
-            double blue = rgb & 0xff;
-            double green = (rgb & 0xff00) >> 8;
-            double red = (rgb & 0xff0000) >> 16;
-            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
-            greyArray[i] = grey;
-            histogram[grey]++;
-
-            sumOfGreys += grey;
-            countOfGreys++;
-        }
-
-        int prevR1 = -1, prevR2 = -2;
-        int currR1 = 0, currR2 = 0;
-        double u1, u2;
-
-        int currThreshold = (int) (sumOfGreys / countOfGreys);
-
-        while (currR1 != prevR1 || currR2 != prevR2) {
-            prevR1 = currR1;
-            prevR2 = currR2;
-            double greyR1 = 0, greyR2 = 0;
-            double countR1 = 0, countR2 = 0;
-            for (int i = 0; i < greyArray.length; i++){
-                int grey = greyArray[i];
-                if (grey > currThreshold) {
-                    greyR1 += grey;
-                    countR1++;
-                } else {
-                    greyR2 += grey;
-                    countR2 ++;
-                }
-            }
-            u1 = (greyR1 / countR1);
-            u2 = (greyR2 / countR2);
-            currThreshold = (int) ((u1 + u2) /2);
-            currR1 = (int) u1;
-            currR2 = (int) u2;
-        }
+//
+//
+//        for (int i = 0; i < rgbArray.length; i++){
+//            int rgb = rgbArray[i];
+//            double blue = rgb & 0xff;
+//            double green = (rgb & 0xff00) >> 8;
+//            double red = (rgb & 0xff0000) >> 16;
+//            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
+//            greyArray[i] = grey;
+//            histogram[grey]++;
+//
+//            sumOfGreys += grey;
+//            countOfGreys++;
+//        }
+//
+//        int prevR1 = -1, prevR2 = -2;
+//        int currR1 = 0, currR2 = 0;
+//        double u1, u2;
+//
+//        int currThreshold = (int) (sumOfGreys / countOfGreys);
+//
+//        while (currR1 != prevR1 || currR2 != prevR2) {
+//            prevR1 = currR1;
+//            prevR2 = currR2;
+//            double greyR1 = 0, greyR2 = 0;
+//            double countR1 = 0, countR2 = 0;
+//            for (int i = 0; i < greyArray.length; i++){
+//                int grey = greyArray[i];
+//                if (grey > currThreshold) {
+//                    greyR1 += grey;
+//                    countR1++;
+//                } else {
+//                    greyR2 += grey;
+//                    countR2 ++;
+//                }
+//            }
+//            u1 = (greyR1 / countR1);
+//            u2 = (greyR2 / countR2);
+//            currThreshold = (int) ((u1 + u2) /2);
+//            currR1 = (int) u1;
+//            currR2 = (int) u2;
+//        }
 
 
         //double averageGrey = sumOfGreys / countOfGreys;
@@ -118,7 +120,7 @@ public class ImageController {
         //ImageIO.write(image, "png", new File("test.png"));
 
         if (threshold == -1) {
-            threshold = currThreshold;
+            threshold = 126;
             System.out.println("Threshold: " + threshold + "\n");
             //threshold = THRESHOLD_DEFAULT;
         } else {
@@ -172,6 +174,9 @@ public class ImageController {
 
         boolDots.reverse();
         char brailleChar = (char) (10240 + Integer.parseInt(boolDots.toString(), 2));
+        if (brailleChar == 10240) {
+            brailleChar += 1;
+        }
 
         String braileString = String.valueOf(brailleChar);
         return brailleChar;

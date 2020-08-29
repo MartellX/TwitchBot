@@ -9,7 +9,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ChatBot extends SimpleApi {
-    String userid = "alcoreru";
+    String userid = "cemka";
     String RESOURCE_POINT = "https://aiproject.ru/api/";
 
     public ChatBot() {
