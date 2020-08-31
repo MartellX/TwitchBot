@@ -105,7 +105,7 @@ public class TwitchBot {
 
     public void sendMessage (String message, String channelName) {
         System.out.println("[LOGS][" + new Date() + "][" + channelName +"][SEND_MESSAGE]:" + message);
-        twitchClient.getChat().sendMessage(channelName, "/me " + message);
+        twitchClient.getChat().sendMessage(channelName, message);
     }
 
     public void sendMessage (String message, String channelName, boolean isLighting) {

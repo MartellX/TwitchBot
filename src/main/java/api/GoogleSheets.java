@@ -1,6 +1,5 @@
 package api;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -9,11 +8,8 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.auth.Credentials;
-import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -22,8 +18,8 @@ import java.util.*;
 public class GoogleSheets {
     private final JacksonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private final NetHttpTransport HTTP_TRANSPORT;
-    private final String spreadsheetId = "1Ag5JOC1tEC7EgMtAB8XJQw-pGc0Xm-s-gh1-_IGh-Ag";
-    private final String pastesSpreadsheetId = "1-xoOKLa1PZEymgxwfRSTCjP6_CbQWg-yVelNvKVueZw";
+    private final String hpgSpreadsheetId = "1Ag5JOC1tEC7EgMtAB8XJQw-pGc0Xm-s-gh1-_IGh-Ag";
+    private final String pastesSpreadsheetId = "1WWBl4hgaFOgvJZvNrG3vwMoerAxMhcwRO-lcYVEu__M";
 
     private Sheets sheetsService;
 
@@ -55,7 +51,7 @@ public class GoogleSheets {
         try{
             String range = "Таблица лидеров!A3:I8";
             ValueRange response = sheetsService.spreadsheets().values()
-                    .get(spreadsheetId, range)
+                    .get(hpgSpreadsheetId, range)
                     .execute();
             return response.getValues();
         } catch (IOException e) {
@@ -77,7 +73,7 @@ public class GoogleSheets {
             Sheets.Spreadsheets.Values.BatchGet request = sheetsService
                     .spreadsheets()
                     .values()
-                    .batchGet(spreadsheetId);
+                    .batchGet(hpgSpreadsheetId);
             request.setRanges(ranges);
             BatchGetValuesResponse response = request.execute();
             int lastRow = 0;
@@ -120,7 +116,7 @@ public class GoogleSheets {
         List<String> lastEvent = new ArrayList<>();
         try {
             ValueRange response = sheetsService.spreadsheets().values()
-                    .get(spreadsheetId, range)
+                    .get(hpgSpreadsheetId, range)
                     .execute();
             List<List<Object>> values = response.getValues();
 

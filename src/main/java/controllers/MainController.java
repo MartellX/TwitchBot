@@ -71,7 +71,7 @@ public class MainController {
 
         if (message.startsWith("!") && !CommandConstants.botNames.contains(username)) {
             String commandTag = message.replaceFirst("(!\\S+).*", "$1");
-            String commandArgs = message.replaceAll("!\\S+\\s?(.*)","$1");
+            String commandArgs = message.replaceAll(commandTag + "\\s?(.*$)","$1");
             if (commandExecutor.containsCommand(commandTag)) {
                 String result = commandExecutor.execute(commandTag, channelname, username, userPermissions, commandArgs);
                 if (result != null) {
@@ -241,31 +241,71 @@ public class MainController {
         return null;
     }
 
-    static public String getPast() {
+    static public String getPast(String message) {
         Set<String> blacklist = new HashSet<>();
+        blacklist.add("пи\\*+с");
+        blacklist.add("пи\\*+c");
+        blacklist.add("п\\*+р");
+        blacklist.add("п\\*+");
         blacklist.add("педик");
         blacklist.add("пидорас");
         blacklist.add("пидор");
         blacklist.add("пидрила");
-        blacklist.add("п***р");
-        blacklist.add("п****");
+        blacklist.add("нигер");
+        blacklist.add("негр");
         List<List<Object>> pastes = googleSheets.getPastes();
         Random rand = new Random();
-        List<Object> column = pastes.get(rand.nextInt(pastes.size()));
-        String past = null;
 
-        while (true) {
-            past = column.get(rand.nextInt(column.size())).toString();
-            for (String bl:blacklist
-                 ) {
-                if(past.contains(bl)){
+        String result = null;
+        if (message.matches("\\s*")){
+            List<Object> column = pastes.get(rand.nextInt(pastes.size()));
+            boolean isContinue = false;
+            while (true) {
+                result = column.get(rand.nextInt(column.size())).toString();
+                for (String bl:blacklist
+                ) {
+                    bl = "[\\s\\S]" + bl + "[\\s\\S]";
+                    if(result.toLowerCase().matches(bl)){
+                        isContinue = true;
+                        break;
+                    }
+                }
+
+                if (isContinue) {
+                    isContinue = false;
                     continue;
                 }
+                break;
             }
-            break;
+        } else {
+            boolean isContinue = false;
+            for (List<Object> column:pastes
+                 ) {
+                for (Object row:column
+                     ) {
+                    if (row.toString().toLowerCase().contains(message.toLowerCase())) {
+                        for (String bl:blacklist
+                        ) {
+                            bl = "[\\s\\S]*" + bl + "[\\s\\S]*";
+                            if(row.toString().toLowerCase().matches(bl)){
+                                isContinue = true;
+                                break;
+                            }
+                        }
+                        if (isContinue) {
+                            isContinue = false;
+                            continue;
+                        }
+
+                        result = row.toString();
+                        break;
+                    }
+                }
+            }
         }
 
-        return past;
+
+        return result;
     }
 
 

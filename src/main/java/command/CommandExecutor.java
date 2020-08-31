@@ -175,7 +175,12 @@ public class CommandExecutor {
     //------ФАН-------
 
     private String getPaste(CommandArgumentDto args) {
-        return MainController.getPast();
+        String result = MainController.getPast(args.getMessage());
+        if (result == null) {
+            //MainController.sendMessage("Не удалось найти пасту " + args.getUsername(), args.getChannelname());
+            result = "Не удалось найти пасту @" + args.getUsername();
+        }
+        return result;
     }
 
     private String chatBotAnswer(CommandArgumentDto args) {
