@@ -377,8 +377,8 @@ public class CommandExecutor {
     }
 
     private String unpauseBot(CommandArgumentDto args) {
-        commandConfigService.getConfig(CommandType.INFO).setPaused(true);
-        commandConfigService.getConfig(CommandType.FUN).setPaused(true);
+        commandConfigService.getConfig(CommandType.INFO).setPaused(false);
+        commandConfigService.getConfig(CommandType.FUN).setPaused(false);
         updateConfigsOfType(CommandType.INFO);
         updateConfigsOfType(CommandType.FUN);
         String result = "работаем";

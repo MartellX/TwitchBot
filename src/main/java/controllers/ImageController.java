@@ -34,16 +34,6 @@ public class ImageController {
         return image;
     }
 
-    public static void main (String[] args) {
-        String test = "5Head.png";
-        try {
-            BufferedImage bi = ImageIO.read(new File(test));
-            System.out.println(ImageToBraille(bi, 45));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public static String ImageToBraille(BufferedImage inputImage,double threshold) {
 
@@ -120,7 +110,7 @@ public class ImageController {
         //ImageIO.write(image, "png", new File("test.png"));
 
         if (threshold == -1) {
-            threshold = 126;
+            threshold = THRESHOLD_DEFAULT;
             System.out.println("Threshold: " + threshold + "\n");
             //threshold = THRESHOLD_DEFAULT;
         } else {

@@ -4,8 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import constants.Config;
 import okhttp3.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ public class EmotesGetter {
     private final String TWITCH_RESOURCE_POINT = "";
 
     OkHttpClient client = new OkHttpClient.Builder()
+            .cache(new Cache(new File("http_cache"), 50L * 1024L * 1024L))
             .build();
 
     public EmotesGetter() {
@@ -218,31 +221,36 @@ public class EmotesGetter {
         Map<String, String> emotesMap = new HashMap<>();
 
         String urlTemplate = "https://static-cdn.jtvnw.net/emoticons/v1/{{id}}/{{size}}";
-        String channelEmotesResource = "https://twitchemotes.com/search/channel";
+        String channelIdResource = "https://api.twitch.tv/v5/users?login=" + nick;
 
         Request request = new Request.Builder()
-                .url(channelEmotesResource)
+                .url(channelIdResource)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .post(new FormBody.Builder().add("query", nick).build())
+                .get()
+                .addHeader("Client-ID", Config.getStringFor("UNOFFICIAL_TWITCH_CID"))
                 .build();
         Response channelIDResponse = null;
         try {
             channelIDResponse = client.newCall(request).execute();
 
-        String channelid = channelIDResponse.priorResponse().headers()
-                .get("location")
-                .replace("/channels/", "");
+        String channelid = JsonParser.parseString(channelIDResponse.body().string())
+                .getAsJsonObject()
+                .getAsJsonArray("users")
+                .get(0)
+                .getAsJsonObject()
+                .get("_id")
+                .getAsString();
 
 
         if (channelid.equals("")) {
             throw new IOException();
         }
 
-        channelEmotesResource = "https://api.twitchemotes.com/api/v4/channels/" + channelid;
+        String channelEmotesResource = "https://api.twitchemotes.com/api/v4/channels/" + channelid;
         Request channelRequest = new Request.Builder()
                 .url(channelEmotesResource)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .get()
+                .method("GET", null)
+                .addHeader("Cookie", "__cfduid=d7d0db7130bf26e37b2449d52460622361598906796")
                 .build();
         Response channelResponse = client.newCall(channelRequest).execute();
         if (channelResponse.body().contentLength() <= 0) {
