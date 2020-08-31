@@ -11,7 +11,7 @@ public class CommandConfigService {
 
     public CommandConfigService() {
         infoConfig = new CommandConfig(3, new HashSet(Set.of("EVERYONE")), CommandType.INFO);
-        funConfig = new CommandConfig(30, new HashSet(Set.of("EVERYONE")), CommandType.FUN);
+        funConfig = new CommandConfig(60, new HashSet(Set.of("EVERYONE")), CommandType.FUN);
         modConfig = new CommandConfig(0, new HashSet(Set.of("MODERATOR", "MASTER")), CommandType.MOD);
         masterConfig = new CommandConfig(0, new HashSet(Set.of("MASTER")), CommandType.MASTER);
     }
