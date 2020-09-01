@@ -47,6 +47,8 @@ public class CommandConstants {
 
         blacklist.add("педик");
         blacklist.add("пидорас");
+        blacklist.add("пидарас");
+        blacklist.add("пидар");
         blacklist.add("пидор");
         blacklist.add("пидрила");
         blacklist.add("пидр");
@@ -60,6 +62,8 @@ public class CommandConstants {
         blacklist.add("негр");
         blacklist.add("неггр");
         blacklist.add("даун");
+        blacklist.add("винни-пух");
+        blacklist.add("свиней");
 
 
         masterNames.add("martellx");

@@ -1,5 +1,6 @@
 package api;
 
+import controllers.MainController;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -115,19 +116,47 @@ public class SimpleApi {
         return answer;
     }
 
-    public String getAnek() {
+    public static void main(String[] args) {
+        SimpleApi simpleApi = new SimpleApi();
+        for(int i = 0; i < 50; i++){
+            System.out.println("--------------------------------------");
+            System.out.println(simpleApi.getAnek());
+            System.out.println("--------------------------------------");
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    public String[] getAnek() {
         Request request = new Request.Builder()
                 .url("https://baneks.ru/random")
                 .get()
                 .build();
 
-        String result = null;
+        String[] result = new String[2];
 
         try {
-            Response response = okclient.newCall(request).execute();
-            Document anekHTML = Jsoup.parse(response.body().string());
-            Element anekText = anekHTML.selectFirst("body > main > section > article > p");
-            result = anekText.text();
+            int i = 0;
+            String key = "-1";
+            while (true) {
+                Response response = okclient.newCall(request).execute();
+                Document anekHTML = Jsoup.parse(response.body().string());
+                key = anekHTML.selectFirst("body > main").attr("data-id");
+                i++;
+                if (MainController.getAneks().contains(key) && i < 10) {
+                    continue;
+                } else {
+                    Element anekText = anekHTML.selectFirst("body > main > section > article > p");
+                    result[0] = anekText.text();
+                    result[1] = key;
+                    break;
+                }
+
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

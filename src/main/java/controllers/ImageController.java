@@ -133,6 +133,7 @@ public class ImageController {
                 //System.out.print(symbol);
                 result.append(symbol);
             }
+
             result.append('\n');
             //System.out.println();
         }

@@ -339,8 +339,22 @@ public class MainController {
 
     static public void main (String[] args){
         Scanner sc = new Scanner(System.in);
-        String channel = sc.nextLine();
-        System.out.println(getShazam(channel));
+//        String channel = sc.nextLine();
+//        System.out.println(getShazam(channel));
+
+        String answer = sc.nextLine();
+        CommandConstants.init();
+        for (var bl: CommandConstants.blacklist
+        ) {
+            String searchbl = "(?i)[\\s\\S]*" + bl + "[\\s\\S]*";
+            if (answer.matches(searchbl)) {
+                //isBL = true;
+                answer = answer.replaceAll("(?i)" + bl, "хороший человек");
+                //break;
+            }
+        }
+
+        System.out.println(answer);
     }
 
     static public String getShazam(String channel) {
@@ -460,27 +474,37 @@ public class MainController {
         twitchBot.sendMessagePm(message, username);
     }
 
+
+    private static List<String> aneks = new ArrayList<>(); //TODO: перенести в базу данных
+    public static List<String> getAneks() {
+        return aneks;
+    }
+
     public static String getAnek() {
-        String answer = null;
+        String[] answer = null;
+        String anek;
         int i = 0;
         while (true) {
             boolean isBL = false;
             answer = httpClient.getAnek();
+            anek = answer[0];
             for (var bl: CommandConstants.blacklist
             ) {
-                bl = "[\\s\\S]*" + bl + "[\\s\\S]*";
-                if (answer.toLowerCase().matches(bl)) {
+                String searchbl = "[\\s\\S]*" + bl + "[\\s\\S]*";
+                if (anek.toLowerCase().matches(searchbl)) {
                     isBL = true;
+                    //answer.replaceAll(bl, "хороший человек");
                     break;
                 }
             }
-            if ((answer.length() <= 500 || i > 15) && !isBL){
+            if ((anek.length() <= 500 || i > 15) && !isBL){
+                aneks.add(answer[1]);
                 break;
             }
             i++;
         }
 
-        return answer;
+        return anek;
     }
 
     @Override
