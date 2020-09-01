@@ -35,6 +35,7 @@ public class ComicBot extends SimpleApi {
         return httpRequest;
     }
 
+    /*
     public String getAnek(){
         HttpRequest request = requestAnswer();
         String answer = null;
@@ -50,5 +51,7 @@ public class ComicBot extends SimpleApi {
         }
         return answer;
     }
+
+     */
 
 }
