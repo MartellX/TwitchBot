@@ -50,6 +50,10 @@ public class CommandConstants {
         blacklist.add("пидор");
         blacklist.add("пидрила");
         blacklist.add("пидр");
+        blacklist.add("пи\\*+с");
+        blacklist.add("пи\\*+c");
+        blacklist.add("п\\*+р");
+        blacklist.add("п\\*+");
         blacklist.add("п***р");
         blacklist.add("п****");
         blacklist.add("нигга");
@@ -57,6 +61,7 @@ public class CommandConstants {
         blacklist.add("ниггер");
         blacklist.add("негр");
         blacklist.add("неггр");
+        blacklist.add("даун");
 
 
         masterNames.add("martellx");

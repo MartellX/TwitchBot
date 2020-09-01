@@ -253,6 +253,7 @@ public class MainController {
         blacklist.add("пидрила");
         blacklist.add("нигер");
         blacklist.add("негр");
+        blacklist.add("даун");
         List<List<Object>> pastes = googleSheets.getPastes();
         Random rand = new Random();
 
@@ -467,7 +468,8 @@ public class MainController {
             answer = httpClient.getAnek();
             for (var bl: CommandConstants.blacklist
             ) {
-                if (answer.contains(bl)) {
+                bl = "[\\s\\S]" + bl + "[\\s\\S]";
+                if (answer.toLowerCase().matches(bl)) {
                     isBL = true;
                     break;
                 }
