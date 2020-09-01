@@ -265,7 +265,7 @@ public class MainController {
                 result = column.get(rand.nextInt(column.size())).toString();
                 for (String bl:blacklist
                 ) {
-                    bl = "[\\s\\S]" + bl + "[\\s\\S]";
+                    bl = "[\\s\\S]*" + bl + "[\\s\\S]()";
                     if(result.toLowerCase().matches(bl)){
                         isContinue = true;
                         break;
@@ -468,7 +468,7 @@ public class MainController {
             answer = httpClient.getAnek();
             for (var bl: CommandConstants.blacklist
             ) {
-                bl = "[\\s\\S]" + bl + "[\\s\\S]";
+                bl = "[\\s\\S]*" + bl + "[\\s\\S]*";
                 if (answer.toLowerCase().matches(bl)) {
                     isBL = true;
                     break;
