@@ -412,7 +412,7 @@ public class MainController {
     }
 
     static public String getAnswerFromComicbot() {
-        String answer = comicBot.getAnek();
+        String answer = null;
         return answer;
     }
 
