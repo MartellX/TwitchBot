@@ -54,8 +54,6 @@ public class CommandConstants {
         blacklist.add("пи\\*+c");
         blacklist.add("п\\*+р");
         blacklist.add("п\\*+");
-        blacklist.add("п***р");
-        blacklist.add("п****");
         blacklist.add("нигга");
         blacklist.add("нигер");
         blacklist.add("ниггер");
