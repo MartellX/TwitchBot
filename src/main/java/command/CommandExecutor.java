@@ -27,9 +27,6 @@ public class CommandExecutor {
             result = commandFunction.apply(args);
             if (result != null) {
                 command.setLastExecution(System.currentTimeMillis());
-                if (command.getConfig().getType() != CommandType.FUN) {
-                    result = "/me " + result;
-                }
             }
         }
 
