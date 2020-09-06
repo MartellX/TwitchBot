@@ -70,7 +70,7 @@ public class MainController {
         handleNick(username);
 
         if (message.startsWith("!") && !CommandConstants.botNames.contains(username)) {
-            String commandTag = message.replaceFirst("(!\\S+).*", "$1");
+            String commandTag = message.replaceFirst("(!\\S+).*", "$1").toLowerCase();
             String commandArgs = message.replaceAll(commandTag + "\\s?(.*$)","$1");
             if (commandExecutor.containsCommand(commandTag)) {
                 String result = commandExecutor.execute(commandTag, channelname, username, userPermissions, commandArgs);
@@ -89,6 +89,8 @@ public class MainController {
             twitchBot.close();
             return;
         }
+
+        // Так как хпг закончилось, это не нужно, но пусть будет
 
         long currEventCheck = System.currentTimeMillis();
         String nick = CommandConstants.nicknames.get(channelname);
@@ -480,6 +482,7 @@ public class MainController {
         return aneks;
     }
 
+    //TODO добавить парсинг baneks.site
     public static String getAnek() {
         String[] answer = null;
         String anek;

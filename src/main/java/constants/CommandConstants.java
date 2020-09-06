@@ -64,6 +64,9 @@ public class CommandConstants {
         blacklist.add("даун");
         blacklist.add("винни-пух");
         blacklist.add("свиней");
+        blacklist.add("https://aiproject.ru");
+        blacklist.add("african");
+        blacklist.add("nigger");
 
 
         masterNames.add("martellx");

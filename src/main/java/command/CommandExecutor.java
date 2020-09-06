@@ -54,12 +54,21 @@ public class CommandExecutor {
 //        tecCommand = new Command(this::getEvent, CommandType.INFO);
 //        commands.put("!событие", tecCommand);
 
+
+        tecCommand = new Command(this::getTimeout, CommandType.INFO);
+        commands.put("!кд", tecCommand);
+
         //----------------------------------------------------------------------------------------------
 
-        tecCommand = new Command(this::getPaste, CommandType.FUN);
+
+        tecCommand = new Command(this::getAnek, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
+        commands.put("!анек", tecCommand);
+        commands.put("!pogo", tecCommand);
+
+        tecCommand = new Command(this::getPaste, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), true, CommandType.FUN));
         commands.put("!паста", tecCommand);
 
-        tecCommand = new Command(this::chatBotAnswer, CommandType.FUN);
+        tecCommand = new Command(this::chatBotAnswer, new CommandConfig(30, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
         commands.put("!анфиса", tecCommand);
 
         tecCommand = new Command(this::getComic, CommandType.FUN);
@@ -117,8 +126,7 @@ public class CommandExecutor {
         tecCommand = new Command(this::getShazam, new CommandConfig(10, new HashSet(Set.of("EVERYONE")), CommandType.OTHER));
         commands.put("!шазам", tecCommand);
 
-        tecCommand = new Command(this::getAnek, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
-        commands.put("!анек", tecCommand);
+
 
     }
 
@@ -446,6 +454,22 @@ public class CommandExecutor {
 
     private String getAnek(CommandArgumentDto args) {
         String result = MainController.getAnek();
+        return result;
+    }
+
+    private String getTimeout(CommandArgumentDto args) {
+        String message = args.getMessage();
+        String result = null;
+        if (message.matches("^\\S+.*")) {
+            String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
+            if (commands.containsKey(type)) {
+                Command command = commands.get(type);
+                int time = command.getConfig().getDelay();
+                int remainTime = (int) (time - (System.currentTimeMillis() - command.getLastExecution())/1000);
+                result = "У команды " + type + " задержка " + time + " секунд, осталось " + remainTime + " @" + args.getUsername();
+            }
+        }
+
         return result;
     }
 
