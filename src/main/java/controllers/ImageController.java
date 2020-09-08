@@ -13,8 +13,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class ImageController {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            String input = sc.nextLine();
+            if (input.equals("0")) {
+                break;
+            } else {
+                try {
+                    BufferedImage inputImage = ImageController.getImageFromUrl(input);
+                    String result = ImageController.ImageToBraille(inputImage, -1);
+                    System.out.println(result);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     static int THRESHOLD_DEFAULT = 127;
     static int asciiXDots = 2, asciiYDots = 4;
@@ -118,24 +137,41 @@ public class ImageController {
         }
         StringBuilder result = new StringBuilder();
         Random rd = new Random();
+        boolean isBlank = true;
+        int lastBlankedRows = 0;
         for (int y = 0; y < asciiHeight * asciiYDots; y += asciiYDots) {
+            boolean isBlankLast = true;
             for (int x = 0; x < asciiWidth * asciiXDots; x += asciiXDots) {
                 char symbol = ImageData2Braille(
                         inputImage
                         .getRGB(x, y, asciiXDots, asciiYDots, null, 0, asciiXDots)
                         , (int)threshold);
 
-//                if ((int)symbol == 10240) {
-//                    symbol = (char) (10240 + (rd.nextInt(7) == 0 ? 1 : 0) );
-//                } else if ((int)symbol == 10495) {
-//                    symbol = (char) (10495 - (rd.nextInt(7) == 0 ? 1 : 0) );
-//                }
+                if ((int)symbol != 10241) {
+                    isBlank = false;
+                    isBlankLast = false;
+                }
                 //System.out.print(symbol);
                 result.append(symbol);
             }
 
-            result.append('\n');
+            //result.append('\n');
+
+            if (isBlankLast) {
+                lastBlankedRows++;
+            } else {
+                lastBlankedRows = 0;
+            }
+            if (isBlank) {
+                result.delete(result.length() - asciiWidth, result.length() - 1);
+            } else {
+                result.append('\n');
+            }
             //System.out.println();
+        }
+
+        if (lastBlankedRows != 0) {
+            result.delete(result.length() - asciiWidth * lastBlankedRows, result.length() - 1);
         }
 
         return result.toString();

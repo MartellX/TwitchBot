@@ -163,6 +163,44 @@ public class SimpleApi {
 
         return result;
     }
+
+    public String[] getAnekAlter() {
+        Request request = new Request.Builder()
+                .url("https://baneks.site/random")
+                .get()
+                .build();
+
+        String[] result = new String[2];
+
+        try {
+            int i = 0;
+            String key = "-1";
+            while (true) {
+                Response response = okclient.newCall(request).execute();
+                Document anekHTML = Jsoup.parse(response.body().string());
+                Element keyElement = anekHTML
+                        .selectFirst("body > div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header.mdl-layout--fixed-drawer > main > div > div.page-content.mdl-cell.mdl-cell--6-col > div.joke.mdl-shadow--6dp.block.mdl-card.mdl-card--border");
+                key = keyElement
+                        .attr("id");
+                i++;
+                if (MainController.getAneks().contains(key) && i < 10) {
+                    continue;
+                } else {
+
+                    Element anekText = keyElement.selectFirst("div.block-content.mdl-card__supporting-text.mdl-color--grey-300.mdl-color-text--grey-900 > article > section > p");
+                    result[0] = anekText.text();
+                    result[1] = key;
+                    break;
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 }
 
 

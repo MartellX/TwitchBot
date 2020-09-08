@@ -344,19 +344,17 @@ public class MainController {
 //        String channel = sc.nextLine();
 //        System.out.println(getShazam(channel));
 
-        String answer = sc.nextLine();
+        //String answer = sc.nextLine();
         CommandConstants.init();
-        for (var bl: CommandConstants.blacklist
-        ) {
-            String searchbl = "(?i)[\\s\\S]*" + bl + "[\\s\\S]*";
-            if (answer.matches(searchbl)) {
-                //isBL = true;
-                answer = answer.replaceAll("(?i)" + bl, "хороший человек");
-                //break;
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            System.out.println(getAnek() + "\n");
         }
 
-        System.out.println(answer);
     }
 
     static public String getShazam(String channel) {
@@ -487,9 +485,15 @@ public class MainController {
         String[] answer = null;
         String anek;
         int i = 0;
+        Random random = new Random();
         while (true) {
             boolean isBL = false;
-            answer = httpClient.getAnek();
+            if (random.nextBoolean()) {
+
+                answer = httpClient.getAnek();
+            } else {
+                answer = httpClient.getAnekAlter();
+            }
             anek = answer[0];
             for (var bl: CommandConstants.blacklist
             ) {
@@ -500,8 +504,8 @@ public class MainController {
                     break;
                 }
             }
+            aneks.add(answer[1]);
             if ((anek.length() <= 500 || i > 15) && !isBL){
-                aneks.add(answer[1]);
                 break;
             }
             i++;
