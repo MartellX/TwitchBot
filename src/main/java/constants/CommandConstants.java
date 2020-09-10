@@ -64,7 +64,7 @@ public class CommandConstants {
         blacklist.add("даун");
         blacklist.add("винни-пух");
         blacklist.add("свиней");
-        blacklist.add("https://aiproject.ru");
+        blacklist.add("(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?");
         blacklist.add("african");
         blacklist.add("nigger");
 

@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class CommandExecutor {
     private Map<String, Command> commands = new HashMap<>();
-    private final CommandConfigService commandConfigService;
+    private CommandConfigService commandConfigService;
 
     public String execute(String commandTag, String channelname, String username, Set<String> userPermissions, String message){
         Command command = commands.get(commandTag);
@@ -127,6 +127,12 @@ public class CommandExecutor {
 
     }
 
+    public CommandExecutor(CommandConfigService configService, Map<String, Command> commands) {
+        this.commandConfigService = configService;
+        this.commands.putAll(commands);
+
+    }
+
     public boolean containsCommand(String command) {
         return commands.containsKey(command);
     }
@@ -197,7 +203,8 @@ public class CommandExecutor {
             String answer = MainController.getAnswerFromChatbot(msg) + " @" + args.getUsername();
             for (var bl : CommandConstants.blacklist
             ) {
-                if (answer.contains(bl)) {
+                String searchbl = "[\\s\\S]*" + bl + "[\\s\\S]*";
+                if (answer.toLowerCase().matches(searchbl)) {
                     return null;
                 }
             }
@@ -461,9 +468,13 @@ public class CommandExecutor {
             String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
             if (commands.containsKey(type)) {
                 Command command = commands.get(type);
-                int time = command.getConfig().getDelay();
-                int remainTime = (int) (time - (System.currentTimeMillis() - command.getLastExecution())/1000);
-                result = "У команды " + type + " задержка " + time + " секунд, осталось " + remainTime + " @" + args.getUsername();
+                if (command.getConfig().isPaused()) {
+                    result = "Команда " + type + " отключена";
+                } else {
+                    int time = command.getConfig().getDelay();
+                    int remainTime = (int) (time - (System.currentTimeMillis() - command.getLastExecution())/1000);
+                    result = "У команды " + type + " задержка " + time + " секунд " + (remainTime >= 0 ? ", осталось " + remainTime : ", команда сейчас доступна") + " @" + args.getUsername();
+                }
             }
         }
 
