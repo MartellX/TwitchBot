@@ -341,19 +341,19 @@ public class MainController {
 
     static public void main (String[] args){
         Scanner sc = new Scanner(System.in);
-//        String channel = sc.nextLine();
-//        System.out.println(getShazam(channel));
+        String channel = sc.nextLine();
+        System.out.println(getShazam(channel));
 
-        //String answer = sc.nextLine();
-        CommandConstants.init();
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println(getAnek() + "\n");
-        }
+//        //String answer = sc.nextLine();
+//        CommandConstants.init();
+//        while (true) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println(getAnek() + "\n");
+//        }
 
     }
 

@@ -187,7 +187,7 @@ public class SimpleApi {
                     continue;
                 } else {
 
-                    Element anekText = keyElement.selectFirst("div.block-content.mdl-card__supporting-text.mdl-color--grey-300.mdl-color-text--grey-900 > article > section > p");
+                    Element anekText = keyElement.selectFirst("div.block-content.mdl-card__supporting-text.mdl-color--grey-300.mdl-color-text--grey-900 > article > section");
                     result[0] = anekText.text();
                     result[1] = key;
                     break;

@@ -8,9 +8,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -103,7 +101,13 @@ public class UnofficialTwitchApi {
 
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                return response.body().byteStream();
+                byte[] bytes = response.body().bytes();
+
+                File temp =  File.createTempFile("response", ".m3u8");
+                FileOutputStream fileOutputStream = new FileOutputStream(temp);
+                fileOutputStream.write(bytes);
+                fileOutputStream.close();
+                return new ByteArrayInputStream(bytes);
             }
         } catch (IOException e) {
             e.printStackTrace();

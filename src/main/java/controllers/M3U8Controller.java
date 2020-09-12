@@ -56,7 +56,7 @@ public class M3U8Controller {
         int size = masterPlaylist.getPlaylists().size();
         InputStream mediaPlaylistStream = null;
         try{
-            mediaPlaylistStream = new URL(masterPlaylist.getPlaylists().get(size - 1).getUri()).openConnection().getInputStream();
+            mediaPlaylistStream = new URL(masterPlaylist.getPlaylists().get(size - 2).getUri()).openConnection().getInputStream();
         } catch (IOException e) {
             chnl.forceUpdate();
             masterPlaylist = chnl.getMasterPlaylist();
@@ -64,7 +64,7 @@ public class M3U8Controller {
                 return null;
             }
             size = masterPlaylist.getPlaylists().size();
-            mediaPlaylistStream = new URL(masterPlaylist.getPlaylists().get(size - 1).getUri()).openConnection().getInputStream();
+            mediaPlaylistStream = new URL(masterPlaylist.getPlaylists().get(size - 2).getUri()).openConnection().getInputStream();
         }
 
         MediaPlaylist mediaPlaylist = new PlaylistParser(mediaPlaylistStream, Format.EXT_M3U, Encoding.UTF_8, ParsingMode.LENIENT)

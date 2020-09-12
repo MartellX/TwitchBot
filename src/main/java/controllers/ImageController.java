@@ -1,5 +1,6 @@
 package controllers;
 
+import jdk.jfr.Threshold;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -79,26 +80,30 @@ public class ImageController {
                 inputImage.getWidth(), inputImage.getHeight(), null, 0, inputImage.getWidth());
         int[] greyArray = new int[rgbArray.length];
 
-//
-//
-//        for (int i = 0; i < rgbArray.length; i++){
-//            int rgb = rgbArray[i];
-//            double blue = rgb & 0xff;
-//            double green = (rgb & 0xff00) >> 8;
-//            double red = (rgb & 0xff0000) >> 16;
-//            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
-//            greyArray[i] = grey;
-//            histogram[grey]++;
-//
-//            sumOfGreys += grey;
-//            countOfGreys++;
-//        }
-//
+
+
+        for (int i = 0; i < rgbArray.length; i++){
+            int rgb = rgbArray[i];
+            double blue = rgb & 0xff;
+            double green = (rgb & 0xff00) >> 8;
+            double red = (rgb & 0xff0000) >> 16;
+            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
+            greyArray[i] = grey;
+            histogram[grey]++;
+
+            sumOfGreys += grey;
+            countOfGreys++;
+        }
+
+
+
+        int currThreshold = (int) (sumOfGreys / countOfGreys);
+        currThreshold += currThreshold < THRESHOLD_DEFAULT ? 20 : -20;
+
+
 //        int prevR1 = -1, prevR2 = -2;
 //        int currR1 = 0, currR2 = 0;
 //        double u1, u2;
-//
-//        int currThreshold = (int) (sumOfGreys / countOfGreys);
 //
 //        while (currR1 != prevR1 || currR2 != prevR2) {
 //            prevR1 = currR1;
@@ -129,12 +134,14 @@ public class ImageController {
         //ImageIO.write(image, "png", new File("test.png"));
 
         if (threshold == -1) {
-            threshold = THRESHOLD_DEFAULT;
-            System.out.println("Threshold: " + threshold + "\n");
+            threshold = currThreshold;
+
             //threshold = THRESHOLD_DEFAULT;
         } else {
             threshold = 255 - (threshold/100) * 255;
         }
+
+        System.out.println("Threshold: " + threshold + "\n");
         StringBuilder result = new StringBuilder();
         Random rd = new Random();
         boolean isBlank = true;
