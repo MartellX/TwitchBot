@@ -12,6 +12,7 @@ import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
 import constants.Config;
 import controllers.MainController;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -68,6 +69,7 @@ public class TwitchBot {
             return;
         }
 
+
         /*
         long timeReconnect = System.currentTimeMillis();
 
@@ -84,7 +86,7 @@ public class TwitchBot {
          String message = event.getMessage();
 
 
-        String logMessage = ("[" + new Date() + "][" + channelname + "]["
+        String logMessage = ("[" + event.getFiredAt().getTime() + "][" + channelname + "]["
                      + permissions.toString()+"] "
                      + username + ": "
                      + message);
@@ -104,12 +106,12 @@ public class TwitchBot {
      }
 
     public void sendMessage (String message, String channelName) {
-        System.out.println("[LOGS][" + new Date() + "][" + channelName +"][SEND_MESSAGE]:" + message);
+        System.out.println("[LOGS][" + Calendar.getInstance().getTime() + "][" + channelName +"][SEND_MESSAGE]:" + message);
         twitchClient.getChat().sendMessage(channelName, message);
     }
 
     public void sendMessage (String message, String channelName, boolean isLighting) {
-        System.out.println("[LOGS][" + new Date() + "][" + channelName +"][SEND_MESSAGE]:" + message);
+        System.out.println("[LOGS][" + Calendar.getInstance().getTime() + "][" + channelName +"][SEND_MESSAGE]:" + message);
         if (isLighting) {
             twitchClient.getChat().sendMessage(channelName, "/me " + message);
         } else {

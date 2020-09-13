@@ -208,6 +208,11 @@ public class EmotesGetter {
             String id = emoteInfo.get("id").getAsString();
             String size = "3.0";
             String code = emoteInfo.get("code").getAsString();
+            if(code.contains("&lt")) {
+                code = code.replaceAll("&lt\\\\;", "<");
+            } else if (code.contains("&gt")) {
+                code = code.replaceAll("&gt\\\\;", ">");
+            }
             String url = urlTemplate
                     .replace("{{id}}", id)
                     .replace("{{size}}", size);
