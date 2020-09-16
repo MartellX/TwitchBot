@@ -417,7 +417,7 @@ public class MainController {
     }
 
     static private final String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
-            "никогда SadCat", "всегда widepeepoHappy", "через неделю", "через год", "когда юзя видеокарту разгонит",
+            "никогда", "всегда", "через неделю", "через год",
             "а хуй знает"};
     static public String when() {
         Random rd = new Random();
@@ -426,7 +426,7 @@ public class MainController {
     }
 
     static private final String[] whoAnswers = {"он", "ты", "я", "никто",
-            "все", "кто-то", "чат"};
+            "все", "чат"};
 
     static public String who() {
         Random rd = new Random();
@@ -439,7 +439,7 @@ public class MainController {
     }
 
     static private final String[] whereAnswers = {"там :point_right:", "там :point_up:",
-            "там :point_down:", "там :point_left:", "сзади monkaW", "за окном", "нигде",
+            "там :point_down:", "там :point_left:", "сзади monkaS", "за окном", "нигде",
     "хз, поищи"};
     static public String where() {
         Random rd = new Random();

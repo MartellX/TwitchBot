@@ -67,6 +67,9 @@ public class CommandConstants {
         blacklist.add("(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?");
         blacklist.add("african");
         blacklist.add("nigger");
+        blacklist.add("гитлер");
+        blacklist.add("еврей");
+
 
 
         masterNames.add("martellx");
