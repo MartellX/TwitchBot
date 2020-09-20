@@ -1,5 +1,6 @@
 package command;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,7 @@ public class Channel {
     private CommandConfigService commandConfigService;
     private CommandExecutor executor;
     private String name;
+    Map<String, CommandConfig> commands;
 
     public Channel(String name) {
         this.name = name;
@@ -24,7 +26,48 @@ public class Channel {
         executor = new CommandExecutor(commandConfigService ,commands);
     }
 
+    private Channel(){
+        name = "Unnamed";
+        commandConfigService = CommandConfigService.getDefault();
+        commands = new HashMap<>();
+    }
+
     public class Builder{
+        private Channel channel;
+
+        public Builder(){
+            channel = new Channel();
+        }
+
+        public Builder setName(String name) {
+            channel.name = name;
+            return this;
+        }
+
+        public Builder setConfigService(CommandConfigService service) {
+            channel.commandConfigService = service;
+            return this;
+        }
+
+        public Builder addCommands(Map<String, CommandConfig> commands) {
+            channel.commands.putAll(commands);
+            return this;
+        }
+
+
+
+        public Channel build(){
+            channel.executor = new CommandExecutor();
+            channel.executor.setCommandConfigService(channel.commandConfigService);
+            for (var command:commands.entrySet()
+                 ) {
+                String alias = command.getKey();
+                CommandConfig config = command.getValue();
+                channel.executor.getCommand(alias).setConfig(config);
+            }
+
+            return channel;
+        }
 
     }
 

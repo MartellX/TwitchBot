@@ -254,7 +254,7 @@ public class EmotesGetter {
         String channelEmotesResource = "https://api.twitchemotes.com/api/v4/channels/" + channelid;
         Request channelRequest = new Request.Builder()
                 .url(channelEmotesResource)
-                .method("GET", null)
+                .get()
                 .addHeader("Cookie", "__cfduid=d7d0db7130bf26e37b2449d52460622361598906796")
                 .build();
         Response channelResponse = client.newCall(channelRequest).execute();

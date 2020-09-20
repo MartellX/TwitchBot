@@ -34,7 +34,7 @@ public class CommandExecutor {
     }
 
     public CommandExecutor() {
-        commandConfigService = new CommandConfigService();
+        commandConfigService = CommandConfigService.getDefault();
         Command tecCommand;
         //----------------------------------------------------------------------------------------------
 //        tecCommand = new Command(this::getHpgTop, CommandType.INFO);
@@ -67,9 +67,6 @@ public class CommandExecutor {
 
         tecCommand = new Command(this::chatBotAnswer, new CommandConfig(30, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
         commands.put("!анфиса", tecCommand);
-
-        tecCommand = new Command(this::getComic, CommandType.FUN);
-        //commands.put("!анек", tecCommand);
 
 
         tecCommand = new Command(this::who, CommandType.FUN);
@@ -136,6 +133,32 @@ public class CommandExecutor {
     public boolean containsCommand(String command) {
         return commands.containsKey(command);
     }
+
+
+    private void updateConfigsOfType(CommandType type) {
+        for (var command:commands.values()
+        ) {
+            if (command.getConfig().getType() == type) {
+                command.setConfig(commandConfigService.getConfigClone(type));
+            }
+        }
+    }
+
+    public Command getCommand(String command) {
+        return commands.get(command);
+    }
+
+    public void setCommandConfigService(CommandConfigService commandConfigService) {
+        this.commandConfigService = commandConfigService;
+    }
+
+    public CommandConfigService getCommandConfigService() {
+        return commandConfigService;
+    }
+
+
+
+    // НИЖЕ ТОЛЬКО ФУНКЦИИ ДЛЯ КОМАНД
 
     //------ИНФО-------
 
@@ -214,28 +237,6 @@ public class CommandExecutor {
         return null;
     }
 
-    private String getComic(CommandArgumentDto args) {
-        String answer = null;
-        int i = 0;
-
-        while (true) {
-            boolean isBL = false;
-            answer = MainController.getAnswerFromComicbot();
-            for (var bl: CommandConstants.blacklist
-            ) {
-                if (answer.contains(bl)) {
-                    isBL = true;
-                    break;
-                }
-            }
-            if ((answer.length() <= 500 || i > 15) && !isBL){
-                break;
-            }
-            i++;
-        }
-
-        return answer;
-    }
 
 
 
@@ -283,7 +284,7 @@ public class CommandExecutor {
         int patron = rd.nextInt(patrons);
         String result;
         if (patron == 0) {
-            result = (7 - patrons + 1) + " патрон убил тебя pressF @" + username ;
+            result = (7 - patrons + 1) + " патрон убил тебя F @" + username ;
             patronsRemain.remove(username);
         } else {
             patrons--;
@@ -481,14 +482,6 @@ public class CommandExecutor {
         return result;
     }
 
-    private void updateConfigsOfType(CommandType type) {
-        for (var command:commands.values()
-             ) {
-            if (command.getConfig().getType() == type) {
-                command.setConfig(commandConfigService.getConfigClone(type));
-            }
-        }
-    }
 
 
 

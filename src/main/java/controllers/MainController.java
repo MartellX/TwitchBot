@@ -30,7 +30,6 @@ public class MainController {
     static private final Map<String, String> gamesLength = new HashMap<>();
 
     static private final ChatBot chatBot = new ChatBot();
-    static private final ComicBot comicBot = new ComicBot();
     static private final SimpleApi httpClient = new SimpleApi();
     static private final EmotesController emotesController = new EmotesController();
     static private final CommandExecutor commandExecutor = new CommandExecutor();
@@ -411,10 +410,6 @@ public class MainController {
         return answer;
     }
 
-    static public String getAnswerFromComicbot() {
-        String answer = null;
-        return answer;
-    }
 
     static private final String[] whenAnswers = {"сейчас", "завтра", "вчера", "через полчаса",
             "никогда", "всегда", "через неделю", "через год",
@@ -448,6 +443,11 @@ public class MainController {
     }
 
     public static String joinTo(String channel) {
+        emotesController.updateChannelEmotes(channel);
+        return twitchBot.joinToChannel(channel);
+    }
+
+    public static String joinToWithSQL(String channel) {
         emotesController.updateChannelEmotes(channel);
         return twitchBot.joinToChannel(channel);
     }

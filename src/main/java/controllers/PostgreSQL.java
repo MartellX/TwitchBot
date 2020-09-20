@@ -4,7 +4,9 @@ import command.CommandConfig;
 import command.CommandType;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class PostgreSQL {
@@ -89,7 +91,46 @@ public class PostgreSQL {
             throwables.printStackTrace();
             throw throwables;
         }
+    }
 
+    public Map<String, CommandConfig> getConfigs(String channelname) throws SQLException {
+
+
+        try {
+            Map<String, CommandConfig> configs = new HashMap<>();
+            PreparedStatement checkOnExist = connection.prepareStatement("SELECT * from channels " +
+                    "WHERE channel_name = ?");
+            checkOnExist.setString(1, channelname);
+            ResultSet checkinRS = checkOnExist.executeQuery();
+            if (!checkinRS.next()) {
+                createNewChannelWithDefaults(channelname);
+            }
+            PreparedStatement getConfig = null;
+            getConfig = connection.prepareStatement("SELECT delay, permissions, isPaused, alias, type " +
+                    "FROM configs_of_channels " +
+                    "WHERE channel_name = ?");
+            getConfig.setString(1, channelname);
+
+            ResultSet rs = getConfig.executeQuery();
+            while(rs.next()) {
+                String alias = rs.getString("alias");
+                int delay = rs.getInt("delay");
+                String[] permArray = (String[]) rs.getArray("permissions").getArray();
+                Set<String> permissions = new HashSet<>();
+                for (String perm:permArray
+                ) {
+                    permissions.add(perm);
+                }
+                CommandType type = CommandType.getTypeFromString(rs.getString("type"));
+                CommandConfig commandConfig = new CommandConfig(delay, permissions, type);
+                configs.put(alias, commandConfig);
+            }
+
+            return configs;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw throwables;
+        }
     }
 
     private String getIdOfCommandConfig(String channelname, String alias) {

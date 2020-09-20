@@ -7,6 +7,7 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.FollowEvent;
+import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
 import constants.Config;
@@ -68,6 +69,9 @@ public class TwitchBot {
             close();
             return;
         }
+
+        //TODO передавать IRCMessageEvent для получение id смайлов твича
+         IRCMessageEvent messageEvent = event.getMessageEvent();
 
 
         /*
@@ -135,7 +139,7 @@ public class TwitchBot {
         String message = "Присоединился к каналу: \"" + channel + "\"";
         sendMessage(message, "martellx");
         twitchClient.getClientHelper().enableFollowEventListener(channel);
-        return message;
+        return null;
     }
 
     @Override
