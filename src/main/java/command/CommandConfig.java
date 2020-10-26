@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class CommandConfig {
     private int delay;
-    private final Set<String> neededPermissions;
+    private Set<String> neededPermissions;
     private boolean isPaused = false;
     private CommandType type;
 
@@ -45,6 +45,9 @@ public class CommandConfig {
 
     public void deletePermission(String permission) {
         neededPermissions.remove(permission);
+    }
+    public void setNeededPermissions(Set<String> neededPermissions) {
+        this.neededPermissions = neededPermissions;
     }
 
     public boolean isPaused() {

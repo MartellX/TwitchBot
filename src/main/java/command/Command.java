@@ -1,9 +1,12 @@
 package command;
 
+import java.lang.reflect.Method;
 import java.util.function.Function;
 
 public class Command {
+    private String name;
     private Function<CommandArgumentDto, String> command;
+    private Method method;
     private CommandConfig config;
     private long lastExecution;
 
@@ -44,4 +47,27 @@ public class Command {
         this.lastExecution = lastExecution;
     }
 
+    public Method getMethod() {
+        return method;
+    }
+
+    public void setMethod(Method method) {
+        this.method = method;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Command clone() {
+        CommandConfig config = this.config.clone();
+        Command command = new Command(this.command, config);
+        command.setMethod(method);
+        command.setName(name);
+        return command;
+    }
 }

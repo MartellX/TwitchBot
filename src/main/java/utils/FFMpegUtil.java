@@ -39,7 +39,7 @@ public class FFMpegUtil {
             e.printStackTrace();
         }
 
-        tsFiles.forEach(t -> t.delete());
+        tsFiles.forEach(File::delete);
 
         return targetMP3;
     }

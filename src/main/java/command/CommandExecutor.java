@@ -3,28 +3,74 @@ package command;
 import constants.CommandConstants;
 import controllers.MainController;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
 
 public class CommandExecutor {
+
+    private static Map<String, Command> defaultCommands = new HashMap<>();
+
     private Map<String, Command> commands = new HashMap<>();
     private CommandConfigService commandConfigService;
+
+    static {
+        for (Method method:CommandExecutor.class.getDeclaredMethods()
+        ) {
+            if (method.isAnnotationPresent(CommandAnnotation.class)) {
+                CommandAnnotation annotation = method.getAnnotation(CommandAnnotation.class);
+
+                if (!annotation.isDisabled()) {
+                    Command command = new Command(null, annotation.type());
+                    if (annotation.delay() != -1) {
+                        command.getConfig().setDelay(annotation.delay());
+                    }
+
+                    command.getConfig().setPaused(annotation.isPaused());
+                    if (annotation.permissions().length != 0) {
+                        HashSet<String> permissions = new HashSet(Arrays.asList(annotation.permissions()));
+                        command.getConfig().setNeededPermissions(permissions);
+                    }
+                    command.setMethod(method);
+                    command.setName(annotation.name());
+                    defaultCommands.put(annotation.name(), command);
+                    for (String name: annotation.names()
+                         ) {
+                        defaultCommands.put(name, command);
+                    }
+                }
+
+            }
+        }
+
+
+    }
 
     public String execute(String commandTag, String channelname, String username, Set<String> userPermissions, String message){
         Command command = commands.get(commandTag);
         Function<CommandArgumentDto, String> commandFunction = command.getCommand();
+        Method commandMethod = command.getMethod();
         Set neededPermissions = command.getConfig().getNeededPermissions();
         int neededDelay = command.getConfig().getDelay();
         long lastExecute = command.getLastExecution();
         long currentTime = System.currentTimeMillis();
         CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message);
-        String result;
+        String result = null;
         if (Collections.disjoint(userPermissions, neededPermissions)) {
             result = null;
         } else if ((currentTime - lastExecute) < neededDelay * 1000 || command.getConfig().isPaused()) {
             result = null;
         } else {
-            result = commandFunction.apply(args);
+            if (commandFunction != null) {
+                result = commandFunction.apply(args);
+            } else {
+                try {
+                    result = (String) commandMethod.invoke(this, args);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
             if (result != null) {
                 command.setLastExecution(System.currentTimeMillis());
             }
@@ -34,8 +80,17 @@ public class CommandExecutor {
     }
 
     public CommandExecutor() {
-        commandConfigService = CommandConfigService.getDefault();
-        Command tecCommand;
+
+        for (var comm : defaultCommands.entrySet()
+             ) {
+            String alias = comm.getKey();
+            Command commandDefault = comm.getValue();
+            Command command = commandDefault.clone();
+            commands.put(alias, command);
+        }
+
+//        commandConfigService = CommandConfigService.getDefault();
+//        Command tecCommand;
         //----------------------------------------------------------------------------------------------
 //        tecCommand = new Command(this::getHpgTop, CommandType.INFO);
 //        commands.put("!хпгтоп", tecCommand);
@@ -51,74 +106,74 @@ public class CommandExecutor {
 //        tecCommand = new Command(this::getEvent, CommandType.INFO);
 //        commands.put("!событие", tecCommand);
 
-
-        tecCommand = new Command(this::getTimeout, CommandType.INFO);
-        commands.put("!кд", tecCommand);
-
-        //----------------------------------------------------------------------------------------------
-
-
-        tecCommand = new Command(this::getAnek, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
-        commands.put("!анек", tecCommand);
-        commands.put("!pogo", tecCommand);
-
-        tecCommand = new Command(this::getPaste, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), true, CommandType.FUN));
-        commands.put("!паста", tecCommand);
-
-        tecCommand = new Command(this::chatBotAnswer, new CommandConfig(30, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
-        commands.put("!анфиса", tecCommand);
-
-
-        tecCommand = new Command(this::who, CommandType.FUN);
-        commands.put("!кто", tecCommand);
-
-        tecCommand = new Command(this::where, CommandType.FUN);
-        commands.put("!где", tecCommand);
-
-        tecCommand = new Command(this::when, CommandType.FUN);
-        commands.put("!когда", tecCommand);
-
-        tecCommand = new Command(this::getArt, CommandType.FUN);
-        commands.put("!арт", tecCommand);
-
-        tecCommand = new Command(this::roulette, CommandType.FUN);
-        commands.put("!рулетка", tecCommand);
-
-        //----------------------------------------------------------------------------------------------
-
-        tecCommand = new Command(this::setDelay, CommandType.MOD);
-        commands.put("!задержка", tecCommand);
-
-        tecCommand = new Command(this::offCommand, CommandType.MOD);
-        commands.put("!выкл", tecCommand);
-
-        tecCommand = new Command(this::onCommand, CommandType.MOD);
-        commands.put("!вкл", tecCommand);
-
-
-        //----------------------------------------------------------------------------------------------
-
-        tecCommand = new Command(this::joinToChannel, CommandType.MASTER);
-        commands.put("!jointo", tecCommand);
-
-        tecCommand = new Command(this::pauseBot, CommandType.MASTER);
-        commands.put("!pause", tecCommand);
-
-        tecCommand = new Command(this::unpauseBot, CommandType.MASTER);
-        commands.put("!unpause", tecCommand);
-
-        tecCommand = new Command(this::restartBot, CommandType.MASTER);
-        commands.put("!martellstop", tecCommand);
-
-        tecCommand = new Command(this::addPermission, CommandType.MASTER);
-        commands.put("!разрешить", tecCommand);
-
-        tecCommand = new Command(this::deletePermission, CommandType.MASTER);
-        commands.put("!запретить", tecCommand);
-
-        //--------------------------------------------------------------------------------------------
-        tecCommand = new Command(this::getShazam, new CommandConfig(10, new HashSet(Set.of("EVERYONE")), CommandType.OTHER));
-        commands.put("!шазам", tecCommand);
+//
+//        tecCommand = new Command(this::getTimeout, CommandType.INFO);
+//        commands.put("!кд", tecCommand);
+//
+//        //----------------------------------------------------------------------------------------------
+//
+//
+//        tecCommand = new Command(this::getAnek, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
+//        commands.put("!анек", tecCommand);
+//        commands.put("!pogo", tecCommand);
+//
+//        tecCommand = new Command(this::getPaste, new CommandConfig(60, new HashSet(Set.of("EVERYONE")), true, CommandType.FUN));
+//        commands.put("!паста", tecCommand);
+//
+//        tecCommand = new Command(this::chatBotAnswer, new CommandConfig(30, new HashSet(Set.of("EVERYONE")), CommandType.FUN));
+//        commands.put("!анфиса", tecCommand);
+//
+//
+//        tecCommand = new Command(this::who, CommandType.FUN);
+//        commands.put("!кто", tecCommand);
+//
+//        tecCommand = new Command(this::where, CommandType.FUN);
+//        commands.put("!где", tecCommand);
+//
+//        tecCommand = new Command(this::when, CommandType.FUN);
+//        commands.put("!когда", tecCommand);
+//
+//        tecCommand = new Command(this::getArt, CommandType.FUN);
+//        commands.put("!арт", tecCommand);
+//
+//        tecCommand = new Command(this::roulette, CommandType.FUN);
+//        commands.put("!рулетка", tecCommand);
+//
+//        //----------------------------------------------------------------------------------------------
+//
+//        tecCommand = new Command(this::setDelay, CommandType.MOD);
+//        commands.put("!задержка", tecCommand);
+//
+//        tecCommand = new Command(this::offCommand, CommandType.MOD);
+//        commands.put("!выкл", tecCommand);
+//
+//        tecCommand = new Command(this::onCommand, CommandType.MOD);
+//        commands.put("!вкл", tecCommand);
+//
+//
+//        //----------------------------------------------------------------------------------------------
+//
+//        tecCommand = new Command(this::joinToChannel, CommandType.MASTER);
+//        commands.put("!jointo", tecCommand);
+//
+//        tecCommand = new Command(this::pauseBot, CommandType.MASTER);
+//        commands.put("!pause", tecCommand);
+//
+//        tecCommand = new Command(this::unpauseBot, CommandType.MASTER);
+//        commands.put("!unpause", tecCommand);
+//
+//        tecCommand = new Command(this::restartBot, CommandType.MASTER);
+//        commands.put("!martellstop", tecCommand);
+//
+//        tecCommand = new Command(this::addPermission, CommandType.MASTER);
+//        commands.put("!разрешить", tecCommand);
+//
+//        tecCommand = new Command(this::deletePermission, CommandType.MASTER);
+//        commands.put("!запретить", tecCommand);
+//
+//        //--------------------------------------------------------------------------------------------
+//        tecCommand = new Command(this::getShazam, new CommandConfig(10, new HashSet(Set.of("EVERYONE")), CommandType.OTHER));
+//        commands.put("!шазам", tecCommand);
 
 
 
@@ -162,6 +217,10 @@ public class CommandExecutor {
 
     //------ИНФО-------
 
+
+    @CommandAnnotation(name = "!хпгтоп",
+            type = CommandType.INFO,
+            isPaused = true)
     private String getHpgTop(CommandArgumentDto args) {
         StringBuilder sb = new StringBuilder();
         sb.append("Топ: ");
@@ -170,6 +229,10 @@ public class CommandExecutor {
         return sb.toString();
     }
 
+    @CommandAnnotation(name = "!хпгинфо",
+            type = CommandType.INFO,
+            isPaused = true,
+            isDisabled = true)
     private String getHpgInfo(CommandArgumentDto args) {
         String nick = CommandConstants.nicknames.get(args.getChannelname());
         String message = args.getMessage();
@@ -188,8 +251,8 @@ public class CommandExecutor {
         return sb.toString();
     }
 
-
-
+    @CommandAnnotation(name = "!помощь", type = CommandType.INFO, isPaused = true,
+            isDisabled = true)
     private String getHelp(CommandArgumentDto args) {
         String msg = "Доступные команды: !хпгтоп, !хпгинфо, !хпгинфо [ник], !событие";
         if (!commandConfigService.getFunConfig().isPaused()) {
@@ -199,6 +262,8 @@ public class CommandExecutor {
         return msg;
     }
 
+    @CommandAnnotation(name = "!событие", type = CommandType.INFO, isPaused = true,
+            isDisabled = true)
     private String getEvent(CommandArgumentDto args) {
         String nick = CommandConstants.nicknames.get(args.getChannelname());
         String msg = MainController.getLastEvent(nick);
@@ -206,8 +271,36 @@ public class CommandExecutor {
         return msg;
     }
 
+    @CommandAnnotation(name = "!шазам", type = CommandType.INFO, delay = 20)
+    private String getShazam(CommandArgumentDto args) {
+        String answer = MainController.getShazam(args.getChannelname());
+        return answer + " @" + args.getUsername();
+    }
+
+    @CommandAnnotation(name = "!кд", type = CommandType.INFO, delay = 10)
+    private String getTimeout(CommandArgumentDto args) {
+        String message = args.getMessage();
+        String result = null;
+        if (message.matches("^\\S+.*")) {
+            String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
+            if (commands.containsKey(type)) {
+                Command command = commands.get(type);
+                if (command.getConfig().isPaused()) {
+                    result = "Команда " + type + " отключена";
+                } else {
+                    int time = command.getConfig().getDelay();
+                    int remainTime = (int) (time - (System.currentTimeMillis() - command.getLastExecution())/1000);
+                    result = "У команды " + type + " задержка " + time + " секунд " + (remainTime >= 0 ? ", осталось " + remainTime : ", команда сейчас доступна") + " @" + args.getUsername();
+                }
+            }
+        }
+
+        return result;
+    }
+
     //------ФАН-------
 
+    @CommandAnnotation(name = "!паста", type = CommandType.FUN, isPaused = true)
     private String getPaste(CommandArgumentDto args) {
         String result = MainController.getPast(args.getMessage());
         if (result == null) {
@@ -217,6 +310,7 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!анфиса", type = CommandType.FUN, delay = 30, isPaused = false)
     private String chatBotAnswer(CommandArgumentDto args) {
         String message = args.getMessage();
         String msg = message.replaceFirst("!анфиса", "")
@@ -238,8 +332,7 @@ public class CommandExecutor {
     }
 
 
-
-
+    @CommandAnnotation(name = "!арт", type = CommandType.FUN, isPaused = true)
     private String getArt(CommandArgumentDto args) {
         String msg = args.getMessage();
         String channelName = args.getChannelname();
@@ -255,6 +348,7 @@ public class CommandExecutor {
         return null;
     }
 
+    @CommandAnnotation(name = "!кто", type = CommandType.FUN, isPaused = true)
     private String who(CommandArgumentDto args) {
         String who = MainController.who();
         if (who.equals("ты")) {
@@ -264,16 +358,19 @@ public class CommandExecutor {
         return who;
     }
 
+    @CommandAnnotation(name = "!где", type = CommandType.FUN, isPaused = true)
     private String when(CommandArgumentDto args) {
         return MainController.when();
     }
 
+    @CommandAnnotation(name = "!когда", type = CommandType.FUN, isPaused = true)
     private String where(CommandArgumentDto args) {
         return MainController.where();
     }
 
     Map<String, Integer> patronsRemain = new HashMap<>();
 
+    @CommandAnnotation(name = "!рулетка", type = CommandType.FUN, isPaused = true)
     private String roulette (CommandArgumentDto args) {
         String username = args.getUsername();
         int patrons = 7;
@@ -294,10 +391,18 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!анек", type = CommandType.FUN, isPaused = true)
+    private String getAnek(CommandArgumentDto args) {
+        String result = MainController.getAnek();
+        return result;
+    }
+
 
     //------MODERATORS------
 
     Map<String, CommandType> commandTypeMap = Map.of("инфо", CommandType.INFO, "фан", CommandType.FUN);
+
+    @CommandAnnotation(name = "!задержка", type = CommandType.MOD)
     private String setDelay(CommandArgumentDto args) {
         String message = args.getMessage();
         String result = null;
@@ -320,6 +425,7 @@ public class CommandExecutor {
 
     }
 
+    @CommandAnnotation(name = "!выкл", type = CommandType.MOD)
     private String offCommand (CommandArgumentDto args) {
         String message = args.getMessage();
         String result = null;
@@ -342,6 +448,7 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!вкл", type = CommandType.MOD)
     private String onCommand (CommandArgumentDto args) {
         String message = args.getMessage();
         String result = null;
@@ -365,6 +472,7 @@ public class CommandExecutor {
     }
 
     //------MASTER------
+    @CommandAnnotation(name = "!jointo", type = CommandType.MASTER)
     private String joinToChannel(CommandArgumentDto args) {
         String message = args.getMessage();
         String result = "Не понял прикола";
@@ -380,6 +488,7 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!pause", type = CommandType.MASTER)
     private String pauseBot(CommandArgumentDto args) {
         commandConfigService.getConfig(CommandType.INFO).setPaused(true);
         commandConfigService.getConfig(CommandType.FUN).setPaused(true);
@@ -389,6 +498,7 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!unpause", type = CommandType.MASTER)
     private String unpauseBot(CommandArgumentDto args) {
         commandConfigService.getConfig(CommandType.INFO).setPaused(false);
         commandConfigService.getConfig(CommandType.FUN).setPaused(false);
@@ -398,11 +508,13 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!restart", type = CommandType.MASTER)
     private String restartBot(CommandArgumentDto args) {
         MainController.isStopped = true;
         return "Перезапускаюсь(наверное) peepoRip";
     }
 
+    @CommandAnnotation(name = "!разрешить", type = CommandType.MASTER)
     private String addPermission(CommandArgumentDto args) {
         String message = args.getMessage();
         String result = null;
@@ -425,6 +537,7 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!запретить", type = CommandType.MASTER)
     private String deletePermission(CommandArgumentDto args) {
         String message = args.getMessage();
         String result = null;
@@ -447,40 +560,14 @@ public class CommandExecutor {
         return result;
     }
 
-    private String getShazam(CommandArgumentDto args) {
-        String answer = MainController.getShazam(args.getChannelname());
-        return answer + " @" + args.getUsername();
-    }
+
 
     private String sendPmMessage(CommandArgumentDto args){
         MainController.sendPMmessage(args.getUsername(), args.getMessage() + " @" + args.getUsername());
         return "Сообщение отправлено";
     }
 
-    private String getAnek(CommandArgumentDto args) {
-        String result = MainController.getAnek();
-        return result;
-    }
 
-    private String getTimeout(CommandArgumentDto args) {
-        String message = args.getMessage();
-        String result = null;
-        if (message.matches("^\\S+.*")) {
-            String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
-            if (commands.containsKey(type)) {
-                Command command = commands.get(type);
-                if (command.getConfig().isPaused()) {
-                    result = "Команда " + type + " отключена";
-                } else {
-                    int time = command.getConfig().getDelay();
-                    int remainTime = (int) (time - (System.currentTimeMillis() - command.getLastExecution())/1000);
-                    result = "У команды " + type + " задержка " + time + " секунд " + (remainTime >= 0 ? ", осталось " + remainTime : ", команда сейчас доступна") + " @" + args.getUsername();
-                }
-            }
-        }
-
-        return result;
-    }
 
 
 
