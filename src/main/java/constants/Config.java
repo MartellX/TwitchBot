@@ -12,7 +12,7 @@ public class Config {
     private static List<String> envVariables = List.of("TWITCH_NICKNAME", "TWITCH_ATOKEN", "TWITCH_CID",
             "GOOGLE_CREDS", "DATABASE_URL",
             "RECOGNIZING_HOST", "RECOGNIZING_AKEY", "RECOGNIZING_SKEY",
-            "UNOFFICIAL_TWITCH_CID");
+            "UNOFFICIAL_TWITCH_CID", "UNOFFICIAL_TWITCH_OAUTH");
     private static Map<String, String> configMap = new HashMap<>();
     static {
         for (String var:envVariables

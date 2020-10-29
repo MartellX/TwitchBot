@@ -27,14 +27,12 @@ public class EmotesController {
     }
 
     void updateChannelEmotes(String channel) {
-            var twitchMap = emotesGetter.getTwitchEmotes(channel);
+            //var twitchMap = emotesGetter.getTwitchEmotes(channel);
             var BTTVMap = emotesGetter.getBTTVEmotes(channel);
             var FFZMap = emotesGetter.getFFZEmotes(channel);
 
             Map<String, String> resultMap = new HashMap<>();
-            if (twitchMap != null) {
-                resultMap.putAll(twitchMap);
-            }
+
             if (BTTVMap != null) {
                 resultMap.putAll(BTTVMap);
             }
@@ -58,11 +56,11 @@ public class EmotesController {
     }
 
     String getEmoteUrl(String emote, String channel) {
-        for (String twEmote : globalTwitchMap.keySet()) {
-            if (emote.matches(twEmote)) {
-                return globalTwitchMap.get(twEmote);
-            }
-        }
+//        for (String twEmote : globalTwitchMap.keySet()) {
+//            if (emote.matches(twEmote)) {
+//                return globalTwitchMap.get(twEmote);
+//            }
+//        }
 
         if (globalThirdPartyMap.containsKey(emote)) {
             return globalThirdPartyMap.get(emote);

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class FFMpegUtil {
 
@@ -21,7 +22,6 @@ public class FFMpegUtil {
         audio.setBitRate(128000);
         audio.setChannels(2);
         audio.setSamplingRate(44100);
-
         EncodingAttributes attrs = new EncodingAttributes();
         attrs.setFormat("mp3");
         attrs.setAudioAttributes(audio);
@@ -39,7 +39,18 @@ public class FFMpegUtil {
             e.printStackTrace();
         }
 
-        tsFiles.forEach(File::delete);
+        Thread deletingThread = new Thread(() -> {
+            try {
+                TimeUnit.MINUTES.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            finally {
+                tsFiles.forEach(File::delete);
+            }
+        });
+        deletingThread.setDaemon(true);
+        deletingThread.start();
 
         return targetMP3;
     }

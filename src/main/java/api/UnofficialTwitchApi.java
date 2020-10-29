@@ -35,6 +35,7 @@ public class UnofficialTwitchApi {
     OkHttpClient client;
 
     String clientid = Config.getStringFor("UNOFFICIAL_TWITCH_CID");
+    String oauth = Config.getStringFor("UNOFFICIAL_TWITCH_OAUTH");
 
     private UnofficialTwitchApi() {
         client = new OkHttpClient.Builder().callTimeout(Duration.ofSeconds(10)).build();
@@ -57,11 +58,10 @@ public class UnofficialTwitchApi {
     Map<String, String> getAccessToken(String channel) {
         Map<String, String> resultMap = new HashMap<>();
 
-        String url = "https://api.twitch.tv/api/channels/{{channel}}/access_token"
+        String url = ("https://api.twitch.tv/api/channels/{{channel}}/access_token" + "?oauth_token=" + oauth)
                 .replace("{{channel}}", channel);
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Client-ID", clientid)
                 .build();
 
         try {
