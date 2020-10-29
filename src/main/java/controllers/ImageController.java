@@ -11,10 +11,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
 public class ImageController {
 
@@ -38,7 +36,7 @@ public class ImageController {
 
     static int THRESHOLD_DEFAULT = 127;
     static int asciiXDots = 2, asciiYDots = 4;
-    static int asciiWidth = 33, asciiHeight = 11; //for twitch chat
+    static int asciiWidth = 30, asciiHeight = 11; //for twitch chat
     static OkHttpClient client = new OkHttpClient.Builder()
             .cache(new Cache(new File("http_cache"), 50L * 1024L * 1024L))
             .build();
@@ -146,8 +144,12 @@ public class ImageController {
         Random rd = new Random();
         boolean isBlank = true;
         int lastBlankedRows = 0;
+        int blanked = 0;
+        int lastBlanked;
+        Queue<String> rows = new ArrayDeque<>();
         for (int y = 0; y < asciiHeight * asciiYDots; y += asciiYDots) {
             boolean isBlankLast = true;
+            StringBuilder row = new StringBuilder();
             for (int x = 0; x < asciiWidth * asciiXDots; x += asciiXDots) {
                 char symbol = ImageData2Braille(
                         inputImage
@@ -159,7 +161,7 @@ public class ImageController {
                     isBlankLast = false;
                 }
                 //System.out.print(symbol);
-                result.append(symbol);
+                row.append(symbol);
             }
 
             //result.append('\n');
@@ -169,16 +171,16 @@ public class ImageController {
             } else {
                 lastBlankedRows = 0;
             }
-            if (isBlank) {
-                result.delete(result.length() - asciiWidth, result.length() - 1);
-            } else {
-                result.append('\n');
+            if (!isBlank) {
+                rows.offer(row.toString() + "\n");
             }
             //System.out.println();
         }
 
-        if (lastBlankedRows != 0) {
-            result.delete(result.length() - asciiWidth * lastBlankedRows, result.length() - 1);
+
+        while (rows.peek() != null) {
+            if (rows.size() == lastBlankedRows) break;
+            result.append(rows.poll());
         }
 
         return result.toString();
