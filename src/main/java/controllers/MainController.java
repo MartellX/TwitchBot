@@ -2,6 +2,7 @@ package controllers;
 
 import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import command.CommandExecutor;
 import constants.CommandConstants;
 import org.apache.commons.collections4.CollectionUtils;
@@ -54,10 +55,8 @@ public class MainController {
         logsFile = new File(logsPath);
     }
 
-    static public void handleMessage(String channelname, String username, Set userPermissions, String message) {
-        if (CommandConstants.masterNames.contains(username)) {
-            userPermissions.add("MASTER");
-        }
+    static public void handleMessage(String channelname, String username, Set userPermissions, String message, IRCMessageEvent messageEvent) {
+
         userPermissions.add(username.toUpperCase());
         for (var s: CommandConstants.blacklist
         ) {
@@ -66,13 +65,14 @@ public class MainController {
             }
         }
 
+
         handleNick(username);
 
         if (message.startsWith("!") && !CommandConstants.botNames.contains(username)) {
             String commandTag = message.replaceFirst("(!\\S+).*", "$1").toLowerCase();
             String commandArgs = message.replaceAll(commandTag + "\\s?(.*$)","$1");
             if (commandExecutor.containsCommand(commandTag)) {
-                String result = commandExecutor.execute(commandTag, channelname, username, userPermissions, commandArgs);
+                String result = commandExecutor.execute(commandTag, channelname, username, userPermissions, commandArgs, messageEvent);
                 if (result != null) {
                     twitchBot.sendMessage(result, channelname, false);
                 }
@@ -319,6 +319,27 @@ public class MainController {
             emotesController.updateChannelEmotes(channel);
         }
         String url = emotesController.getEmoteUrl(emote, channel);
+        if (url == null) {
+            return null;
+        }
+
+        if (threshold > 100 || threshold < 0) {
+            threshold = -1;
+        }
+        String art = null;
+
+        try {
+            BufferedImage image = ImageController.getImageFromUrl(url);
+            art = ImageController.ImageToBraille(image, threshold);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return art;
+    }
+
+    static public String getArt(String emoteID, int threshold) {
+        String url = emotesController.getEmoteUrl(emoteID);
         if (url == null) {
             return null;
         }

@@ -1,5 +1,7 @@
 package command;
 
+import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,8 +77,10 @@ public class Channel {
                         String channelname,
                         String username,
                         Set<String> userPermissions,
-                        String message) {
-        executor.execute(commandTag, channelname, username, userPermissions, message);
+                        String message,
+                        IRCMessageEvent messageEvent) {
+
+        executor.execute(commandTag, channelname, username, userPermissions, message, messageEvent);
     }
 }
 

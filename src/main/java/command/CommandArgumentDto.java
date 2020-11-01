@@ -9,12 +9,14 @@ public class CommandArgumentDto {
     private final String username;
     private final Set userPermissions;
     private final String message;
+    private final String emotesInfo;
 
-    public CommandArgumentDto(String channelname, String username, Set userPermissions, String message) {
+    public CommandArgumentDto(String channelname, String username, Set userPermissions, String message, String emotesInfo) {
         this.channelname = channelname;
         this.username = username;
         this.userPermissions = userPermissions;
         this.message = message;
+        this.emotesInfo = emotesInfo;
     }
 
     public String getChannelname() {
@@ -31,6 +33,11 @@ public class CommandArgumentDto {
 
     public String getMessage() {
         return message;
+    }
+
+
+    public String getEmotesInfo() {
+        return emotesInfo;
     }
 }
 

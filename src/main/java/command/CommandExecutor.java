@@ -1,5 +1,6 @@
 package command;
 
+import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import constants.CommandConstants;
 import controllers.MainController;
 
@@ -47,36 +48,42 @@ public class CommandExecutor {
 
     }
 
-    public String execute(String commandTag, String channelname, String username, Set<String> userPermissions, String message){
+    public String execute(String commandTag, String channelname, String username, Set<String> userPermissions,
+                          String message, IRCMessageEvent messageEvent){
         Command command = commands.get(commandTag);
-        Function<CommandArgumentDto, String> commandFunction = command.getCommand();
-        Method commandMethod = command.getMethod();
-        Set neededPermissions = command.getConfig().getNeededPermissions();
-        int neededDelay = command.getConfig().getDelay();
-        long lastExecute = command.getLastExecution();
-        long currentTime = System.currentTimeMillis();
-        CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message);
-        String result = null;
-        if (Collections.disjoint(userPermissions, neededPermissions)) {
-            result = null;
-        } else if ((currentTime - lastExecute) < neededDelay * 1000 || command.getConfig().isPaused()) {
-            result = null;
-        } else {
-            if (commandFunction != null) {
-                result = commandFunction.apply(args);
+        synchronized (command) {
+            Function<CommandArgumentDto, String> commandFunction = command.getCommand();
+            Method commandMethod = command.getMethod();
+            Set neededPermissions = command.getConfig().getNeededPermissions();
+            String emotes = null;
+            if (messageEvent.getTagValue("emotes").isPresent()) {
+                emotes = messageEvent.getTagValue("emotes").get();
+            }
+            int neededDelay = command.getConfig().getDelay();
+            long lastExecute = command.getLastExecution();
+            long currentTime = System.currentTimeMillis();
+            CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message, emotes);
+            String result = null;
+            if (Collections.disjoint(userPermissions, neededPermissions)) {
+                result = null;
+            } else if ((currentTime - lastExecute) < neededDelay * 1000 || command.getConfig().isPaused()) {
+                result = null;
             } else {
-                try {
-                    result = (String) commandMethod.invoke(this, args);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+                if (commandFunction != null) {
+                    result = commandFunction.apply(args);
+                } else {
+                    try {
+                        result = (String) commandMethod.invoke(this, args);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (result != null) {
+                    command.setLastExecution(System.currentTimeMillis());
                 }
             }
-            if (result != null) {
-                command.setLastExecution(System.currentTimeMillis());
-            }
+            return result;
         }
-
-        return result;
     }
 
     public CommandExecutor() {
@@ -336,13 +343,24 @@ public class CommandExecutor {
     private String getArt(CommandArgumentDto args) {
         String msg = args.getMessage();
         String channelName = args.getChannelname();
+        String emoteInfo = args.getEmotesInfo();
+        String emoteID = null;
+        if (emoteInfo != null) {
+            emoteInfo = emoteInfo.replaceAll("\\\\.*", "");
+            emoteID = emoteInfo.replaceAll(":.*", "");
+        }
         if (msg.matches("\\S+.*")) {
             String emote = msg.replaceAll("^(\\S+).*", "$1");
             int threshold = -1;
             if (msg.matches("\\S+ \\d+.*")) {
                 threshold = Integer.parseInt(msg.replaceAll("\\S+ (\\d+).*", "$1"));
             }
-            String art = MainController.getArt(emote, channelName, threshold);
+            String art;
+            if (emoteID == null) {
+                art = MainController.getArt(emote, channelName, threshold);
+            } else {
+                art = MainController.getArt(emoteID, threshold);
+            }
             return art;
         }
         return null;

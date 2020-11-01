@@ -10,6 +10,7 @@ import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
 import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
+import constants.CommandConstants;
 import constants.Config;
 import controllers.MainController;
 
@@ -39,7 +40,7 @@ public class TwitchBot {
         SimpleEventHandler eventHandler = twitchClient.getEventManager()
                 .getEventHandler(SimpleEventHandler.class);
 
-        eventHandler.onEvent(ChannelMessageEvent.class, event -> handlerMethod(event));
+        eventHandler.onEvent(ChannelMessageEvent.class, this::handlerMethod);
 
 
 
@@ -89,6 +90,9 @@ public class TwitchBot {
          String username = event.getUser().getName();
          String message = event.getMessage();
 
+         if (CommandConstants.masterNames.contains(username)) {
+             permissions.add("MASTER");
+         }
 
         String logMessage = ("[" + event.getFiredAt().getTime() + "][" + channelname + "]["
                      + permissions.toString()+"] "
@@ -98,7 +102,10 @@ public class TwitchBot {
         //controllers.MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
 
-        MainController.handleMessage(channelname, username, permissions, message);
+        //TODO следить за стабильностью
+         new Thread(() -> MainController.handleMessage(channelname, username, permissions, message, messageEvent)).start();
+
+         //MainController.handleMessage(channelname, username, permissions, message);
 
      }
 

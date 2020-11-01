@@ -14,7 +14,7 @@ public class EmotesController {
 
     EmotesController() {
         try {
-            globalTwitchMap = emotesGetter.getGlobalTwitchEmotes();
+            //globalTwitchMap = emotesGetter.getGlobalTwitchEmotes();
             var BTTVMap = emotesGetter.getGlobalBTTVEmotes();
             var FFZMap = emotesGetter.getGlobalFFZEmotes();
             globalThirdPartyMap.putAll(BTTVMap);
@@ -75,5 +75,9 @@ public class EmotesController {
             return emotesMap.get(emote);
         }
         return null;
+    }
+
+    String getEmoteUrl(String emoteID) {
+        return emotesGetter.getTwitchEmoteURL(emoteID);
     }
 }

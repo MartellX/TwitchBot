@@ -288,6 +288,14 @@ public class EmotesGetter {
         }
 
         return emotesMap;
+    }
 
+    public String getTwitchEmoteURL(String emoteID) {
+        String urlTemplate = "https://static-cdn.jtvnw.net/emoticons/v1/{{id}}/{{size}}";
+        String size = "3.0";
+        String url = urlTemplate
+                .replace("{{id}}", emoteID)
+                .replace("{{size}}", size);
+        return url;
     }
 }
