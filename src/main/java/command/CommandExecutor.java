@@ -3,6 +3,7 @@ package command;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import constants.CommandConstants;
 import controllers.MainController;
+import org.jboss.jandex.Main;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -281,6 +282,10 @@ public class CommandExecutor {
     @CommandAnnotation(name = "!шазам", type = CommandType.INFO, delay = 20)
     private String getShazam(CommandArgumentDto args) {
         String answer = MainController.getShazam(args.getChannelname());
+        if (answer.contains("No result")) {
+            MainController.sendMessage(answer + " @" + args.getUsername(), args.getChannelname());
+            return null;
+        }
         return answer + " @" + args.getUsername();
     }
 

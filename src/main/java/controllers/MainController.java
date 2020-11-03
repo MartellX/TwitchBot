@@ -3,6 +3,7 @@ package controllers;
 import api.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
+import command.Channel;
 import command.CommandExecutor;
 import constants.CommandConstants;
 import org.apache.commons.collections4.CollectionUtils;
@@ -394,6 +395,7 @@ public class MainController {
                 result = "Совпадения: " + result;
             } else {
                 result = resultMap.get("status");
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -470,6 +472,9 @@ public class MainController {
 
     public static String joinToWithSQL(String channel) {
         emotesController.updateChannelEmotes(channel);
+        Channel channelObj = new Channel.Builder()
+                .setName(channel)
+                .build();
         return twitchBot.joinToChannel(channel);
     }
 

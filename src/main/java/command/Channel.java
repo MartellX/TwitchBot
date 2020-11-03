@@ -34,7 +34,7 @@ public class Channel {
         commands = new HashMap<>();
     }
 
-    public class Builder{
+    public static class Builder{
         private Channel channel;
 
         public Builder(){
@@ -61,7 +61,7 @@ public class Channel {
         public Channel build(){
             channel.executor = new CommandExecutor();
             channel.executor.setCommandConfigService(channel.commandConfigService);
-            for (var command:commands.entrySet()
+            for (var command: channel.commands.entrySet()
                  ) {
                 String alias = command.getKey();
                 CommandConfig config = command.getValue();
