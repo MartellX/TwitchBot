@@ -71,10 +71,25 @@ public class CommandConstants {
         blacklist.add("гитлер");
         blacklist.add("еврей");
 
-
+        blacklist.add("cemka");
+        blacklist.add("taerss");
+        blacklist.add("sgtgrafoyni");
+        blacklist.add("elwycco");
+        blacklist.add("insize");
+        blacklist.add("soroket");
+        blacklist.add("bacardiy_");
+        blacklist.add("alcoreru");
+        blacklist.add("beastqt");
+        blacklist.add("blackjoker707");
+        blacklist.add("cr1m3r".toLowerCase());
+        blacklist.add("mooniverse");
+        blacklist.add("asmadey");
+        blacklist.add("barsart");
+        blacklist.add("ren4games");
+        blacklist.add("ThePagYYY".toLowerCase());
 
         masterNames.add("martellx");
-        masterNames.add("pdvrr");
+//        masterNames.add("pdvrr");
     }
 
     public static String getNick(String nickVar) {

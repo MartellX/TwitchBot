@@ -327,20 +327,25 @@ public class CommandExecutor {
         return result;
     }
 
-    @CommandAnnotation(name = "!анфиса", type = CommandType.FUN, delay = 30, isPaused = false)
+    @CommandAnnotation(name = "!анфиса", type = CommandType.FUN, delay = 30, isPaused = true)
     private String chatBotAnswer(CommandArgumentDto args) {
         String message = args.getMessage();
         String msg = message.replaceFirst("!анфиса", "")
                 .replaceAll("@martellx_bot", "");
 
         if (!msg.matches("\\s*?")) {
-            String answer = MainController.getAnswerFromChatbot(msg) + " @" + args.getUsername();
+            String answer = MainController.getAnswerFromChatbot(msg);
             for (var bl : CommandConstants.blacklist
             ) {
                 String searchbl = "[\\s\\S]*" + bl + "[\\s\\S]*";
                 if (answer.toLowerCase().matches(searchbl)) {
                     return null;
                 }
+            }
+            if (answer == null) {
+                MainController.sendMessage("Что-то пошло не так " + args.getUsername(), args.getChannelname());
+            } else {
+                answer += " @" + args.getUsername();
             }
             return answer;
         }

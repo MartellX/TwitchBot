@@ -61,7 +61,7 @@ public class MainController {
         userPermissions.add(username.toUpperCase());
         for (var s: CommandConstants.blacklist
         ) {
-            if (message.contains(s)) {
+            if (message.toLowerCase().contains(s)) {
                 return;
             }
         }

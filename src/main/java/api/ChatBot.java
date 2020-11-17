@@ -43,7 +43,7 @@ public class ChatBot extends SimpleApi {
     public String getAnswer(String msg) {
         Request request = requestAnswer(msg);
 
-        String answer = "Что-то пошло не так";
+        String answer = null;
         try {
             //HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
             Response response = okclient.newCall(request).execute();
