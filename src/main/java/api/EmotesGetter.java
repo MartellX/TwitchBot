@@ -115,9 +115,17 @@ public class EmotesGetter {
             String name = emoteInfo.get("name").getAsString();
             JsonObject urls = emoteInfo.getAsJsonObject("urls");
             String url = "";
-            if (!urls.get("4").isJsonNull()) {
+//            if (!urls.get("4").isJsonNull()) {
+//                url = urls.get("4").getAsString();
+//            } else if (!urls.get("2").isJsonNull()) {
+//                url = urls.get("2").getAsString();
+//            } else {
+//                url = urls.get("1").getAsString();
+//            }
+
+            if (urls.has("4")) {
                 url = urls.get("4").getAsString();
-            } else if (!urls.get("2").isJsonNull()) {
+            } else if (urls.has("2")) {
                 url = urls.get("2").getAsString();
             } else {
                 url = urls.get("1").getAsString();
@@ -170,9 +178,17 @@ public class EmotesGetter {
             String name = emoteInfo.get("name").getAsString();
             JsonObject urls = emoteInfo.getAsJsonObject("urls");
             String url = "";
-            if (!urls.get("4").isJsonNull()) {
+//            if (!urls.get("4").isJsonNull()) {
+//                url = urls.get("4").getAsString();
+//            } else if (!urls.get("2").isJsonNull()) {
+//                url = urls.get("2").getAsString();
+//            } else {
+//                url = urls.get("1").getAsString();
+//            }
+
+            if (urls.has("4")) {
                 url = urls.get("4").getAsString();
-            } else if (!urls.get("2").isJsonNull()) {
+            } else if (urls.has("2")) {
                 url = urls.get("2").getAsString();
             } else {
                 url = urls.get("1").getAsString();
