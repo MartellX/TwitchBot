@@ -1,4 +1,4 @@
-package controllers;
+package sql;
 
 import command.CommandConfig;
 import command.CommandType;
@@ -9,25 +9,36 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class PostgreSQL {
+public class DataSourceController {
     private Connection connection = null;
+    private final String DB_URL;
+
+    public Connection getConnection () {
+        try {
+            return DriverManager.getConnection(DB_URL);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    DataSourceController(String DB_URL) {
+        this.DB_URL = DB_URL;
+    }
 
     public static void main (String[] args) {
         String DB_URL = System.getenv("DATABASE_URL");
 
-        PostgreSQL sqlController = new PostgreSQL();
+        DataSourceController sqlController = new DataSourceController(DB_URL);
 
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(DB_URL);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+
+        Connection connection = sqlController.getConnection();
+
 
         if (connection != null) {
             System.out.println("You successfully connected to database now");
@@ -225,6 +236,8 @@ public class PostgreSQL {
         }
 
     }
+
+
 
 
 

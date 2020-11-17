@@ -75,6 +75,7 @@ public enum CommandType {
             "MOD", CommandType.MOD,
             "MASTER", CommandType.MASTER,
             "OTHER", CommandType.OTHER);
+
     public static CommandType getTypeFromString(String type) {
         return typesMap.get(type);
     }

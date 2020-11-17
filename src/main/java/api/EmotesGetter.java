@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import constants.Config;
 import okhttp3.*;
 
+import javax.annotation.CheckForNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -88,6 +89,9 @@ public class EmotesGetter {
         return emotesMap;
     }
 
+    public static void main(String[] args) throws IOException, InterruptedException {
+        new EmotesGetter().getGlobalFFZEmotes();
+    }
     public Map<String, String> getGlobalFFZEmotes() throws IOException, InterruptedException {
         Map<String, String> emotesMap = new HashMap<>();
         String globalEmotesResource = FFZ_RESOURCE_POINT + "/v1/set/3";
@@ -111,9 +115,9 @@ public class EmotesGetter {
             String name = emoteInfo.get("name").getAsString();
             JsonObject urls = emoteInfo.getAsJsonObject("urls");
             String url = "";
-            if (urls.has("4")) {
+            if (!urls.get("4").isJsonNull()) {
                 url = urls.get("4").getAsString();
-            } else if (urls.has("2")) {
+            } else if (!urls.get("2").isJsonNull()) {
                 url = urls.get("2").getAsString();
             } else {
                 url = urls.get("1").getAsString();
@@ -166,9 +170,9 @@ public class EmotesGetter {
             String name = emoteInfo.get("name").getAsString();
             JsonObject urls = emoteInfo.getAsJsonObject("urls");
             String url = "";
-            if (urls.has("4")) {
+            if (!urls.get("4").isJsonNull()) {
                 url = urls.get("4").getAsString();
-            } else if (urls.has("2")) {
+            } else if (!urls.get("2").isJsonNull()) {
                 url = urls.get("2").getAsString();
             } else {
                 url = urls.get("1").getAsString();

@@ -8,10 +8,7 @@ import com.iheartradio.m3u8.data.TrackData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class M3U8Controller {
     Map<String, M3U8PlaylistData> channelPlaylists = new HashMap<>();
@@ -79,7 +76,7 @@ public class M3U8Controller {
     }
 
     public List<String> getLastTsUrls(String channel, int count) {
-        List<String> tracksUrl = new ArrayList<>();
+        List<String> tracksUrl = new LinkedList<>();
         try {
             MediaPlaylist mediaPlaylist = getAudioPlaylistForChannel(channel);
             if (mediaPlaylist == null) {

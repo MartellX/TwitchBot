@@ -3,7 +3,6 @@ package command;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import constants.CommandConstants;
 import controllers.MainController;
-import org.jboss.jandex.Main;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,7 +11,7 @@ import java.util.function.Function;
 
 public class CommandExecutor {
 
-    private static Map<String, Command> defaultCommands = new HashMap<>();
+    private static final Map<String, Command> defaultCommands = new HashMap<>();
 
     private Map<String, Command> commands = new HashMap<>();
     private CommandConfigService commandConfigService;
@@ -36,6 +35,7 @@ public class CommandExecutor {
                     }
                     command.setMethod(method);
                     command.setName(annotation.name());
+                    command.getConfig().setName(annotation.name());
                     defaultCommands.put(annotation.name(), command);
                     for (String name: annotation.names()
                          ) {
@@ -184,7 +184,6 @@ public class CommandExecutor {
 //        commands.put("!шазам", tecCommand);
 
 
-
     }
 
     public CommandExecutor(CommandConfigService configService, Map<String, Command> commands) {
@@ -209,6 +208,11 @@ public class CommandExecutor {
 
     public Command getCommand(String command) {
         return commands.get(command);
+    }
+    public List<CommandConfig> getConfigs () {
+        HashSet<CommandConfig> configSet = new HashSet<>();
+        commands.values().forEach(c -> configSet.add(c.getConfig()));
+        return new ArrayList<>(configSet);
     }
 
     public void setCommandConfigService(CommandConfigService commandConfigService) {
@@ -295,6 +299,7 @@ public class CommandExecutor {
         String result = null;
         if (message.matches("^\\S+.*")) {
             String type = message.replaceAll("^([^0-9^\\s]+).*$", "$1");
+            type = type.toLowerCase();
             if (commands.containsKey(type)) {
                 Command command = commands.get(type);
                 if (command.getConfig().isPaused()) {
@@ -582,19 +587,11 @@ public class CommandExecutor {
 
         return result;
     }
-
-
+    
 
     private String sendPmMessage(CommandArgumentDto args){
         MainController.sendPMmessage(args.getUsername(), args.getMessage() + " @" + args.getUsername());
         return "Сообщение отправлено";
     }
-
-
-
-
-
-
-
 
 }

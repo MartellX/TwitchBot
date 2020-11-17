@@ -34,14 +34,14 @@ public class MainController {
     static private final ChatBot chatBot = new ChatBot();
     static private final SimpleApi httpClient = new SimpleApi();
     static private final EmotesController emotesController = new EmotesController();
-    static private final CommandExecutor commandExecutor = new CommandExecutor();
     static private final long lastUpdate = System.currentTimeMillis();
     static private final int updateMinutes = 30;
     static private long lastEventCheck = 0;
     static public boolean isStopped = false;
     static public boolean isCheckedEvents = false;
+    static private Map<String, Channel> connectedChannels = new HashMap<>();
 
-    static private int maxPastCount = 5;
+
 
 
     static public void setTwitchBot(OAuth2Credential twitchCreds) {
@@ -66,10 +66,12 @@ public class MainController {
             }
         }
 
+        Channel channel = connectedChannels.get(channelname);
 
         handleNick(username);
 
         if (message.startsWith("!") && !CommandConstants.botNames.contains(username)) {
+            CommandExecutor commandExecutor = channel.getExecutor();
             String commandTag = message.replaceFirst("(!\\S+).*", "$1").toLowerCase();
             String commandArgs = message.replaceAll(commandTag + "\\s?(.*$)","$1");
             if (commandExecutor.containsCommand(commandTag)) {
@@ -466,11 +468,22 @@ public class MainController {
     }
 
     public static String joinTo(String channel) {
+        if (connectedChannels.containsKey(channel)) {
+            return "Уже присоединен";
+        }
+        Channel channelObj = new Channel.Builder()
+                .setName(channel)
+                .build();
         emotesController.updateChannelEmotes(channel);
+        connectedChannels.put(channel, channelObj);
         return twitchBot.joinToChannel(channel);
     }
 
     public static String joinToWithSQL(String channel) {
+        if (connectedChannels.containsKey(channel)) {
+            return "Уже присоединен";
+        }
+
         emotesController.updateChannelEmotes(channel);
         Channel channelObj = new Channel.Builder()
                 .setName(channel)
@@ -478,9 +491,6 @@ public class MainController {
         return twitchBot.joinToChannel(channel);
     }
 
-    public static void setMaxPastCount(int count) {
-        maxPastCount = count;
-    }
 
     static void writeToLogs(String log) {
 

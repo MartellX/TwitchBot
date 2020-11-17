@@ -9,10 +9,14 @@ import java.util.Set;
 
 //TODO собственно сделать
 public class Channel {
+
+    private String name;
+    private int id;
+    private boolean isLive;
+    Map<String, CommandConfig> commands;
+
     private CommandConfigService commandConfigService;
     private CommandExecutor executor;
-    private String name;
-    Map<String, CommandConfig> commands;
 
     public Channel(String name) {
         this.name = name;
@@ -34,6 +38,14 @@ public class Channel {
         commands = new HashMap<>();
     }
 
+    public Map<String, CommandConfig> getCommands() {
+        return commands;
+    }
+
+    public void setCommands(Map<String, CommandConfig> commands) {
+        this.commands = commands;
+    }
+
     public static class Builder{
         private Channel channel;
 
@@ -43,6 +55,11 @@ public class Channel {
 
         public Builder setName(String name) {
             channel.name = name;
+            return this;
+        }
+
+        public Builder setID (int id) {
+            channel.id = id;
             return this;
         }
 
@@ -68,20 +85,46 @@ public class Channel {
                 channel.executor.getCommand(alias).setConfig(config);
             }
 
+            channel.commands.clear();
+            for (CommandConfig config:channel.executor.getConfigs()
+                 ) {
+                channel.commands.put(config.getName(), config);
+            }
+
             return channel;
         }
 
     }
 
-    public void execute(String commandTag,
-                        String channelname,
-                        String username,
-                        Set<String> userPermissions,
-                        String message,
-                        IRCMessageEvent messageEvent) {
-
-        executor.execute(commandTag, channelname, username, userPermissions, message, messageEvent);
+    public boolean isLive() {
+        return isLive;
     }
+
+    public void setLive(boolean live) {
+        isLive = live;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public CommandExecutor getExecutor() {
+        return executor;
+    }
+
+
 }
 
 

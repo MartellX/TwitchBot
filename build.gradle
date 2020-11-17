@@ -39,7 +39,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
 
-    implementation 'org.postgresql:postgresql:42.2.14.jre7'
+    implementation 'org.postgresql:postgresql:42.2.18'
 
     implementation 'org.hibernate:hibernate-agroal:5.4.23.Final'
 
