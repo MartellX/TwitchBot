@@ -3,6 +3,8 @@ package api;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
 import controllers.DecodedSignature;
 import okhttp3.*;
 
@@ -69,31 +71,35 @@ public class RecognizingV2API {
     }
 
     private static String parseJson(String json) {
-        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-        int matchesSize = jsonObject.getAsJsonArray("matches").size();
+        try {
+            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            int matchesSize = jsonObject.getAsJsonArray("matches").size();
 
 
-        if (matchesSize == 0) {
+            if (matchesSize == 0) {
+                return null;
+            }
+            JsonObject trackInfo = jsonObject.getAsJsonObject("track");
+
+            String title = trackInfo.get("title").getAsString();
+            String subtitle = trackInfo.get("subtitle").getAsString();
+
+            if (matchesSize > 1) {
+                System.out.println("Совпадений: " + matchesSize);
+            }
+            if (matchesSize > matchesThreshold) {
+                System.out.println(subtitle + " - " + title);
+                return null;
+            }
+            return subtitle + " - " + title;
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            System.out.println();
+            System.out.println(json);
             return null;
         }
 
 
-        JsonObject trackInfo = jsonObject.getAsJsonObject("track");
-
-        String title = trackInfo.get("title").getAsString();
-        String subtitle = trackInfo.get("subtitle").getAsString();
-
-        if (matchesSize > 1) {
-            System.out.println("Совпадений: " + matchesSize);
-        }
-        if (matchesSize > matchesThreshold) {
-            System.out.println(subtitle + " - " + title);
-            return null;
-        }
-
-
-
-        return subtitle + " - " + title;
     }
 
 

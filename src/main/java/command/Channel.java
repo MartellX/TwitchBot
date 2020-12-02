@@ -141,9 +141,15 @@ public class Channel {
                 if (result != null && !result.equals(lastResult)) {
                     MainController.sendMessage("Сейчас играет: " + result, this.name);
                     this.channelData.put("last_result", result);
+                } else {
+                    System.out.println("[" + name + "]" + " Нет результатов");
                 }
                 try {
-                    TimeUnit.SECONDS.sleep(30);
+                    if (result == null) {
+                        TimeUnit.SECONDS.sleep(15);
+                    } else {
+                        TimeUnit.SECONDS.sleep(30);
+                    }
                 } catch (InterruptedException e) {
 //                e.printStackTrace();
                     isShazaming = false;
