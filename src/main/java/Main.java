@@ -25,6 +25,9 @@ public class Main {
         //MainController.setLogsFile("logs.txt");
         MainController.joinTo("martellx");
         MainController.joinTo("cemka");
+//        MainController.joinTo("martellx_bot");
 //        MainController.joinTo("taerss");
+
+//        MainController.joinTo("monstercat");
     }
 }

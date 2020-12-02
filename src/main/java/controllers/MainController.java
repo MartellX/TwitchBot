@@ -59,12 +59,7 @@ public class MainController {
     static public void handleMessage(String channelname, String username, Set userPermissions, String message, IRCMessageEvent messageEvent) {
 
         userPermissions.add(username.toUpperCase());
-        for (var s: CommandConstants.blacklist
-        ) {
-            if (message.toLowerCase().contains(s)) {
-                return;
-            }
-        }
+
 
         Channel channel = connectedChannels.get(channelname);
 
@@ -402,7 +397,18 @@ public class MainController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return result;
+    }
 
+    static public String getShazamV2(String channel) {
+        if (!connectedChannels.get(channel).isLive()) return null;
+        String result = "Произошла хуйня :)";
+        List<String> urls = m3U8Controller.getLastTsUrls(channel, 7);
+
+        List<File> filesFromUrls = FFMpegUtil.urlsToTSfiles(urls);
+        RecognizingV2 recognizingV2 = new RecognizingV2();
+
+        result = recognizingV2.recognize(filesFromUrls);
 
 
         return result;
@@ -467,16 +473,53 @@ public class MainController {
         return answ;
     }
 
+    private static List<String> autoShazamChannels = List.of("cemka", "martellx", "taerss", "monstercat");
+
+    public static void goLive(String channel) {
+        Channel channelObj = connectedChannels.get(channel);
+
+        channelObj.setLive(true);
+        if (autoShazamChannels.contains(channel)) {
+            channelObj.setAutoShazam(true);
+        }
+    }
+
+    public static void goOffline(String channel) {
+        Channel channelObj = connectedChannels.get(channel);
+        channelObj.setLive(false);
+        if (autoShazamChannels.contains(channel)) {
+            channelObj.setAutoShazam(false);
+        }
+    }
+
     public static String joinTo(String channel) {
         if (connectedChannels.containsKey(channel)) {
             return "Уже присоединен";
         }
-        Channel channelObj = new Channel.Builder()
+        String id = twitchBot.getTwitchClient()
+                .getHelix()
+                .getUsers(null, null, Collections.singletonList(channel))
+                .execute()
+                .getUsers()
+                .get(0)
+                .getId();
+
+
+        Channel.Builder channelBuilder = new Channel.Builder();
+        if (autoShazamChannels.contains(channel)) {
+            channelBuilder.setAutoShazam(true);
+        }
+        Channel channelObj = channelBuilder
                 .setName(channel)
+                .setID(Integer.parseInt(id))
                 .build();
         emotesController.updateChannelEmotes(channel);
         connectedChannels.put(channel, channelObj);
         return twitchBot.joinToChannel(channel);
+    }
+
+    public static boolean checkOnLive(String id) {
+        return UnofficialTwitchApi.getInstance().getChannelStatus(id);
     }
 
     public static String joinToWithSQL(String channel) {
@@ -548,6 +591,10 @@ public class MainController {
         }
 
         return anek;
+    }
+
+    public static void deleteMessage(String channel, String id) {
+        twitchBot.deleteMessage(channel, id);
     }
 
     @Override

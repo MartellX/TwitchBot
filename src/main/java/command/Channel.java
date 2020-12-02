@@ -1,11 +1,13 @@
 package command;
 
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
+import controllers.MainController;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 //TODO собственно сделать
 public class Channel {
@@ -17,6 +19,10 @@ public class Channel {
 
     private CommandConfigService commandConfigService;
     private CommandExecutor executor;
+    private boolean isAutoShazam = false;
+    private boolean isShazaming = false;
+
+    private HashMap<String, String> channelData = new HashMap<>();
 
     public Channel(String name) {
         this.name = name;
@@ -63,6 +69,11 @@ public class Channel {
             return this;
         }
 
+        public Builder setAutoShazam(boolean isAuto) {
+            channel.isAutoShazam = isAuto;
+            return this;
+        }
+
         public Builder setConfigService(CommandConfigService service) {
             channel.commandConfigService = service;
             return this;
@@ -72,8 +83,6 @@ public class Channel {
             channel.commands.putAll(commands);
             return this;
         }
-
-
 
         public Channel build(){
             channel.executor = new CommandExecutor();
@@ -85,23 +94,89 @@ public class Channel {
                 channel.executor.getCommand(alias).setConfig(config);
             }
 
+            channel.executor.setChannel(channel);
             channel.commands.clear();
             for (CommandConfig config:channel.executor.getConfigs()
                  ) {
                 channel.commands.put(config.getName(), config);
             }
-
+            channel.channelData.put("last_result", "");
+            initListenThreads();
             return channel;
+        }
+
+        private void initListenThreads() {
+            if (channel.isAutoShazam) {
+                channel.startAutoShazam();
+            }
         }
 
     }
 
+    Thread shazamListen;
+
+    private void startAutoShazam() {
+        shazamListen = new Thread(() ->
+        {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            isShazaming = true;
+            long lastCheckTime = 0;
+            while (this.isAutoShazam) {
+
+                long thisCheckTime = System.currentTimeMillis();
+                if (thisCheckTime - lastCheckTime >= 120 * 1000) {
+                    isLive();
+                    if (!isLive) {
+                        isShazaming = false;
+                        break;
+                    }
+                    lastCheckTime = thisCheckTime;
+                }
+                String lastResult = this.channelData.get("last_result");
+                String result = MainController.getShazamV2(this.name);
+                if (result != null && !result.equals(lastResult)) {
+                    MainController.sendMessage("Сейчас играет: " + result, this.name);
+                    this.channelData.put("last_result", result);
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(30);
+                } catch (InterruptedException e) {
+//                e.printStackTrace();
+                    isShazaming = false;
+                }
+            }
+        });
+        shazamListen.start();
+    }
+
     public boolean isLive() {
+        assert id != 0;
+        boolean check = MainController.checkOnLive(String.valueOf(id));
+        isLive = check;
         return isLive;
     }
 
     public void setLive(boolean live) {
         isLive = live;
+    }
+
+    public void setAutoShazam(boolean autoShazam) {
+        if (!shazamListen.isAlive() && autoShazam) {
+            startAutoShazam();
+        }
+
+        if (shazamListen.isAlive() && !autoShazam) {
+            shazamListen.interrupt();
+        }
+        isAutoShazam = autoShazam;
+    }
+
+    public boolean isAutoShazam() {
+        return isAutoShazam;
     }
 
     public String getName() {

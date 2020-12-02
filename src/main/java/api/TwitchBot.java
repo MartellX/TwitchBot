@@ -8,8 +8,8 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
-import com.github.twitch4j.common.events.channel.ChannelGoOfflineEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
+import com.github.twitch4j.events.ChannelGoOfflineEvent;
 import constants.CommandConstants;
 import constants.Config;
 import controllers.MainController;
@@ -45,14 +45,19 @@ public class TwitchBot {
 
 
         eventHandler.onEvent(ChannelGoLiveEvent.class, event -> {
+
+            System.out.println("[LIVE]" + "[" + event.getChannel().getName() + "]");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!выкл фан");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 30");
             MainController.addListeningChannel(event.getChannel().getName());
+            MainController.goLive(event.getChannel().getName());
         });
 
         eventHandler.onEvent(ChannelGoOfflineEvent.class, event -> {
+            System.out.println("[OFFLINE]" + "[" + event.getChannel().getName() + "]");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!вкл фан");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 5");
+            MainController.goOffline(event.getChannel().getName());
         });
 
         eventHandler.onEvent(FollowEvent.class, followEvent -> {
@@ -71,10 +76,9 @@ public class TwitchBot {
             return;
         }
 
-        //TODO передавать IRCMessageEvent для получение id смайлов твича
          IRCMessageEvent messageEvent = event.getMessageEvent();
 
-
+        messageEvent.getMessageId().get();
         /*
         long timeReconnect = System.currentTimeMillis();
 
@@ -116,6 +120,10 @@ public class TwitchBot {
          twitchClient.close();
      }
 
+     public void deleteMessage(String channel, String id){
+         twitchClient.getChat().delete(channel, id);
+     }
+
     public void sendMessage (String message, String channelName) {
         System.out.println("[LOGS][" + Calendar.getInstance().getTime() + "][" + channelName +"][SEND_MESSAGE]:" + message);
         twitchClient.getChat().sendMessage(channelName, message);
@@ -147,6 +155,10 @@ public class TwitchBot {
         sendMessage(message, "martellx");
         twitchClient.getClientHelper().enableFollowEventListener(channel);
         return null;
+    }
+
+    public TwitchClient getTwitchClient() {
+        return twitchClient;
     }
 
     @Override

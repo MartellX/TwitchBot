@@ -1,5 +1,6 @@
 package command;
 
+import api.RecognizingV2API;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import constants.CommandConstants;
 import controllers.MainController;
@@ -15,6 +16,7 @@ public class CommandExecutor {
 
     private Map<String, Command> commands = new HashMap<>();
     private CommandConfigService commandConfigService;
+    private Channel channel;
 
     static {
         for (Method method:CommandExecutor.class.getDeclaredMethods()
@@ -63,7 +65,7 @@ public class CommandExecutor {
             int neededDelay = command.getConfig().getDelay();
             long lastExecute = command.getLastExecution();
             long currentTime = System.currentTimeMillis();
-            CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message, emotes);
+            CommandArgumentDto args = new CommandArgumentDto(channelname, username, userPermissions, message, emotes, messageEvent);
             String result = null;
             if (Collections.disjoint(userPermissions, neededPermissions)) {
                 result = null;
@@ -223,7 +225,9 @@ public class CommandExecutor {
         return commandConfigService;
     }
 
-
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
 
     // НИЖЕ ТОЛЬКО ФУНКЦИИ ДЛЯ КОМАНД
 
@@ -283,7 +287,18 @@ public class CommandExecutor {
         return msg;
     }
 
-    @CommandAnnotation(name = "!шазам", type = CommandType.INFO, delay = 20)
+    @CommandAnnotation(name = "!шазам", type = CommandType.INFO, delay = 5)
+    private String getShazamV2(CommandArgumentDto args) {
+        String result = MainController.getShazamV2(args.getChannelname());
+        if (result == null) {
+            MainController.sendMessage("Нет результатов @" + args.getUsername(), args.getChannelname());
+            return null;
+        } else {
+            return result + " @" + args.getUsername();
+        }
+    }
+
+    @CommandAnnotation(name = "!шазам2", type = CommandType.INFO, delay = 20)
     private String getShazam(CommandArgumentDto args) {
         String answer = MainController.getShazam(args.getChannelname());
         if (answer.contains("No result")) {
@@ -332,6 +347,12 @@ public class CommandExecutor {
         String message = args.getMessage();
         String msg = message.replaceFirst("!анфиса", "")
                 .replaceAll("@martellx_bot", "");
+        for (var s: CommandConstants.blacklist
+        ) {
+            if (message.toLowerCase().contains(s)) {
+                return null;
+            }
+        }
 
         if (!msg.matches("\\s*?")) {
             String answer = MainController.getAnswerFromChatbot(msg);
@@ -504,6 +525,29 @@ public class CommandExecutor {
         return result;
     }
 
+    @CommandAnnotation(name = "!автошазам", type = CommandType.MOD)
+    private String autoShazam (CommandArgumentDto args) {
+        if(channel.isAutoShazam()) {
+            channel.setAutoShazam(false);
+            return "Автошазам отключен";
+        } else {
+            channel.setAutoShazam(true);
+            return "Автошазам включен";
+        }
+    }
+
+    @CommandAnnotation(name = "!совпадений", type = CommandType.MOD)
+    private String setAutoShazamMatches (CommandArgumentDto args) {
+        String result = null;
+        if (args.getMessage().matches("\\d+.*")) {
+            int matches = Integer.parseInt(args.getMessage().replaceFirst("(\\d+).*", "$1"));
+            RecognizingV2API.matchesThreshold = matches;
+            result = "Шазам будет выдавать результаты при сопадениях <= " + matches;
+        }
+        return result;
+
+    }
+
     //------MASTER------
     @CommandAnnotation(name = "!jointo", type = CommandType.MASTER)
     private String joinToChannel(CommandArgumentDto args) {
@@ -546,6 +590,12 @@ public class CommandExecutor {
         MainController.isStopped = true;
         return "Перезапускаюсь(наверное) peepoRip";
     }
+
+//    @CommandAnnotation(name = "!delete", type = CommandType.MASTER, isPaused = true)
+//    private String deleteMessage(CommandArgumentDto args) {
+//        MainController.deleteMessage(args.getChannelname(), args.getMessageEvent().getMessageId().get());
+//        return "Pick";
+//    }
 
     @CommandAnnotation(name = "!разрешить", type = CommandType.MASTER)
     private String addPermission(CommandArgumentDto args) {

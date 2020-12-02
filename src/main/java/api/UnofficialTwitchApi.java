@@ -115,5 +115,25 @@ public class UnofficialTwitchApi {
         return null;
     }
 
+    public boolean getChannelStatus(String id) {
+        String URL_TEMPLATE = "https://api.twitch.tv/v5/streams/{channel_id}";
+        String url = URL_TEMPLATE.replace("{channel_id}", id);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Client-ID", clientid)
+                .get()
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            JsonObject jsonResponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
+            boolean isStreamNull = jsonResponse.get("stream").isJsonNull();
+            return !isStreamNull;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
 }
