@@ -34,7 +34,7 @@ public class UnofficialTwitchApi {
 
     OkHttpClient client;
 
-    String clientid = Config.getStringFor("UNOFFICIAL_TWITCH_CID");
+    String clientid = Config.getStringFor("TWITCH_CID");
     String oauth = Config.getStringFor("UNOFFICIAL_TWITCH_OAUTH");
 
     private UnofficialTwitchApi() {
