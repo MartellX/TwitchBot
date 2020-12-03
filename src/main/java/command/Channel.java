@@ -138,7 +138,7 @@ public class Channel {
                 }
                 String lastResult = this.channelData.get("last_result");
                 String result = MainController.getShazamV2(this.name);
-                if (result != null && !(result.contains(lastResult) || lastResult.contains(result))) {
+                if (result != null && !(result.equals(lastResult))) {
                     MainController.sendMessage("Сейчас играет: " + result, this.name);
                     this.channelData.put("last_result", result);
                 } else {

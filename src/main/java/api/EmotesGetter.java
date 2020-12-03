@@ -51,6 +51,8 @@ public class EmotesGetter {
             emotesMap.put(code, url);
         }
 
+        response.close();
+
         return emotesMap;
     }
 
@@ -82,6 +84,14 @@ public class EmotesGetter {
             }
         } catch (IOException | NullPointerException e) {
             System.out.println("[ERROR]Не удалось получить BTTV-смайлы");
+        } finally {
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (final Throwable th) {
+                    System.out.println(th.getMessage());
+                }
+            }
         }
 
 
@@ -108,6 +118,8 @@ public class EmotesGetter {
                 .getAsJsonObject()
                 .getAsJsonObject("set")
                 .getAsJsonArray("emoticons");
+
+        globalResponse.close();
 
         for (var elem : globalEmotes
         ) {
@@ -200,6 +212,14 @@ public class EmotesGetter {
         }
         } catch (IOException | NullPointerException e) {
             System.out.println("[ERROR}Не удалось получить FFZ-смайлы");
+        } finally {
+            if (channelResponse != null) {
+                try {
+                    channelResponse.close();
+                } catch (final Throwable th) {
+                    System.out.println(th.getMessage());
+                }
+            }
         }
 
         return emotesMap;
