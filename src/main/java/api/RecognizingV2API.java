@@ -1,14 +1,13 @@
 package api;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.MalformedJsonException;
 import controllers.DecodedSignature;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.TimeZone;
@@ -62,7 +61,7 @@ public class RecognizingV2API {
         try {
             Response response = client.newCall(request).execute();
             result = parseJson(response.body().string());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -72,6 +71,7 @@ public class RecognizingV2API {
 
     private static String parseJson(String json) {
         try {
+
             JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
             int matchesSize = jsonObject.getAsJsonArray("matches").size();
 
