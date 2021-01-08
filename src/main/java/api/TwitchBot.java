@@ -5,11 +5,20 @@ import com.github.philippheuer.events4j.api.domain.IDisposable;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.chat.events.TwitchEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.FollowEvent;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 import com.github.twitch4j.events.ChannelGoOfflineEvent;
+import com.github.twitch4j.helix.webhooks.domain.WebhookRequest;
+import com.github.twitch4j.helix.webhooks.topics.TwitchWebhookTopic;
+import com.github.twitch4j.pubsub.PubSubSubscription;
+import com.github.twitch4j.pubsub.TwitchPubSub;
+import com.github.twitch4j.pubsub.domain.ChannelPointsRedemption;
+import com.github.twitch4j.pubsub.domain.PubSubRequest;
+import com.github.twitch4j.pubsub.enums.PubSubType;
+import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import constants.CommandConstants;
 import constants.Config;
 import controllers.MainController;
@@ -25,15 +34,18 @@ public class TwitchBot {
     TwitchClient twitchClient;
     IDisposable handlerMessages;
     boolean isClosed = false;
+    OAuth2Credential credential;
 
 
     public TwitchBot(OAuth2Credential credential) {
         Logger.getLogger(TwitchClient.class.getName()).setLevel(Level.WARNING);
+        this.credential = credential;
         this.twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
                 .withChatAccount(credential)
                 .withClientId(Config.getStringFor("TWITCH_CID"))
                 .withEnableHelix(true)
+                .withEnablePubSub(true)
                 .withDefaultAuthToken(credential)
                 .build();
         //twitchClient.getClientHelper().setDefaultAuthToken(credential);
@@ -41,11 +53,11 @@ public class TwitchBot {
                 .getEventHandler(SimpleEventHandler.class);
 
         eventHandler.onEvent(ChannelMessageEvent.class, this::handlerMethod);
+        
 
 
 
         eventHandler.onEvent(ChannelGoLiveEvent.class, event -> {
-
             System.out.println("[LIVE]" + "[" + event.getChannel().getName() + "]");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!выкл фан");
 //            MainController.handleMessage(event.getChannel().getName(), "", new HashSet(Set.of("MASTER")), "!задержка фан 30");
@@ -65,6 +77,9 @@ public class TwitchBot {
         });
 
 
+        
+
+
     }
 
     boolean isStarted = false;
@@ -78,7 +93,6 @@ public class TwitchBot {
 
          IRCMessageEvent messageEvent = event.getMessageEvent();
 
-        messageEvent.getMessageId().get();
         /*
         long timeReconnect = System.currentTimeMillis();
 
@@ -106,7 +120,7 @@ public class TwitchBot {
         //controllers.MainController.writeToLogs(logMessage);
         System.out.println(logMessage);
 
-        //TODO следить за стабильностью
+
          new Thread(() -> MainController.handleMessage(channelname, username, permissions, message, messageEvent)).start();
 
          //MainController.handleMessage(channelname, username, permissions, message);
@@ -156,6 +170,8 @@ public class TwitchBot {
         twitchClient.getClientHelper().enableFollowEventListener(channel);
         return null;
     }
+
+
 
     public TwitchClient getTwitchClient() {
         return twitchClient;

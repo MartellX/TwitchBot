@@ -42,7 +42,6 @@ public class RecognizingV2 {
         RecognizingV2 recognizingV2 = new RecognizingV2();
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            if (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.matches("0")) {
                     break;
@@ -58,14 +57,13 @@ public class RecognizingV2 {
                                 lastResult = result;
                             }
                             try {
-                                TimeUnit.SECONDS.sleep(15);
+                                TimeUnit.SECONDS.sleep(5);
                             } catch (InterruptedException e) {
 
                             }
                         }
                     }).start();
                 }
-            }
         }
 //        List<File> tsFiles = FFMpegUtil.urlsToTSfiles(new M3U8Controller().getLastTsUrls("monstercat", 7));
 //        System.out.println(recognizingV2.recognize(tsFiles));

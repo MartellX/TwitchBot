@@ -27,6 +27,8 @@ public class Main {
         MainController.joinTo("cemka");
 //        MainController.joinTo("martellx_bot");
 //        MainController.joinTo("taerss");
+//        MainController.joinTo("vadikus007");
+//        MainController.joinTo("uselessmouth");
 
 //        MainController.joinTo("monstercat");
     }

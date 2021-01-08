@@ -473,7 +473,7 @@ public class MainController {
         return answ;
     }
 
-    private static List<String> autoShazamChannels = List.of("cemka", "martellx", "taerss", "monstercat");
+    private static List<String> autoShazamChannels = List.of("cemka", "martellx", "taerss", "monstercat", "uselessmouth");
 
     public static void goLive(String channel) {
         Channel channelObj = connectedChannels.get(channel);

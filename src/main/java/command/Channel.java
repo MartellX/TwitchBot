@@ -3,10 +3,9 @@ package command;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import controllers.MainController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.net.http.WebSocket;
+import java.util.*;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 //TODO собственно сделать
@@ -21,6 +20,7 @@ public class Channel {
     private CommandExecutor executor;
     private boolean isAutoShazam = false;
     private boolean isShazaming = false;
+    private boolean isAutoBet = false;
 
     private HashMap<String, String> channelData = new HashMap<>();
 
@@ -109,6 +109,7 @@ public class Channel {
             if (channel.isAutoShazam) {
                 channel.startAutoShazam();
             }
+
         }
 
     }
@@ -137,7 +138,13 @@ public class Channel {
                     lastCheckTime = thisCheckTime;
                 }
                 String lastResult = this.channelData.get("last_result");
-                String result = MainController.getShazamV2(this.name);
+                String result;
+                try {
+                    result = MainController.getShazamV2(this.name);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                    result = null;
+                }
                 if (result != null && !(result.equals(lastResult))) {
                     MainController.sendMessage("/me Сейчас играет: " + result, this.name);
                     this.channelData.put("last_result", result);
@@ -161,6 +168,10 @@ public class Channel {
             }
         });
         shazamListen.start();
+    }
+
+    private void startAutoBet() {
+
     }
 
     public boolean isLive() {

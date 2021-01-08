@@ -36,7 +36,7 @@ public class ImageController {
 
     static int THRESHOLD_DEFAULT = 127;
     static int asciiXDots = 2, asciiYDots = 4;
-    static int asciiWidth = 30, asciiHeight = 11; //for twitch chat
+    static int asciiWidth = 30, asciiHeight = 12; //for twitch chat
     static OkHttpClient client = new OkHttpClient.Builder()
             .cache(new Cache(new File("http_cache"), 50L * 1024L * 1024L))
             .build();
@@ -64,6 +64,8 @@ public class ImageController {
         int offsetX = image.getWidth(null)/2 - width / 2;
         int offsetY = image.getHeight(null)/2 - height / 2;
         image.getGraphics().drawImage(inputImage, offsetX, offsetY, width, height, null);
+
+//        Image image = inputImage.getScaledInstance(asciiWidth * asciiXDots, asciiHeight * asciiYDots, Image.SCALE_AREA_AVERAGING);
         inputImage = toBufferedImage(image);
         try {
             ImageIO.write(inputImage, "png", new File("result.png"));
@@ -80,56 +82,25 @@ public class ImageController {
 
 
 
-        for (int i = 0; i < rgbArray.length; i++){
-            int rgb = rgbArray[i];
-            double blue = rgb & 0xff;
-            double green = (rgb & 0xff00) >> 8;
-            double red = (rgb & 0xff0000) >> 16;
-            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
-            greyArray[i] = grey;
-            histogram[grey]++;
+//        for (int i = 0; i < rgbArray.length; i++){
+//            int rgb = rgbArray[i];
+//            double blue = rgb & 0xff;
+//            double green = (rgb & 0xff00) >> 8;
+//            double red = (rgb & 0xff0000) >> 16;
+//            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
+//            greyArray[i] = grey;
+//            histogram[grey]++;
+//
+//            sumOfGreys += grey;
+//            countOfGreys++;
+//        }
+//
 
-            sumOfGreys += grey;
-            countOfGreys++;
-        }
 
-
-
-        int currThreshold = (int) (sumOfGreys / countOfGreys);
+        int currThreshold = getThreshold(rgbArray);
         currThreshold += currThreshold < THRESHOLD_DEFAULT ? 20 : -20;
 
 
-//        int prevR1 = -1, prevR2 = -2;
-//        int currR1 = 0, currR2 = 0;
-//        double u1, u2;
-//
-//        while (currR1 != prevR1 || currR2 != prevR2) {
-//            prevR1 = currR1;
-//            prevR2 = currR2;
-//            double greyR1 = 0, greyR2 = 0;
-//            double countR1 = 0, countR2 = 0;
-//            for (int i = 0; i < greyArray.length; i++){
-//                int grey = greyArray[i];
-//                if (grey > currThreshold) {
-//                    greyR1 += grey;
-//                    countR1++;
-//                } else {
-//                    greyR2 += grey;
-//                    countR2 ++;
-//                }
-//            }
-//            u1 = (greyR1 / countR1);
-//            u2 = (greyR2 / countR2);
-//            currThreshold = (int) ((u1 + u2) /2);
-//            currR1 = (int) u1;
-//            currR2 = (int) u2;
-//        }
-
-
-        //double averageGrey = sumOfGreys / countOfGreys;
-
-
-        //ImageIO.write(image, "png", new File("test.png"));
 
         if (threshold == -1) {
             threshold = currThreshold;
@@ -148,6 +119,18 @@ public class ImageController {
         int lastBlanked;
         Queue<String> rows = new ArrayDeque<>();
         for (int y = 0; y < asciiHeight * asciiYDots; y += asciiYDots) {
+            if (y % 2 == 0) {
+                rgbArray = inputImage.getRGB(
+                        0,
+                        y,
+                        inputImage.getWidth(),
+                        1,
+                        null,
+                        0,
+                        inputImage.getWidth());
+                threshold = getThreshold(rgbArray);
+            }
+
             boolean isBlankLast = true;
             StringBuilder row = new StringBuilder();
             for (int x = 0; x < asciiWidth * asciiXDots; x += asciiXDots) {
@@ -184,6 +167,29 @@ public class ImageController {
         }
 
         return result.toString();
+    }
+
+    private static int getThreshold(int[] rgbArray) {
+        int sumOfGreys = 0, countOfGreys = 0;
+        int countOfWhites = 0;
+        for (int i = 0; i < rgbArray.length; i++){
+            int rgb = rgbArray[i];
+            double blue = rgb & 0xff;
+            double green = (rgb & 0xff00) >> 8;
+            double red = (rgb & 0xff0000) >> 16;
+            int grey = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
+            if(grey == 0) {
+                if (++countOfWhites >= 10) {
+                    countOfWhites = 0;
+                    sumOfGreys += grey;
+                    countOfGreys++;
+                }
+            } else {
+                sumOfGreys += grey;
+                countOfGreys++;
+            }
+        }
+        return (sumOfGreys / countOfGreys);
     }
 
     private static char ImageData2Braille(int[] data, int threshold) {
