@@ -9,8 +9,6 @@ import java.security.GeneralSecurityException;
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException, GeneralSecurityException {
         CommandConstants.init();
-//        OAuth2Credential twitchCredential = new OAuth2Credential("martellx_testbot",
-//                "p77qxvmablm14hpvq9xg1mai5sgudw");
       OAuth2Credential twitchCredential = new OAuth2Credential(Config.getStringFor("TWITCH_NICKNAME"),
                Config.getStringFor("TWITCH_ATOKEN"));
 
